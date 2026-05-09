@@ -1,0 +1,147 @@
+import React, { useState } from 'react';
+import { Package, Truck, Search, Plus, MapPin, Search as SearchIcon, ArrowLeftRight } from 'lucide-react';
+import { dummyWarehouses } from '../../lib/extended-dummy';
+import { useOrders } from '../../context/OrderContext';
+import { useUsers } from '../../context/UserContext';
+
+export default function AdminWarehouses() {
+  const [activeTab, setActiveTab] = useState<'main' | 'sub'>('main');
+  const { orders, updateOrderStatus } = useOrders();
+  const { users } = useUsers();
+  
+  const mainWarehouses = dummyWarehouses.filter(w => w.type === 'main');
+  // Combine dummy sub warehouses with any new warehouse users
+  const subWarehouses = [
+    ...dummyWarehouses.filter(w => w.type === 'sub'),
+    ...users.filter(u => u.role === 'warehouse').map(u => ({
+      id: u.id,
+      name: u.name,
+      type: 'sub',
+      city: u.city || 'غير محدد'
+    }))
+  ];
+  
+  const displayWarehouses = activeTab === 'main' ? mainWarehouses : subWarehouses;
+  
+  const mainOrders = orders.filter(o => o.status === 'main_warehouse');
+  
+  const [selectedBranches, setSelectedBranches] = useState<Record<string, string>>({});
+
+  const handleTransferToBranch = (id: string) => {
+    const branchName = selectedBranches[id];
+    if (!branchName) {
+      alert("الرجاء اختيار فرع للتحويل");
+      return;
+    }
+    updateOrderStatus(id, 'branch_transfering', { branchName });
+    alert(`تم تحويل الطلب إلى ${branchName}`);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">إدارة المستودعات</h1>
+          <p className="text-slate-500">المستودعات الرئيسية، مراكز التوزيع الفرعية، والطاقة الاستيعابية.</p>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="flex border-b border-slate-200">
+          <button 
+            className={`flex-1 py-4 text-center font-bold uppercase tracking-wider text-sm transition-colors ${activeTab === 'main' ? 'text-primary border-b-2 border-primary bg-primary-50/50' : 'text-slate-500 hover:bg-slate-50'}`}
+            onClick={() => setActiveTab('main')}
+          >
+            المستودعات الرئيسية
+          </button>
+          <button 
+            className={`flex-1 py-4 text-center font-bold uppercase tracking-wider text-sm transition-colors ${activeTab === 'sub' ? 'text-primary border-b-2 border-primary bg-primary-50/50' : 'text-slate-500 hover:bg-slate-50'}`}
+            onClick={() => setActiveTab('sub')}
+          >
+            المستودعات الفرعية (مراكز التوزيع)
+          </button>
+        </div>
+
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayWarehouses.map(warehouse => {
+             return (
+              <div key={warehouse.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col">
+                <div className="p-5 border-b border-slate-100 flex items-start gap-4">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${warehouse.type === 'main' ? 'bg-[#0F3B73] text-white' : 'bg-[#FF6B00] text-white shadow-lg shadow-orange-500/20'}`}>
+                    <Package className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-800 text-lg leading-tight">{warehouse.name}</h3>
+                    <div className="flex items-center gap-1 text-slate-500 text-xs mt-1 font-medium">
+                      <MapPin className="w-3.5 h-3.5" /> {warehouse.city}
+                    </div>
+                  </div>
+                </div>
+              </div>
+             );
+          })}
+        </div>
+      </div>
+
+      {activeTab === 'main' && (
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden text-sm">
+          <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+             <h2 className="text-xl font-bold text-slate-800">الطلبات في المخزن الرئيسي</h2>
+             <p className="text-slate-500 mt-1">قم بتحويل الطلبات المستلمة إلى الفروع</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-right">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
+                  <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
+                  <th className="px-6 py-4 font-bold text-slate-600">الكمية (طرود)</th>
+                  <th className="px-6 py-4 font-bold text-slate-600">محافظة التسليم</th>
+                  <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراءات التحويل</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {mainOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-20 text-center text-slate-300 font-bold text-lg">
+                      لا توجد طلبات في المخزن الرئيسي حالياً
+                    </td>
+                  </tr>
+                ) : (
+                  mainOrders.map((o) => (
+                    <tr key={o.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-4 font-en font-bold text-slate-800">{o.id}</td>
+                      <td className="px-6 py-4 font-bold text-slate-800">{o.merchantName}</td>
+                      <td className="px-6 py-4 font-en font-bold text-blue-600">{o.pieces}</td>
+                      <td className="px-6 py-4 font-bold text-slate-800">{o.province}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                           <select 
+                             className="border border-slate-200 rounded-lg px-3 py-1.5 focus:border-blue-500 outline-none"
+                             onChange={(e) => setSelectedBranches(prev => ({...prev, [o.id]: e.target.value}))}
+                             value={selectedBranches[o.id] || ""}
+                           >
+                             <option value="" disabled>اختر الفرع...</option>
+                             {subWarehouses.map(sw => (
+                               <option key={sw.id} value={sw.name}>{sw.name}</option>
+                             ))}
+                           </select>
+                           <button 
+                             onClick={() => handleTransferToBranch(o.id)}
+                             className="text-white bg-[#0F3B73] hover:bg-[#0F3B73]/90 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors flex items-center gap-1"
+                           >
+                             <ArrowLeftRight className="w-3.5 h-3.5" /> تحويل للفرع
+                           </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

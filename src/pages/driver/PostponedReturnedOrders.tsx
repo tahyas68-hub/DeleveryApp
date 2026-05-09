@@ -1,0 +1,137 @@
+import React, { useState } from 'react';
+import { Package, Search, Calendar, MapPin, Edit3 } from 'lucide-react';
+import { useOrders } from '../../context/OrderContext';
+
+export default function PostponedReturnedOrders() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const { orders } = useOrders();
+
+  const filteredOrders = orders.filter(
+    (o) => 
+      (o.status === 'returned' || o.status === 'postponed' || o.status === 'returned_partial') &&
+      (searchTerm === '' ||
+      o.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (o.trackingNumber && o.trackingNumber.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (o.customerPhone && o.customerPhone.includes(searchTerm)))
+  );
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'returned':
+        return (
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-100">
+            مرتجع
+          </span>
+        );
+      case 'postponed':
+        return (
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-600 border border-purple-100">
+            مؤجل
+          </span>
+        );
+      case 'returned_partial':
+        return (
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-orange-50 text-orange-600 border border-orange-100">
+            راجع جزئي
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-slate-800 tracking-tight">الطلبات المؤجلة والراجعة</h1>
+          <p className="text-slate-500 font-medium mt-1">
+            قائمة بجميع الطلبات المرتجعة كلياً، المرتجعة جزئياً، والمؤجلة
+          </p>
+        </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+        <label className="block text-sm font-bold text-slate-700 mb-2">البحث</label>
+        <div className="relative max-w-2xl">
+          <input
+            type="text"
+            placeholder="أدخل رقم الطلب، رقم الشحنة، أو رقم هاتف العميل..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 pl-12 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-700 text-lg"
+          />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400" />
+        </div>
+      </div>
+
+      {/* Orders Table */}
+      <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden text-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-right w-max-full">
+            <thead className="bg-slate-50/80 border-b border-slate-200">
+              <tr>
+                <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
+                <th className="px-6 py-4 font-bold text-slate-600">رقم الشحنة</th>
+                <th className="px-6 py-4 font-bold text-slate-600">اسم المتجر او التاجر</th>
+                <th className="px-6 py-4 font-bold text-slate-600 whitespace-nowrap">العميل</th>
+                <th className="px-6 py-4 font-bold text-slate-600 whitespace-nowrap">العنوان</th>
+                <th className="px-6 py-4 font-bold text-slate-600">تاريخ الطلب</th>
+                <th className="px-6 py-4 font-bold text-slate-600 text-center">الحالة</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
+                    <Package className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                    <p className="text-lg font-medium">لا توجد طلبات مطابقة</p>
+                  </td>
+                </tr>
+              ) : (
+                filteredOrders.map((order) => (
+                  <tr key={order.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-6 py-4">
+                      <span className="font-en font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded inline-block">
+                        {order.id}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-en font-medium text-slate-600">{order.trackingNumber || '-'}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-slate-800">{order.merchantName}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-800">{order.customerName}</span>
+                        <span className="font-en text-xs text-slate-500">{order.customerPhone}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-1.5 text-slate-600">
+                        <MapPin className="w-4 h-4 shrink-0 text-slate-400" />
+                        <span className="truncate max-w-[150px]" title={order.address}>{order.address}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-1.5 text-slate-500 text-xs">
+                        <Calendar className="w-3.5 h-3.5" />
+                        <span className="font-en">{order.date}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {getStatusBadge(order.status)}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
