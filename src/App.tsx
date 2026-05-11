@@ -17,6 +17,8 @@ import DriverApp from './pages/driver/DriverApp';
 import CustomerTracking from './pages/CustomerTracking';
 import WarehouseIncomingOrders from './pages/warehouse/WarehouseIncomingOrders';
 
+import WarehouseDispatch from './pages/warehouse/WarehouseDispatch';
+
 import DriverMap from './pages/driver/DriverMap';
 import DriverWallet from './pages/driver/DriverWallet';
 
@@ -98,7 +100,7 @@ export default function App() {
         <Route path="/warehouse" element={<DashboardLayout role="warehouse" />}>
           <Route index element={<WarehouseIncomingOrders />} />
           <Route path="incoming" element={<WarehouseIncomingOrders />} />
-          <Route path="dispatch" element={<PlaceholderPage title="توزيع المندوبين" />} />
+          <Route path="dispatch" element={<WarehouseDispatch />} />
           <Route path="returns" element={<PlaceholderPage title="إدارة المرتجعات" />} />
         </Route>
 
