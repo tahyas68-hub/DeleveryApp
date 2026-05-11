@@ -87,7 +87,7 @@ export default function AdminWarehouses() {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">
                          <select 
-                           className="border border-slate-200 rounded-lg px-3 py-1.5 focus:border-blue-500 outline-none w-40"
+                           className="border border-slate-200 rounded-lg px-3 py-1.5 focus:border-blue-500 outline-none w-40 text-slate-900 bg-white"
                            onChange={(e) => setSelectedBranches(prev => ({...prev, [o.id]: e.target.value}))}
                            value={selectedBranches[o.id] || ""}
                          >

@@ -187,7 +187,7 @@ export default function WarehouseIncomingOrders() {
                        ) : (
                          <div className="flex items-center gap-2 max-w-[250px] mx-auto">
                            <select 
-                             className="border border-slate-200 rounded-lg px-3 py-2 focus:border-blue-500 outline-none w-full text-xs font-bold"
+                             className="border border-slate-200 rounded-lg px-3 py-2 focus:border-blue-500 outline-none w-full text-xs font-bold text-slate-900 bg-white"
                              onChange={(e) => setSelectedDrivers(prev => ({...prev, [order.id]: e.target.value}))}
                              value={selectedDrivers[order.id] || ""}
                            >
