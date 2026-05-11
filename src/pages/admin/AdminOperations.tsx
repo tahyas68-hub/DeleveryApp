@@ -13,11 +13,23 @@ export default function AdminOperations() {
 
   const filteredOrders = orders.filter(o => {
     if (activeTab !== 'all' && o.status !== activeTab) return false;
-    if (searchQuery && !o.trackingNumber.includes(searchQuery) && !o.id.includes(searchQuery)) return false;
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchTracking = o.trackingNumber?.toLowerCase().includes(query);
+      const matchId = o.id?.toLowerCase().includes(query);
+      const matchPhone = o.customerPhone?.includes(query);
+      const matchName = o.customerName?.toLowerCase().includes(query);
+      if (!matchTracking && !matchId && !matchPhone && !matchName) return false;
+    }
     return true;
   });
 
-  const searchedOrder = actionQuery ? orders.find(o => o.trackingNumber === actionQuery || o.id === actionQuery) : null;
+  const searchedOrder = actionQuery 
+    ? orders.find(o => 
+        (o.trackingNumber && o.trackingNumber.toLowerCase() === actionQuery.toLowerCase()) || 
+        (o.id && o.id.toLowerCase() === actionQuery.toLowerCase())
+      ) 
+    : null;
 
   const handleAction = (status: OrderStatus) => {
     if (searchedOrder) {
