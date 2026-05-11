@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Search, MapPin, Truck, RefreshCcw, Navigation2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUsers } from '../../context/UserContext';
-import { dummyOrders, getStatusColor, getStatusText } from '../../lib/dummy';
+import { useOrders } from '../../context/OrderContext';
 
 export default function TrackingMap() {
   const { users } = useUsers();
+  const { orders } = useOrders();
   const [activeDriver, setActiveDriver] = useState<string | null>(null);
 
   const activeDrivers = users.filter(d => d.role === 'driver' && d.status !== 'offline');
@@ -98,7 +99,7 @@ export default function TrackingMap() {
         <div className={`bg-white border-r border-slate-200 shadow-xl overflow-y-auto transition-all duration-300 ${activeDriver ? 'w-80' : 'w-0 border-r-0'}`}>
           {activeDriver && (() => {
             const driver = activeDrivers.find(d => d.id === activeDriver)!;
-            const orders = dummyOrders.filter(o => o.driver === driver.name);
+            const driverOrders = orders.filter(o => o.driverId === driver.id);
 
             return (
               <div className="p-4 w-80">
@@ -129,15 +130,20 @@ export default function TrackingMap() {
                 <div className="space-y-4">
                   <h4 className="font-bold text-sm uppercase tracking-widest text-slate-500 border-b border-slate-100 pb-2">سجل شحنات الرحلة التابعة لك</h4>
                   
-                  {orders.length === 0 ? (
+                  {driverOrders.length === 0 ? (
                     <p className="text-sm text-slate-500 text-center py-4 bg-slate-50 rounded-lg border border-slate-100">لا توجد شحنات لك مع هذا المندوب في الرحلة الحالية.</p>
                   ) : (
-                    orders.map(order => (
+                    driverOrders.map(order => (
                       <div key={order.id} className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm">
                         <div className="flex justify-between items-start mb-2">
                           <span className="font-en text-[10px] font-bold text-slate-500 tracking-wider block bg-slate-100 px-2 rounded">{order.trackingNumber}</span>
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${getStatusColor(order.status as any)}`}>
-                            {getStatusText(order.status as any)}
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                            order.status === 'delivered' ? 'bg-[#E5F5D0] text-[#10b981]' :
+                            order.status === 'driver_assigned' ? 'bg-purple-100 text-purple-700' :
+                            'bg-slate-100 text-slate-700'
+                          }`}>
+                            {order.status === 'delivered' ? 'تم التسليم' :
+                             order.status === 'driver_assigned' ? 'قيد التوصيل' : 'معالجة'}
                           </span>
                         </div>
                         <h5 className="font-bold text-sm text-slate-800">{order.customerName}</h5>

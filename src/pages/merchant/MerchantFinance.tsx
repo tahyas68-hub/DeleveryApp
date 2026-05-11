@@ -63,7 +63,7 @@ export default function MerchantFinance() {
               </div>
               <h3 className="text-white font-black text-xl mb-2">المسحوبات</h3>
               <div className="flex items-baseline gap-2 mb-2">
-                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter">450,000</span>
+                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter">0</span>
                  <span className="text-xl font-black text-white/90">د.ع</span>
               </div>
               <p className="text-white/80 font-bold text-sm md:text-base">تم تسليمها للتاجر</p>
@@ -76,7 +76,7 @@ export default function MerchantFinance() {
               </div>
               <h3 className="text-white font-black text-xl mb-2">مبالغ معلقة (قيد التوصيل)</h3>
               <div className="flex items-baseline gap-2 mb-2">
-                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter">135,000</span>
+                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter">0</span>
                  <span className="text-xl font-black text-white/90">د.ع</span>
               </div>
               <p className="text-white/80 font-bold text-sm md:text-base">انتظار إتمام عمليات التوصيل</p>

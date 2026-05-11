@@ -6,21 +6,27 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useOrders } from '../../context/OrderContext';
 
 export default function MerchantOverview() {
   const { user } = useAuth();
-  const latestOrders: any[] = [];
+  const { orders } = useOrders();
+  
+  const latestOrders = orders.slice(0, 5);
+  const activeOrdersCount = orders.filter(o => o.status !== 'delivered' && o.status !== 'returned').length;
+  const completedOrdersCount = orders.filter(o => o.status === 'delivered').length;
 
   const getStatusBadge = (status: string) => {
     switch(status) {
       case 'delivered':
         return <span className="bg-[#E5F5D0]/10 text-[#10b981] px-4 py-1.5 rounded-full font-bold text-xs">تم التسليم</span>;
-      case 'pending':
-        return <span className="bg-amber-100/10 text-amber-500 px-4 py-1.5 rounded-full font-bold text-xs">قيد التسليم</span>;
+      case 'driver_assigned':
+        return <span className="bg-purple-100/10 text-purple-500 px-4 py-1.5 rounded-full font-bold text-xs">قيد التسليم</span>;
+      case 'returned_partial':
       case 'returned':
         return <span className="text-slate-400 font-bold text-xs whitespace-nowrap">راجع من مندوب (بانتظار سحب)</span>;
       default:
-        return <span className="text-slate-500 text-xs">{status}</span>;
+        return <span className="bg-amber-100/10 text-amber-500 px-4 py-1.5 rounded-full font-bold text-xs">معالجة</span>;
     }
   };
 
@@ -42,7 +48,7 @@ export default function MerchantOverview() {
         <div className="bg-white border border-slate-100 p-6 rounded-[2rem] flex items-center justify-between group hover:border-[#0F3B73]/30 transition-all shadow-xl">
            <div className="text-right">
               <p className="text-slate-400 font-bold text-sm mb-1">طلبات نشطة</p>
-              <h2 className="text-4xl font-black text-[#0F3B73] font-en tracking-tighter">3</h2>
+              <h2 className="text-4xl font-black text-[#0F3B73] font-en tracking-tighter">{activeOrdersCount}</h2>
            </div>
            <div className="w-16 h-16 bg-[#0F3B73]/5 rounded-2xl flex items-center justify-center">
               <Package className="w-8 h-8 text-[#0F3B73]" />
@@ -53,7 +59,7 @@ export default function MerchantOverview() {
         <div className="bg-white border border-slate-100 p-6 rounded-[2rem] flex items-center justify-between group hover:border-emerald-500/30 transition-all shadow-xl">
            <div className="text-right">
               <p className="text-slate-400 font-bold text-sm mb-1">طلبات مكتملة</p>
-              <h2 className="text-4xl font-black text-[#0F3B73] font-en tracking-tighter">13</h2>
+              <h2 className="text-4xl font-black text-[#0F3B73] font-en tracking-tighter">{completedOrdersCount}</h2>
            </div>
            <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center">
               <CheckCircle2 className="w-8 h-8 text-emerald-500" />
@@ -139,13 +145,13 @@ export default function MerchantOverview() {
               {latestOrders.map((order) => (
                 <tr key={order.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-10 py-7 font-black text-slate-800 text-lg">#{order.id}</td>
-                  <td className="px-10 py-7 font-en font-bold text-slate-500 text-lg">{order.tracking}</td>
+                  <td className="px-10 py-7 font-en font-bold text-slate-500 text-lg">{order.trackingNumber}</td>
                   <td className="px-10 py-7">
                     <div className="flex flex-col items-start gap-1">
-                      <span className="font-bold text-slate-800 text-lg">{order.customer}</span>
+                      <span className="font-bold text-slate-800 text-lg">{order.customerName}</span>
                       <div className="flex items-center gap-1.5 text-slate-400 font-en font-bold text-sm">
                         <MessageCircle className="w-4 h-4 text-[#10b981]" />
-                        <span>{order.phone}</span>
+                        <span>{order.customerPhone}</span>
                       </div>
                     </div>
                   </td>
