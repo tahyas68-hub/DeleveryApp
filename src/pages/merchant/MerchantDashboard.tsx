@@ -11,7 +11,7 @@ import { useOrders, MainOrder } from '../../context/OrderContext';
 
 export default function MerchantDashboard() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const { orders, addOrder, deleteOrder } = useOrders();
   const [activeTab, setActiveTab] = useState('جديد');
   const [searchQuery, setSearchQuery] = useState('');
@@ -98,7 +98,8 @@ export default function MerchantDashboard() {
     const order: MainOrder = {
        id: `ORD-${1000 + orders.length + 1}`,
        trackingNumber: newOrder.trackingNumber || `SHP-${Math.floor(Math.random() * 100000)}`,
-       merchantName: 'التاجر الحالي',
+       merchantId: user?.id || 'm-1',
+       merchantName: user?.name || 'التاجر الحالي',
        customerName: newOrder.customerName,
        customerPhone: newOrder.customerPhone,
        address: newOrder.address,
