@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Package, Search, Calendar, MapPin, Check, X, Clock, SplitSquareHorizontal } from 'lucide-react';
+import { Package, Search, Calendar, MapPin, Check, X, Clock, SplitSquareHorizontal, Copy } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 
 export default function DeliveryOrders() {
@@ -127,7 +127,19 @@ export default function DeliveryOrders() {
                 filteredOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="px-6 py-4">
-                      <span className="font-en font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded inline-block">{order.id}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-en font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded inline-block">{order.id}</span>
+                        <button 
+                          onClick={() => {
+                             navigator.clipboard.writeText(order.id);
+                             alert('تم نسخ رقم الطلب بنجاح');
+                          }}
+                          className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-500 hover:text-[#0F3B73] transition-colors"
+                          title="نسخ رقم الطلب"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <span className="font-bold text-slate-800">{order.merchantName}</span>
