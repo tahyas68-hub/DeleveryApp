@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Save, Plus, MapPin, Search } from 'lucide-react';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function AdminSettings() {
   const [activeTab, setActiveTab] = useState<'delivery' | 'general'>('delivery');
+  const { governorates, updateGovernorate } = useSettings();
 
   return (
     <div className="space-y-6">
@@ -60,27 +62,7 @@ export default function AdminSettings() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {[
-                    { id: 1, name: 'بغداد', base: 5000, commission: 500, peak: 20, hours: '04:00 PM - 09:00 PM', active: true },
-                    { id: 2, name: 'البصرة', base: 6000, commission: 1000, peak: 15, hours: '05:00 PM - 10:00 PM', active: true },
-                    { id: 3, name: 'نينوى', base: 6500, commission: 1200, peak: 10, hours: '03:00 PM - 08:00 PM', active: true },
-                    { id: 4, name: 'أربيل', base: 7000, commission: 1500, peak: 25, hours: '06:00 PM - 11:00 PM', active: true },
-                    { id: 5, name: 'بابل', base: 5500, commission: 800, peak: 0, hours: '-', active: true },
-                    { id: 6, name: 'النجف', base: 5500, commission: 800, peak: 15, hours: '04:00 PM - 08:00 PM', active: true },
-                    { id: 7, name: 'ذي قار', base: 6000, commission: 1000, peak: 0, hours: '-', active: true },
-                    { id: 8, name: 'كربلاء', base: 5500, commission: 800, peak: 20, hours: '05:00 PM - 10:00 PM', active: true },
-                    { id: 9, name: 'واسط', base: 5500, commission: 800, peak: 0, hours: '-', active: true },
-                    { id: 10, name: 'ميسان', base: 6000, commission: 1000, peak: 0, hours: '-', active: true },
-                    { id: 11, name: 'القادسية', base: 5500, commission: 800, peak: 0, hours: '-', active: true },
-                    { id: 12, name: 'المثنى', base: 6000, commission: 1000, peak: 0, hours: '-', active: true },
-                    { id: 13, name: 'الأنبار', base: 6500, commission: 1200, peak: 0, hours: '-', active: false },
-                    { id: 14, name: 'صلاح الدين', base: 6000, commission: 1000, peak: 0, hours: '-', active: false },
-                    { id: 15, name: 'ديالى', base: 5500, commission: 800, peak: 0, hours: '-', active: false },
-                    { id: 16, name: 'كركوك', base: 6000, commission: 1000, peak: 0, hours: '-', active: false },
-                    { id: 17, name: 'السليمانية', base: 7000, commission: 1500, peak: 0, hours: '-', active: false },
-                    { id: 18, name: 'دهوك', base: 7000, commission: 1500, peak: 0, hours: '-', active: false },
-                    { id: 19, name: 'حلبجة', base: 7000, commission: 1500, peak: 0, hours: '-', active: false },
-                  ].map((gov) => (
+                  {governorates.map((gov) => (
                     <tr key={gov.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 font-bold text-slate-800">
@@ -89,26 +71,46 @@ export default function AdminSettings() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="relative w-24">
-                          <input type="number" defaultValue={gov.base} className="w-full border border-slate-200 rounded-md px-2 py-1 pr-8 font-en focus:outline-none focus:ring-1 focus:ring-primary" />
+                          <input 
+                            type="number" 
+                            value={gov.base} 
+                            onChange={(e) => updateGovernorate(gov.id, { base: Number(e.target.value) })}
+                            className="w-full border border-slate-200 rounded-md px-2 py-1 pr-8 font-en focus:outline-none focus:ring-1 focus:ring-primary" 
+                          />
                           <span className="absolute right-2 top-1.5 text-xs text-slate-400 font-bold">د.ع</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="relative w-24">
-                          <input type="number" defaultValue={gov.commission} className="w-full border border-slate-200 rounded-md px-2 py-1 pr-8 font-en focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+                          <input 
+                            type="number" 
+                            value={gov.commission} 
+                            onChange={(e) => updateGovernorate(gov.id, { commission: Number(e.target.value) })}
+                            className="w-full border border-slate-200 rounded-md px-2 py-1 pr-8 font-en focus:outline-none focus:ring-1 focus:ring-emerald-500" 
+                          />
                           <span className="absolute right-2 top-1.5 text-xs text-slate-400 font-bold">د.ع</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="relative w-20">
-                          <input type="number" defaultValue={gov.peak} className="w-full border border-slate-200 rounded-md px-2 py-1 pr-6 font-en focus:outline-none focus:ring-1 focus:ring-primary" />
+                          <input 
+                            type="number" 
+                            value={gov.peak} 
+                            onChange={(e) => updateGovernorate(gov.id, { peak: Number(e.target.value) })}
+                            className="w-full border border-slate-200 rounded-md px-2 py-1 pr-6 font-en focus:outline-none focus:ring-1 focus:ring-primary" 
+                          />
                           <span className="absolute right-2 top-1.5 text-xs text-slate-400 font-bold">%</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 font-en text-slate-600 text-xs font-bold">{gov.hours}</td>
                       <td className="px-6 py-4">
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" defaultChecked={gov.active} className="sr-only peer" />
+                          <input 
+                            type="checkbox" 
+                            checked={gov.active} 
+                            onChange={(e) => updateGovernorate(gov.id, { active: e.target.checked })}
+                            className="sr-only peer" 
+                          />
                           <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
                         </label>
                       </td>

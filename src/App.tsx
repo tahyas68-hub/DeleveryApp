@@ -39,6 +39,7 @@ import { AuthProvider } from './context/AuthContext';
 import { OrderProvider } from './context/OrderContext';
 import { UserProvider } from './context/UserContext';
 import { BranchProvider } from './context/BranchContext';
+import { SettingsProvider } from './context/SettingsContext';
 
 import IncomingMerchant from './pages/admin/IncomingMerchant';
 import AdminUsers from './pages/admin/AdminUsers';
@@ -70,6 +71,7 @@ export default function App() {
     <AuthProvider>
       <UserProvider>
         <BranchProvider>
+          <SettingsProvider>
           <OrderProvider>
             <BrowserRouter>
           <Routes>
@@ -138,6 +140,7 @@ export default function App() {
       </Routes>
     </BrowserRouter>
         </OrderProvider>
+        </SettingsProvider>
         </BranchProvider>
       </UserProvider>
     </AuthProvider>

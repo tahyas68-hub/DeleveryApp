@@ -1,8 +1,13 @@
 import React from 'react';
-import { Tags, Edit2 } from 'lucide-react';
+import { Tags, Edit2, Save } from 'lucide-react';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function AdminMerchantPricing() {
-  const merchants: any[] = [];
+  const { merchants, updateMerchant } = useSettings();
+
+  const handleCustomPriceChange = (id: string, value: string) => {
+    updateMerchant(id, { customPrice: Number(value) });
+  };
 
   return (
     <div className="space-y-6">
@@ -18,24 +23,36 @@ export default function AdminMerchantPricing() {
            <thead className="bg-slate-50 border-b border-slate-200">
              <tr>
                <th className="px-6 py-4 font-bold text-slate-600">اسم التاجر</th>
-               <th className="px-6 py-4 font-bold text-slate-600">السعر الافتراضي</th>
+               <th className="px-6 py-4 font-bold text-slate-600">السعر الافتراضي (بغداد)</th>
                <th className="px-6 py-4 font-bold text-slate-600">السعر المخصص</th>
-               <th className="px-6 py-4 font-bold text-slate-600 text-center">تعديل التسعيرة</th>
              </tr>
            </thead>
            <tbody className="divide-y divide-slate-100">
              {merchants.map(m => (
                <tr key={m.id} className="hover:bg-slate-50">
                  <td className="px-6 py-4 font-bold text-slate-800">{m.name}</td>
-                 <td className="px-6 py-4 font-en text-slate-500 line-through">{m.defaultPrice}</td>
-                 <td className="px-6 py-4 font-en font-black text-emerald-600">{m.customPrice}</td>
-                 <td className="px-6 py-4 text-center">
-                    <button className="bg-slate-100 hover:bg-slate-200 text-slate-600 p-2 rounded-lg transition-colors inline-block">
-                       <Edit2 className="w-4 h-4" />
-                    </button>
+                 <td className="px-6 py-4 font-en text-slate-500 line-through">{m.defaultPrice} د.ع</td>
+                 <td className="px-6 py-4">
+                    <div className="flex items-center gap-2 max-w-[200px]">
+                      <input 
+                        type="number" 
+                        value={m.customPrice}
+                        onChange={(e) => handleCustomPriceChange(m.id, e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 font-en font-bold text-emerald-600 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-left" 
+                        dir="ltr"
+                      />
+                      <span className="text-xs font-bold text-slate-500">د.ع</span>
+                    </div>
                  </td>
                </tr>
              ))}
+             {merchants.length === 0 && (
+               <tr>
+                 <td colSpan={3} className="px-6 py-12 text-center text-slate-500 font-bold">
+                   لا يوجد تجار حالياً لعرض التسعيرة
+                 </td>
+               </tr>
+             )}
            </tbody>
         </table>
       </div>

@@ -8,11 +8,13 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useOrders, MainOrder } from '../../context/OrderContext';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function MerchantDashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { orders, addOrder, deleteOrder } = useOrders();
+  const { getDeliveryFee } = useSettings();
   const [activeTab, setActiveTab] = useState('جديد');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -99,6 +101,7 @@ export default function MerchantDashboard() {
        alert("الرجاء ملء كافة الحقول المطلوبة (الاسم، الهاتف، المحافظة)");
        return;
     }
+    const deliveryFee = getDeliveryFee(newOrder.province, user?.id || 'm-1');
     const order: MainOrder = {
        id: `ORD-${1000 + orders.length + 1}`,
        trackingNumber: newOrder.trackingNumber || `SHP-${Math.floor(Math.random() * 100000)}`,
@@ -109,8 +112,8 @@ export default function MerchantDashboard() {
        address: newOrder.address,
        province: newOrder.province,
        amount: 25000,
-       deliveryFee: 5000,
-       totalAmount: 30000,
+       deliveryFee: deliveryFee,
+       totalAmount: 25000 + deliveryFee,
        date: new Date().toISOString().split('T')[0],
        pieces: newOrder.pieces,
        status: 'merchant_pending'

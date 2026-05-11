@@ -84,15 +84,22 @@ export default function DeliveryOrders() {
       </div>
 
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-4 sm:px-6 flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full md:w-96">
-          <input
-            type="text"
-            placeholder="بحث برقم الطلب، رقم الشحنة، او التاجر..."
+        <div className="relative w-full md:w-[28rem]">
+          <select
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-700"
-          />
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-slate-700 appearance-none"
+          >
+             <option value="">-- عرض كل الطلبات قيد التوصيل --</option>
+             {driverOrders.map(o => (
+               <option key={o.id} value={o.id}>
+                 {o.id} - {o.merchantName} - {o.customerName} - {o.province}
+               </option>
+             ))}
+          </select>
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+            <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
         </div>
         <div className="flex bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 items-center gap-2 text-slate-600 font-bold w-full md:w-auto justify-center">
             <Package className="w-5 h-5 text-blue-500" />
