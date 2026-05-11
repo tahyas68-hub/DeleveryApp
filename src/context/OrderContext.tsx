@@ -3,8 +3,6 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 export type OrderStatus = 
   | 'merchant_pending' // merchant created, pending admin pickup 
   | 'main_warehouse'   // arrived at main warehouse
-  | 'branch_transfering' // optionally: transferring to branch
-  | 'branch_warehouse' // arrived at branch warehouse
   | 'driver_assigned'  // with driver
   | 'delivered'        // delivered
   | 'returned_partial'
@@ -25,71 +23,38 @@ export interface MainOrder {
   date: string;
   pieces: number;
   status: OrderStatus;
-  branchName?: string;
   driverId?: string;
   driverName?: string;
 }
 
-const defaultOrders: MainOrder[] = [
-  {
-    id: 'ORD-1001',
-    trackingNumber: 'SHP-992123',
-    merchantName: 'بوتيك نايا',
-    customerName: 'أحمد محمد',
-    customerPhone: '07700000000',
-    address: 'المنصور، شارع 14 رمضان',
-    province: 'بغداد',
-    amount: 15000,
-    deliveryFee: 5000,
-    totalAmount: 20000,
-    date: '2026-05-02',
-    pieces: 1,
-    status: 'merchant_pending'
-  },
-  {
-    id: 'ORD-1002',
-    trackingNumber: 'SHP-992124',
-    merchantName: 'سوق الجملة',
-    customerName: 'سارة أحمد',
-    customerPhone: '07800000000',
-    address: 'البصرة، حي الجزائر',
-    province: 'البصرة',
-    amount: 25000,
-    deliveryFee: 6000,
-    totalAmount: 31000,
-    date: '2026-05-02',
-    pieces: 2,
-    status: 'main_warehouse'
-  },
-  {
-    id: 'ORD-1003',
-    trackingNumber: 'SHP-992125',
-    merchantName: 'الكترونيات بغداد',
-    customerName: 'محمود علي',
-    customerPhone: '07900000000',
-    address: 'أربيل، عينكاوا',
-    province: 'أربيل',
-    amount: 150000,
-    deliveryFee: 8000,
-    totalAmount: 158000,
-    date: '2026-05-02',
-    pieces: 1,
-    status: 'branch_warehouse',
-    branchName: 'فرع أربيل'
-  }
-];
+const defaultOrders: MainOrder[] = [];
 
 interface OrderContextType {
   orders: MainOrder[];
   addOrder: (order: MainOrder) => void;
   updateOrderStatus: (id: string, newStatus: OrderStatus, extra?: Partial<MainOrder>) => void;
   getOrdersByStatus: (status: OrderStatus) => MainOrder[];
+  deleteOrder: (id: string) => void;
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
 export function OrderProvider({ children }: { children: ReactNode }) {
-  const [orders, setOrders] = useState<MainOrder[]>(defaultOrders);
+  const [orders, setOrders] = useState<MainOrder[]>(() => {
+    const saved = localStorage.getItem('app_orders');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse orders from localStorage", e);
+      }
+    }
+    return defaultOrders;
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem('app_orders', JSON.stringify(orders));
+  }, [orders]);
 
   const addOrder = (order: MainOrder) => {
     setOrders((prev) => [order, ...prev]);
@@ -105,8 +70,12 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     return orders.filter(o => o.status === status);
   };
 
+  const deleteOrder = (id: string) => {
+    setOrders((prev) => prev.filter(o => o.id !== id));
+  };
+
   return (
-    <OrderContext.Provider value={{ orders, addOrder, updateOrderStatus, getOrdersByStatus }}>
+    <OrderContext.Provider value={{ orders, addOrder, updateOrderStatus, getOrdersByStatus, deleteOrder }}>
       {children}
     </OrderContext.Provider>
   );

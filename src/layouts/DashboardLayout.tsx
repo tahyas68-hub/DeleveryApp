@@ -54,8 +54,6 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
             subItems: [
               { label: 'الوارد من التاجر', icon: ArrowDown, to: '/admin/incoming-merchant' },
               { label: 'المخزن الرئيسي', icon: Warehouse, to: '/admin/warehouses' },
-              { label: 'الوارد من الفرع', icon: History, to: '/admin/incoming-branch' },
-              { label: 'إدارة الفروع', icon: Building2, to: '/admin/branches' },
             ]
           },
           { label: 'المستخدمين', icon: Users, to: '/admin/users' },
@@ -80,7 +78,6 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
             icon: DollarSign, 
             subItems: [
               { label: 'الحسابات المالية', to: '/admin/finance' },
-              { label: 'واردات الفروع', to: '/admin/branch-imports' },
               { label: 'حسابات التجار', to: '/admin/merchant-accounts' },
               { label: 'الصندوق المالي', icon: Wallet, to: '/admin/treasury' },
             ]

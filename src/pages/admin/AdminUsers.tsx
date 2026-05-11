@@ -3,14 +3,18 @@ import { Users, Search, Filter, Plus, Shield, X } from 'lucide-react';
 import { useUsers, UserRole } from '../../context/UserContext';
 
 export default function AdminUsers() {
-  const { users, addUser } = useUsers();
+  const { users, addUser, updateUser, deleteUser } = useUsers();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newUser, setNewUser] = useState({
     name: '',
     role: 'driver' as UserRole,
     phone: '',
-    branch: '',
+    username: '',
+    password: '',
   });
+
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [userToDelete, setUserToDelete] = useState<{ id: string, name: string } | null>(null);
 
   const getRoleLabel = (role: string) => {
     switch(role) {
@@ -22,23 +26,62 @@ export default function AdminUsers() {
     }
   };
 
+  const handleEditUser = (user: any) => {
+    setNewUser({
+      name: user.name || '',
+      role: user.role || 'driver',
+      phone: user.phone || '',
+      branch: user.branch || '',
+      username: user.username || '',
+      password: user.password || '',
+    });
+    setEditingUserId(user.id);
+    setIsModalOpen(true);
+  };
+
   const handleAddUser = () => {
     if (!newUser.name || !newUser.phone) {
       alert("الرجاء إدخال الاسم ورقم الهاتف");
       return;
     }
-    addUser({
-      name: newUser.name,
-      role: newUser.role,
-      phone: newUser.phone,
-      status: 'active',
-      ...(newUser.role === 'merchant' ? { balance: 0 } : {}),
-      ...((newUser.role === 'driver' || newUser.role === 'warehouse') ? { branch: newUser.branch } : {}),
-      ...(newUser.role === 'driver' ? { vehicleType: 'van', maxLoad: 50, currentLoad: 0, rating: 5.0 } : {})
-    });
-    setNewUser({ name: '', role: 'driver', phone: '', branch: '' });
+    
+    if (editingUserId) {
+      updateUser(editingUserId, {
+        name: newUser.name,
+        role: newUser.role,
+        phone: newUser.phone,
+        username: newUser.username,
+        password: newUser.password,
+      });
+      alert('تم تعديل المستخدم بنجاح');
+    } else {
+      addUser({
+        name: newUser.name,
+        role: newUser.role,
+        phone: newUser.phone,
+        username: newUser.username,
+        password: newUser.password,
+        status: 'active',
+        ...(newUser.role === 'merchant' ? { balance: 0 } : {}),
+        ...(newUser.role === 'driver' ? { vehicleType: 'van', maxLoad: 50, currentLoad: 0, rating: 5.0 } : {})
+      });
+      alert('تم إضافة المستخدم بنجاح');
+    }
+    
+    setNewUser({ name: '', role: 'driver', phone: '', branch: '', username: '', password: '' });
+    setEditingUserId(null);
     setIsModalOpen(false);
-    alert('تم إضافة المستخدم بنجاح');
+  };
+
+  const handleDeleteUser = (id: string, name: string) => {
+    setUserToDelete({ id, name });
+  };
+
+  const confirmDelete = () => {
+    if (userToDelete) {
+      deleteUser(userToDelete.id);
+      setUserToDelete(null);
+    }
   };
 
   return (
@@ -70,6 +113,8 @@ export default function AdminUsers() {
                 <th className="px-6 py-4 font-bold text-slate-600">الاسم</th>
                 <th className="px-6 py-4 font-bold text-slate-600">الدور</th>
                 <th className="px-6 py-4 font-bold text-slate-600">رقم الهاتف</th>
+                <th className="px-6 py-4 font-bold text-slate-600">اسم المستخدم (User)</th>
+                <th className="px-6 py-4 font-bold text-slate-600">كلمة المرور (Pass)</th>
                 <th className="px-6 py-4 font-bold text-slate-600 text-center">الحالة</th>
                 <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراءات</th>
               </tr>
@@ -84,13 +129,10 @@ export default function AdminUsers() {
                     <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${roleInfo.color}`}>
                       {roleInfo.label}
                     </span>
-                    {user.branch && (
-                      <div className="mt-2 text-xs font-medium text-slate-500">
-                        {user.branch}
-                      </div>
-                    )}
                   </td>
                   <td className="px-6 py-4 font-en font-bold text-slate-600">{user.phone}</td>
+                  <td className="px-6 py-4 font-en font-bold text-slate-600">{user.username || '-'}</td>
+                  <td className="px-6 py-4 font-en font-bold text-slate-600">{user.password || '-'}</td>
                   <td className="px-6 py-4 text-center">
                     {user.status === 'active' ? (
                       <span className="text-emerald-500 font-bold">نشط</span>
@@ -99,9 +141,20 @@ export default function AdminUsers() {
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <button className="text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors">
-                      تعديل
-                    </button>
+                    <div className="flex items-center justify-center gap-2">
+                      <button 
+                        onClick={() => handleEditUser(user)}
+                        className="text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors"
+                      >
+                        تعديل
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteUser(user.id, user.name)}
+                        className="text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-700 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors"
+                      >
+                        حذف
+                      </button>
+                    </div>
                   </td>
                  </tr>
                 )
@@ -114,18 +167,18 @@ export default function AdminUsers() {
       {/* Add User Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-800">إضافة مستخدم جديد</h2>
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between shrink-0">
+              <h2 className="text-xl font-bold text-slate-800">{editingUserId ? 'تعديل بيانات المستخدم' : 'إضافة مستخدم جديد'}</h2>
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500 transition-colors shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 overflow-y-auto flex-1">
               <div className="space-y-2">
                 <label className="block text-slate-700 font-bold text-sm">الاسم الكامل</label>
                   <input 
@@ -146,7 +199,6 @@ export default function AdminUsers() {
                 >
                   <option value="driver">مندوب</option>
                   <option value="merchant">تاجر</option>
-                  <option value="warehouse">أمين مخزن فرعي</option>
                   <option value="admin">إدارة</option>
                 </select>
               </div>
@@ -163,34 +215,71 @@ export default function AdminUsers() {
                 />
               </div>
 
-              {(newUser.role === 'driver' || newUser.role === 'warehouse') && (
-                <div className="space-y-2">
-                  <label className="block text-slate-700 font-bold text-sm">الفرع (اختياري)</label>
-                  <select 
-                    value={newUser.branch}
-                    onChange={e => setNewUser({...newUser, branch: e.target.value})}
-                    className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none bg-white font-bold" 
-                  >
-                    <option value="">جميع الفروع / غير محدد</option>
-                    <option value="بغداد - الرصافة">بغداد - الرصافة</option>
-                    <option value="بغداد - الكرخ">بغداد - الكرخ</option>
-                    <option value="البصرة">البصرة</option>
-                    <option value="أربيل">أربيل</option>
-                    <option value="الموصل">الموصل</option>
-                  </select>
-                </div>
-              )}
+              <div className="space-y-2">
+                <label className="block text-slate-700 font-bold text-sm">اسم المستخدم للولوج</label>
+                <input 
+                  type="text" 
+                  value={newUser.username}
+                  onChange={e => setNewUser({...newUser, username: e.target.value})}
+                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 text-left font-en font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" 
+                  placeholder="username"
+                  dir="ltr"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-slate-700 font-bold text-sm">كلمة المرور</label>
+                <input 
+                  type="password" 
+                  value={newUser.password}
+                  onChange={e => setNewUser({...newUser, password: e.target.value})}
+                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 text-left font-en focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" 
+                  placeholder="********"
+                  dir="ltr"
+                />
+              </div>
             </div>
 
-            <div className="p-6 border-t border-slate-100 bg-slate-50 flex gap-3">
+            <div className="p-6 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0">
               <button 
                 onClick={handleAddUser}
                 className="flex-1 bg-[#0F3B73] hover:bg-[#0F3B73]/90 text-white py-3 rounded-xl font-bold transition-all"
               >
-                حفظ وإضافة
+                {editingUserId ? 'حفظ التعديلات' : 'حفظ وإضافة'}
               </button>
               <button 
                 onClick={() => setIsModalOpen(false)}
+                className="flex-1 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 py-3 rounded-xl font-bold transition-all"
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {userToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 text-center space-y-4">
+              <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-8 h-8" />
+              </div>
+              <h2 className="text-xl font-bold text-slate-800">حذف المستخدم</h2>
+              <p className="text-slate-500 text-sm">
+                هل أنت متأكد من حذف المستخدم <span className="font-bold text-slate-700">{userToDelete.name}</span>؟<br/> لا يمكن التراجع عن هذا الإجراء.
+              </p>
+            </div>
+            <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3">
+              <button 
+                onClick={confirmDelete}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-bold transition-all"
+              >
+                تأكيد الحذف
+              </button>
+              <button 
+                onClick={() => setUserToDelete(null)}
                 className="flex-1 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 py-3 rounded-xl font-bold transition-all"
               >
                 إلغاء

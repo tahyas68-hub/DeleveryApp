@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import { Percent, Search, Download } from 'lucide-react';
 
 export default function DriverCommission() {
-  const [commissions] = useState([
-    { driverId: 'DRV-1', name: 'كرار محمد', ordersCount: 45, totalDeliveryBase: 225000, commissionRate: '20%', earned: 45000 },
-    { driverId: 'DRV-2', name: 'علي حسن', ordersCount: 30, totalDeliveryBase: 150000, commissionRate: '20%', earned: 30000 },
-  ]);
+  const [commissions] = useState<any[]>([]);
 
   return (
     <div className="space-y-6">

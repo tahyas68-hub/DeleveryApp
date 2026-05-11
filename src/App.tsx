@@ -23,8 +23,6 @@ import AdminWarehouses from './pages/admin/AdminWarehouses';
 import AdminDrivers from './pages/admin/AdminDrivers';
 import AdminSettings from './pages/admin/AdminSettings';
 
-import WarehouseIncomingOrders from './pages/warehouse/WarehouseIncomingOrders';
-
 import DriverProfile from './pages/driver/DriverProfile';
 
 import DeliveryOrders from './pages/driver/DeliveryOrders';
@@ -39,13 +37,10 @@ import { OrderProvider } from './context/OrderContext';
 import { UserProvider } from './context/UserContext';
 
 import IncomingMerchant from './pages/admin/IncomingMerchant';
-import IncomingBranch from './pages/admin/IncomingBranch';
-import AdminBranches from './pages/admin/AdminBranches';
 import AdminUsers from './pages/admin/AdminUsers';
 import Stickers from './pages/admin/Stickers';
 import DriverCommission from './pages/admin/DriverCommission';
 import AdminFinance from './pages/admin/AdminFinance';
-import AdminBranchImports from './pages/admin/AdminBranchImports';
 import AdminMerchantAccounts from './pages/admin/AdminMerchantAccounts';
 import AdminTreasury from './pages/admin/AdminTreasury';
 import AdminReports from './pages/admin/AdminReports';
@@ -78,14 +73,11 @@ export default function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="incoming-merchant" element={<IncomingMerchant />} />
           <Route path="warehouses" element={<AdminWarehouses />} />
-          <Route path="incoming-branch" element={<IncomingBranch />} />
-          <Route path="branches" element={<AdminBranches />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="stickers" element={<Stickers />} />
           <Route path="drivers" element={<AdminDrivers />} />
           <Route path="driver-commission" element={<DriverCommission />} />
           <Route path="finance" element={<AdminFinance />} />
-          <Route path="branch-imports" element={<AdminBranchImports />} />
           <Route path="merchant-accounts" element={<AdminMerchantAccounts />} />
           <Route path="treasury" element={<AdminTreasury />} />
           <Route path="reports" element={<AdminReports />} />
@@ -95,13 +87,7 @@ export default function App() {
           <Route path="settings" element={<AdminSettings />} />
         </Route>
 
-        {/* Sub-Warehouse Routes */}
-        <Route path="/warehouse" element={<DashboardLayout role="warehouse" />}>
-          <Route index element={<WarehouseIncomingOrders />} />
-          <Route path="incoming" element={<WarehouseIncomingOrders />} />
-          <Route path="dispatch" element={<PlaceholderPage title="توزيع المندوبين" />} />
-          <Route path="returns" element={<PlaceholderPage title="إدارة المرتجعات" />} />
-        </Route>
+
 
         {/* Merchant Routes */}
         <Route path="/merchant" element={<DashboardLayout role="merchant" />}>

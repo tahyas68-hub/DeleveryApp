@@ -9,12 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function MerchantOverview() {
   const { user } = useAuth();
-  const latestOrders = [
-    { id: '10017', tracking: '20260429-6', customer: 'G', phone: '07829928152', status: 'delivered' },
-    { id: '10016', tracking: '20260429-5', customer: 'L', phone: '0774 220 5072', status: 'delivered' },
-    { id: '10014', tracking: '20260429-3', customer: 'K', phone: '0770 441 5611', status: 'returned' },
-    { id: '10013', tracking: '20260429-2', customer: 'L', phone: '07812152878', status: 'pending' },
-  ];
+  const latestOrders: any[] = [];
 
   const getStatusBadge = (status: string) => {
     switch(status) {
@@ -76,48 +71,48 @@ export default function MerchantOverview() {
         {/* Add Order */}
         <Link 
           to="/merchant/orders?action=add" 
-          className="bg-[#0F3B73] hover:bg-opacity-95 p-12 rounded-[2.5rem] flex flex-col items-center justify-center text-center shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group relative overflow-hidden"
+          className="bg-[#0F3B73] hover:bg-opacity-95 p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-xl transition-all hover:scale-[1.02] active:scale-95 group relative overflow-hidden"
         >
-          <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
-            <Plus className="w-10 h-10 text-white stroke-[3px]" />
+          <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
+            <Plus className="w-8 h-8 text-white stroke-[3px]" />
           </div>
-          <h3 className="text-white font-black text-3xl mb-3">إضافة طلب</h3>
-          <p className="text-white/80 font-bold text-lg">بدء شحنة جديدة</p>
+          <h3 className="text-white font-black text-xl md:text-2xl mb-2">إضافة طلب</h3>
+          <p className="text-white/80 font-bold text-sm md:text-base">بدء شحنة جديدة</p>
         </Link>
 
         {/* Excel Import */}
         <button 
-          className="bg-[#10b981] hover:bg-emerald-600 p-12 rounded-[2.5rem] flex flex-col items-center justify-center text-center shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group relative overflow-hidden"
+          className="bg-[#10b981] hover:bg-emerald-600 p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-xl transition-all hover:scale-[1.02] active:scale-95 group relative overflow-hidden w-full"
         >
-          <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
-            <FileDown className="w-10 h-10 text-white" />
+          <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
+            <FileDown className="w-8 h-8 text-white" />
           </div>
-          <h3 className="text-white font-black text-3xl mb-3">استيراد إكسل</h3>
-          <p className="text-white/80 font-bold text-lg">رفع طلبات متعددة</p>
+          <h3 className="text-white font-black text-xl md:text-2xl mb-2">استيراد إكسل</h3>
+          <p className="text-white/80 font-bold text-sm md:text-base">رفع طلبات متعددة</p>
         </button>
 
         {/* All Orders */}
         <Link 
           to="/merchant/orders" 
-          className="bg-white border border-slate-200 p-12 rounded-[2.5rem] flex flex-col items-center justify-center text-center shadow-lg transition-all hover:scale-[1.02] active:scale-95 group"
+          className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-md transition-all hover:scale-[1.02] active:scale-95 group"
         >
-          <div className="w-20 h-20 bg-[#0F3B73]/5 rounded-2xl flex items-center justify-center mb-6">
-            <Layers className="w-10 h-10 text-[#0F3B73]" />
+          <div className="w-16 h-16 bg-[#0F3B73]/5 rounded-2xl flex items-center justify-center mb-4">
+            <Layers className="w-8 h-8 text-[#0F3B73]" />
           </div>
-          <h3 className="text-[#0F3B73] font-black text-3xl mb-3">جميع الطلبات</h3>
-          <p className="text-slate-400 font-bold text-lg">متابعة كافة الشحنات</p>
+          <h3 className="text-[#0F3B73] font-black text-xl md:text-2xl mb-2">جميع الطلبات</h3>
+          <p className="text-slate-400 font-bold text-sm md:text-base">متابعة كافة الشحنات</p>
         </Link>
 
         {/* Account Statement */}
         <Link 
           to="/merchant/finance" 
-          className="bg-white border border-slate-200 p-12 rounded-[2.5rem] flex flex-col items-center justify-center text-center shadow-lg transition-all hover:scale-[1.02] active:scale-95 group"
+          className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-md transition-all hover:scale-[1.02] active:scale-95 group"
         >
-          <div className="w-20 h-20 bg-amber-50 rounded-2xl flex items-center justify-center mb-6">
-            <CreditCard className="w-10 h-10 text-amber-500" />
+          <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mb-4">
+            <CreditCard className="w-8 h-8 text-amber-500" />
           </div>
-          <h3 className="text-[#0F3B73] font-black text-3xl mb-3">كشف الحساب</h3>
-          <p className="text-slate-400 font-bold text-lg">المبالغ والتحصيلات</p>
+          <h3 className="text-[#0F3B73] font-black text-xl md:text-2xl mb-2">كشف الحساب</h3>
+          <p className="text-slate-400 font-bold text-sm md:text-base">المبالغ والتحصيلات</p>
         </Link>
       </div>
 

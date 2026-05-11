@@ -2,12 +2,7 @@ import React from 'react';
 import { FileText, Download, BarChart2 } from 'lucide-react';
 
 export default function AdminReports() {
-  const reportsList = [
-    { id: 1, title: 'تقرير الأرباح الشهري', type: 'مالي', date: '2026-05-01' },
-    { id: 2, title: 'تقرير المندوبين المتصدرين', type: 'أداء', date: '2026-05-01' },
-    { id: 3, title: 'تقرير الطلبات المرتجعة', type: 'عمليات', date: '2026-05-01' },
-    { id: 4, title: 'كشف مبيعات التجار', type: 'مالي', date: '2026-05-01' },
-  ];
+  const reportsList: any[] = [];
 
   return (
     <div className="space-y-6">

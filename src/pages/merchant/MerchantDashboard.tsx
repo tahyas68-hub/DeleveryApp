@@ -12,7 +12,7 @@ import { useOrders, MainOrder } from '../../context/OrderContext';
 export default function MerchantDashboard() {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { orders, addOrder } = useOrders();
+  const { orders, addOrder, deleteOrder } = useOrders();
   const [activeTab, setActiveTab] = useState('جديد');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -29,8 +29,6 @@ export default function MerchantDashboard() {
   const tabs = [
     { name: 'جديد', icon: Star, status: 'merchant_pending' },
     { name: 'في المخزن', icon: Warehouse, status: 'main_warehouse' },
-    { name: 'تحويل للفرع', icon: Truck, status: 'branch_transfering' },
-    { name: 'في الفرع', icon: Building2, status: 'branch_warehouse' },
     { name: 'قيد التوصيل', icon: Truck, status: 'driver_assigned' },
     { name: 'تم التسليم', icon: Building2, status: 'delivered' },
   ];
@@ -66,7 +64,7 @@ export default function MerchantDashboard() {
   const handleDeleteSelected = () => {
     if (selectedIds.length === 0) return;
     if (window.confirm(`هل أنت متأكد من حذف ${selectedIds.length} طلب؟`)) {
-      // In a real app we'd delete via context. For now just clear selection.
+      selectedIds.forEach(id => deleteOrder(id));
       setSelectedIds([]);
     }
   };

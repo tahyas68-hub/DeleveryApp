@@ -66,9 +66,6 @@ export default function AdminDrivers() {
                          <p className="font-bold text-slate-800">{driver.name}</p>
                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-0.5">
                            <p className="text-xs text-slate-500 font-en">{driver.phone}</p>
-                           {driver.branch && (
-                             <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold">{driver.branch}</span>
-                           )}
                          </div>
                        </div>
                      </div>

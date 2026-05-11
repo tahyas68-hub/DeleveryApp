@@ -2,11 +2,7 @@ import React from 'react';
 import { Shield, Activity, User } from 'lucide-react';
 
 export default function AdminOperations() {
-  const operations = [
-    { id: 1, action: 'حذف طلب', entity: 'أحمد المسؤول', role: 'admin', entityId: 'ORD-1234', time: 'منذ 10 دقائق' },
-    { id: 2, action: 'تغيير حالة باقة', entity: 'بوتيك نايا', role: 'merchant', entityId: 'PKG-99', time: 'منذ 30 دقيقة' },
-    { id: 3, action: 'صرف مبلغ', entity: 'أحمد المسؤول', role: 'admin', entityId: '-', time: 'منذ ساعة' },
-  ];
+  const operations: any[] = [];
 
   return (
     <div className="space-y-6">

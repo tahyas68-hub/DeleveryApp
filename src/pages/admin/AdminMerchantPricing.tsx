@@ -2,10 +2,7 @@ import React from 'react';
 import { Tags, Edit2 } from 'lucide-react';
 
 export default function AdminMerchantPricing() {
-  const merchants = [
-    { id: 1, name: 'بوتيك نايا', customPrice: '4,000 د.ع', customBaseLimit: 10, defaultPrice: '5,000 د.ع' },
-    { id: 2, name: 'سوق الجملة', customPrice: '3,500 د.ع', customBaseLimit: 50, defaultPrice: '5,000 د.ع' },
-  ];
+  const merchants: any[] = [];
 
   return (
     <div className="space-y-6">

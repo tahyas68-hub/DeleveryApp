@@ -1,15 +1,15 @@
 import React, { createContext, useContext, useState } from 'react';
 
-export type UserRole = 'admin' | 'merchant' | 'warehouse' | 'driver';
+export type UserRole = 'admin' | 'merchant' | 'driver';
 
 export interface AppUser {
   id: string;
   name: string;
   role: UserRole;
   phone: string;
+  username?: string;
+  password?: string;
   status: 'active' | 'inactive' | 'busy' | 'offline';
-  // Driver & Warehouse specific
-  branch?: string;
   // Driver specific
   rating?: number;
   vehicleType?: 'van' | 'motorcycle' | 'truck';
@@ -28,23 +28,68 @@ interface UserContextType {
   users: AppUser[];
   addUser: (user: Omit<AppUser, 'id'>) => void;
   updateUser: (id: string, data: Partial<AppUser>) => void;
+  deleteUser: (id: string) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 const initialUsers: AppUser[] = [
-  { id: '1', name: 'أحمد محمود', role: 'admin', phone: '0770000000', status: 'active' },
-  { id: 'MER-1', name: 'بوتيك نايا', role: 'merchant', phone: '0780000000', status: 'active', balance: 500000, lastClearance: '2026-04-28' },
-  { id: 'MER-2', name: 'عالم الأزياء', role: 'merchant', phone: '0780000001', status: 'active', balance: 1250000, lastClearance: '2026-05-01' },
-  { id: 'MER-3', name: 'متجر الإلكترونيات', role: 'merchant', phone: '0780000002', status: 'active', balance: -25000, lastClearance: '2026-04-30' },
-  { id: 'd1', name: 'يوسف ياسين', role: 'driver', phone: '0501234567', branch: 'بغداد - الرصافة', rating: 4.8, vehicleType: 'van', maxLoad: 50, currentLoad: 12, status: 'active', lat: 24.7136, lng: 46.6753 },
-  { id: 'd2', name: 'عمر فهد', role: 'driver', phone: '0551234567', branch: 'بغداد - الكرخ', rating: 4.5, vehicleType: 'motorcycle', maxLoad: 10, currentLoad: 10, status: 'busy', lat: 24.7236, lng: 46.6853 },
-  { id: 'd3', name: 'محمد علي', role: 'driver', phone: '0561234567', branch: 'البصرة', rating: 4.9, vehicleType: 'truck', maxLoad: 200, currentLoad: 0, status: 'offline' },
-  { id: '4', name: 'علي (مخزن البصرة)', role: 'warehouse', phone: '0790000000', branch: 'البصرة', status: 'active', city: 'البصرة' },
+  {
+    id: 'admin-1',
+    name: 'أحمد المسؤول',
+    username: 'admin',
+    password: '123',
+    role: 'admin',
+    phone: '0700000000',
+    status: 'active'
+  },
+  {
+    id: 'merch-1',
+    name: 'بوتيك نايا',
+    username: 'merchant',
+    password: '123',
+    role: 'merchant',
+    phone: '0711111111',
+    status: 'active',
+    balance: 0
+  }
 ];
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [users, setUsers] = useState<AppUser[]>(initialUsers);
+  const [users, setUsers] = useState<AppUser[]>(() => {
+    const saved = localStorage.getItem('app_users');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Ensure default users have their credentials if they were saved without them
+        let hasAdmin = false;
+        const mappedUsers = parsed.map((u: AppUser) => {
+          if (u.role === 'admin') {
+            hasAdmin = true;
+            if (!u.username) {
+              return { ...u, username: 'admin', password: '123' };
+            }
+          }
+          if (u.role === 'merchant' && !u.username) {
+            return { ...u, username: 'merchant', password: '123' };
+          }
+          return u;
+        });
+
+        if (!hasAdmin) {
+          mappedUsers.unshift(initialUsers[0]);
+        }
+        return mappedUsers;
+      } catch (e) {
+        console.error("Failed to parse users from localStorage", e);
+      }
+    }
+    return initialUsers;
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem('app_users', JSON.stringify(users));
+  }, [users]);
 
   const addUser = (user: Omit<AppUser, 'id'>) => {
     const newUser = {
@@ -58,8 +103,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setUsers(users.map(u => u.id === id ? { ...u, ...data } : u));
   };
 
+  const deleteUser = (id: string) => {
+    setUsers(users.filter(u => u.id !== id));
+  };
+
   return (
-    <UserContext.Provider value={{ users, addUser, updateUser }}>
+    <UserContext.Provider value={{ users, addUser, updateUser, deleteUser }}>
       {children}
     </UserContext.Provider>
   );

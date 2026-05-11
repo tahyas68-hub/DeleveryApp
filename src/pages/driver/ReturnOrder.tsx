@@ -6,34 +6,7 @@ export default function ReturnOrder() {
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
   const [reason, setReason] = useState<string>('');
 
-  const [orders, setOrders] = useState([
-    { 
-      id: 'ORD-8921',
-      shipmentNo: 'SHP-123456',
-      merchantName: 'بوتيك نايا',
-      customerName: 'أحمد محمد', 
-      customerPhone: '0501234567', 
-      address: 'الجادرية، بغداد', 
-      date: '2026-05-02 08:30 AM',
-      amount: 15000, 
-      deliveryFee: 5000,
-      totalAmount: 20000,
-      status: 'delivering',
-    },
-    { 
-      id: 'ORD-8922', 
-      shipmentNo: 'SHP-987654',
-      merchantName: 'متجر الإلكترونيات',
-      customerName: 'سارة خالد', 
-      customerPhone: '0551234567', 
-      address: 'المنصور، بغداد', 
-      date: '2026-05-02 09:15 AM',
-      amount: 45000, 
-      deliveryFee: 5000,
-      totalAmount: 50000,
-      status: 'delivering',
-    },
-  ]);
+  const [orders, setOrders] = useState<any[]>([]);
 
   const filteredOrders = orders.filter(
     (o) => 

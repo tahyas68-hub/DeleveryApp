@@ -7,9 +7,7 @@ export default function MerchantFinance() {
   const { user } = useAuth();
   const merchantName = user?.name || 'بوتيك نايا';
   
-  const transactions = [
-    { id: 1, trxId: '4', type: 'صرف مستحقات', details: `تسوية حساب تاجر: ${merchantName}`, date: '2026/04/30' },
-  ];
+  const transactions: any[] = [];
 
   return (
     <div className="min-h-screen bg-[#f8fafc] -m-4 lg:-m-8 text-right pb-20 overflow-x-hidden" dir="rtl">
@@ -44,44 +42,44 @@ export default function MerchantFinance() {
         </div>
 
         {/* Financial Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
            {/* Current Balance Card (Green) */}
-           <div className="bg-[#10b981] p-10 rounded-[2.5rem] flex flex-col items-center text-center shadow-lg relative group overflow-hidden">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
-                <Wallet className="w-9 h-9 text-white" />
+           <div className="bg-[#10b981] p-6 md:p-8 rounded-3xl flex flex-col items-center text-center shadow-lg relative group overflow-hidden">
+              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
+                <Wallet className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-white font-black text-xl mb-3">الرصيد الحالي</h3>
-              <div className="flex items-baseline gap-2 mb-3">
-                 <span className="text-6xl font-black text-white font-en tracking-tighter">0</span>
-                 <span className="text-2xl font-black text-white/90">د.ع</span>
+              <h3 className="text-white font-black text-xl mb-2">الرصيد الحالي</h3>
+              <div className="flex items-baseline gap-2 mb-2">
+                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter">0</span>
+                 <span className="text-xl font-black text-white/90">د.ع</span>
               </div>
-              <p className="text-white/80 font-bold text-lg">جاهز للسحب</p>
+              <p className="text-white/80 font-bold text-sm md:text-base">جاهز للسحب</p>
            </div>
 
            {/* Withdrawals Card (Blue) */}
-           <div className="bg-[#3b82f6] p-10 rounded-[2.5rem] flex flex-col items-center text-center shadow-lg relative group overflow-hidden">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
-                <Landmark className="w-9 h-9 text-white" />
+           <div className="bg-[#3b82f6] p-6 md:p-8 rounded-3xl flex flex-col items-center text-center shadow-lg relative group overflow-hidden">
+              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
+                <Landmark className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-white font-black text-xl mb-3">المسحوبات</h3>
-              <div className="flex items-baseline gap-2 mb-3">
-                 <span className="text-6xl font-black text-white font-en tracking-tighter">450,000</span>
-                 <span className="text-2xl font-black text-white/90">د.ع</span>
+              <h3 className="text-white font-black text-xl mb-2">المسحوبات</h3>
+              <div className="flex items-baseline gap-2 mb-2">
+                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter">450,000</span>
+                 <span className="text-xl font-black text-white/90">د.ع</span>
               </div>
-              <p className="text-white/80 font-bold text-lg">تم تسليمها للتاجر</p>
+              <p className="text-white/80 font-bold text-sm md:text-base">تم تسليمها للتاجر</p>
            </div>
 
            {/* Pending Amounts Card (Orange) - Full Width */}
-           <div className="md:col-span-2 bg-[#f59e0b] p-10 rounded-[2.5rem] flex flex-col items-center justify-center text-center shadow-lg relative group overflow-hidden">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
-                <Clock className="w-9 h-9 text-white" />
+           <div className="md:col-span-2 bg-[#f59e0b] p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-lg relative group overflow-hidden">
+              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
+                <Clock className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-white font-black text-xl mb-3">مبالغ معلقة (قيد التوصيل)</h3>
-              <div className="flex items-baseline gap-2 mb-3">
-                 <span className="text-6xl font-black text-white font-en tracking-tighter">135,000</span>
-                 <span className="text-2xl font-black text-white/90">د.ع</span>
+              <h3 className="text-white font-black text-xl mb-2">مبالغ معلقة (قيد التوصيل)</h3>
+              <div className="flex items-baseline gap-2 mb-2">
+                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter">135,000</span>
+                 <span className="text-xl font-black text-white/90">د.ع</span>
               </div>
-              <p className="text-white/80 font-bold text-lg">انتظار إتمام عمليات التوصيل</p>
+              <p className="text-white/80 font-bold text-sm md:text-base">انتظار إتمام عمليات التوصيل</p>
            </div>
         </div>
 
