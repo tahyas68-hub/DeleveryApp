@@ -13,10 +13,11 @@ export default function DeliveryOrders() {
 
   const filteredOrders = driverOrders.filter(
     (o) => 
+      !searchTerm ||
       o.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
       (o.trackingNumber && o.trackingNumber.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      o.merchantName.includes(searchTerm) ||
-      o.address.includes(searchTerm)
+      (o.merchantName && o.merchantName.includes(searchTerm)) ||
+      (o.address && o.address.includes(searchTerm))
   );
 
   const handleDeliver = (id: string) => {

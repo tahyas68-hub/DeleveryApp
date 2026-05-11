@@ -4,7 +4,7 @@ import {
   Plus, FileDown, Printer, Trash2, Search, 
   Star, Warehouse, Truck, Building2, 
   ChevronLeft, MessageCircle, X, CheckSquare, Square,
-  ArrowRight
+  ArrowRight, Package, Clock, RotateCcw
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useOrders, MainOrder } from '../../context/OrderContext';
@@ -27,22 +27,26 @@ export default function MerchantDashboard() {
 
   // Tabs configuration mappings to OrderStatus
   const tabs = [
+    { name: 'الكل', icon: Package, status: 'all' },
     { name: 'جديد', icon: Star, status: 'merchant_pending' },
     { name: 'في المخزن', icon: Warehouse, status: 'main_warehouse' },
     { name: 'تحويل للفرع', icon: Truck, status: 'branch_transfering' },
     { name: 'في الفرع', icon: Building2, status: 'branch_warehouse' },
     { name: 'قيد التوصيل', icon: Truck, status: 'driver_assigned' },
     { name: 'تم التسليم', icon: Building2, status: 'delivered' },
+    { name: 'مسلم جزئياً', icon: Package, status: 'returned_partial' },
+    { name: 'مؤجل', icon: Clock, status: 'postponed' },
+    { name: 'مرتجع', icon: RotateCcw, status: 'returned' },
   ];
 
   // Filter and Search Logic
   const filteredOrders = useMemo(() => {
     return orders.filter(order => {
-      const matchesTab = activeTab === 'جديد' ? order.status === 'merchant_pending' : order.status === tabs.find(t => t.name === activeTab)?.status;
+      const matchesTab = activeTab === 'الكل' ? true : activeTab === 'جديد' ? order.status === 'merchant_pending' : order.status === tabs.find(t => t.name === activeTab)?.status;
       const matchesSearch = 
-        order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.trackingNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.id.toLowerCase().includes(searchQuery.toLowerCase());
+        order.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.trackingNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.id?.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesTab && matchesSearch;
     });
   }, [orders, activeTab, searchQuery]);
