@@ -14,6 +14,7 @@ export type OrderStatus =
 export interface MainOrder {
   id: string;
   trackingNumber: string;
+  merchantId?: string;
   merchantName: string;
   customerName: string;
   customerPhone: string;

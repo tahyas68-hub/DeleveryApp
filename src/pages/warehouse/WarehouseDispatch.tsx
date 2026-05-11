@@ -100,7 +100,7 @@ export default function WarehouseDispatch() {
                              {Array.from(new Set(drivers.map(d => d.branch || 'غير محدد'))).map(branch => (
                                <optgroup key={branch} label={branch}>
                                  {drivers.filter(d => (d.branch || 'غير محدد') === branch).map(d => (
-                                   <option key={d.id} value={d.id}>{d.name} ({d.vehicleType})</option>
+                                   <option key={d.id} value={d.id}>{d.name}</option>
                                  ))}
                                </optgroup>
                              ))}
