@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building2, Search, Plus, MapPin, Phone, Users, Package, MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { Building2, Search, Plus, MapPin, Phone, Users, Package, MoreVertical, Edit2, Trash2, Truck } from 'lucide-react';
 import { useBranches } from '../../context/BranchContext';
 
 export default function AdminBranches() {
