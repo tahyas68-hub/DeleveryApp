@@ -19,7 +19,7 @@ export default function Login() {
     
     if (user) {
       login(user.name, user.role);
-      navigate(`/${user.role}`);
+      navigate(user.role === 'branch_manager' ? '/warehouse' : `/${user.role}`);
     } else {
       setError('اسم المستخدم أو كلمة المرور غير صحيحة');
     }

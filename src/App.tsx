@@ -15,6 +15,7 @@ import MerchantSettings from './pages/merchant/MerchantSettings';
 import TrackingMap from './pages/merchant/TrackingMap';
 import DriverApp from './pages/driver/DriverApp';
 import CustomerTracking from './pages/CustomerTracking';
+import WarehouseIncomingOrders from './pages/warehouse/WarehouseIncomingOrders';
 
 import DriverMap from './pages/driver/DriverMap';
 import DriverWallet from './pages/driver/DriverWallet';
@@ -92,6 +93,14 @@ export default function App() {
         </Route>
 
 
+
+        {/* Sub-Warehouse Routes */}
+        <Route path="/warehouse" element={<DashboardLayout role="warehouse" />}>
+          <Route index element={<WarehouseIncomingOrders />} />
+          <Route path="incoming" element={<WarehouseIncomingOrders />} />
+          <Route path="dispatch" element={<PlaceholderPage title="توزيع المندوبين" />} />
+          <Route path="returns" element={<PlaceholderPage title="إدارة المرتجعات" />} />
+        </Route>
 
         {/* Merchant Routes */}
         <Route path="/merchant" element={<DashboardLayout role="merchant" />}>

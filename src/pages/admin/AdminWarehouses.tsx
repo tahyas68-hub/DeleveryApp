@@ -1,30 +1,26 @@
 import React, { useState } from 'react';
-import { Package, Truck, Search, Plus, MapPin, Search as SearchIcon, ArrowLeftRight, UserCheck } from 'lucide-react';
+import { Package, Truck, Search, Plus, MapPin, Search as SearchIcon, ArrowLeftRight } from 'lucide-react';
 import { dummyWarehouses } from '../../lib/extended-dummy';
 import { useOrders } from '../../context/OrderContext';
-import { useUsers } from '../../context/UserContext';
+import { useBranches } from '../../context/BranchContext';
 
 export default function AdminWarehouses() {
   const { orders, updateOrderStatus } = useOrders();
-  const { users } = useUsers();
+  const { branches } = useBranches();
   
-  const drivers = users.filter(u => u.role === 'driver');
   const mainWarehouses = dummyWarehouses.filter(w => w.type === 'main');
   const mainOrders = orders.filter(o => o.status === 'main_warehouse');
   
-  const [selectedDrivers, setSelectedDrivers] = useState<Record<string, string>>({});
+  const [selectedBranches, setSelectedBranches] = useState<Record<string, string>>({});
 
-  const handleAssignToDriver = (id: string) => {
-    const driverId = selectedDrivers[id];
-    if (!driverId) {
-      alert("الرجاء اختيار مندوب للتسليم");
+  const handleTransferToBranch = (id: string) => {
+    const branchName = selectedBranches[id];
+    if (!branchName) {
+      alert("الرجاء اختيار فرع للتحويل");
       return;
     }
-    const driver = drivers.find(d => d.id === driverId);
-    if(driver) {
-       updateOrderStatus(id, 'driver_assigned', { driverId: driver.id, driverName: driver.name });
-       alert(`تم تحويل الطلب إلى المندوب ${driver.name}`);
-    }
+    updateOrderStatus(id, 'branch_transfering', { branchName });
+    alert(`تم تحويل الطلب إلى ${branchName}`);
   };
 
   return (
@@ -61,7 +57,7 @@ export default function AdminWarehouses() {
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden text-sm">
         <div className="p-6 border-b border-slate-100 bg-slate-50/50">
            <h2 className="text-xl font-bold text-slate-800">الطلبات في المخزن الرئيسي</h2>
-           <p className="text-slate-500 mt-1">تخصيص الطلبات وتسليمها للمناديب</p>
+           <p className="text-slate-500 mt-1">تخصيص الطلبات وتحويلها إلى الفروع</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-right">
@@ -71,7 +67,7 @@ export default function AdminWarehouses() {
                 <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
                 <th className="px-6 py-4 font-bold text-slate-600">الكمية (طرود)</th>
                 <th className="px-6 py-4 font-bold text-slate-600">محافظة التسليم</th>
-                <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراءات التسليم</th>
+                <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراءات التحويل</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -92,19 +88,19 @@ export default function AdminWarehouses() {
                       <div className="flex items-center justify-center gap-2">
                          <select 
                            className="border border-slate-200 rounded-lg px-3 py-1.5 focus:border-blue-500 outline-none w-40"
-                           onChange={(e) => setSelectedDrivers(prev => ({...prev, [o.id]: e.target.value}))}
-                           value={selectedDrivers[o.id] || ""}
+                           onChange={(e) => setSelectedBranches(prev => ({...prev, [o.id]: e.target.value}))}
+                           value={selectedBranches[o.id] || ""}
                          >
-                           <option value="" disabled>اختر المندوب...</option>
-                           {drivers.map(d => (
-                             <option key={d.id} value={d.id}>{d.name}</option>
+                           <option value="" disabled>اختر الفرع...</option>
+                           {branches.map(b => (
+                             <option key={b.id} value={b.name}>{b.name}</option>
                            ))}
                          </select>
                          <button 
-                           onClick={() => handleAssignToDriver(o.id)}
+                           onClick={() => handleTransferToBranch(o.id)}
                            className="text-white bg-[#0F3B73] hover:bg-[#0F3B73]/90 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors flex items-center gap-1 whitespace-nowrap"
                          >
-                           <UserCheck className="w-3.5 h-3.5" /> تسليم للمندوب
+                           <ArrowLeftRight className="w-3.5 h-3.5" /> تحويل للفرع
                          </button>
                       </div>
                     </td>

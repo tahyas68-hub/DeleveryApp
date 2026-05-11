@@ -3,6 +3,8 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 export type OrderStatus = 
   | 'merchant_pending' // merchant created, pending admin pickup 
   | 'main_warehouse'   // arrived at main warehouse
+  | 'branch_transfering'
+  | 'branch_warehouse'
   | 'driver_assigned'  // with driver
   | 'delivered'        // delivered
   | 'returned_partial'
@@ -25,6 +27,7 @@ export interface MainOrder {
   status: OrderStatus;
   driverId?: string;
   driverName?: string;
+  branchName?: string;
 }
 
 const defaultOrders: MainOrder[] = [];
