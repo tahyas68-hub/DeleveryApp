@@ -35,10 +35,12 @@ import PostponedReturnedOrders from './pages/driver/PostponedReturnedOrders';
 import { AuthProvider } from './context/AuthContext';
 import { OrderProvider } from './context/OrderContext';
 import { UserProvider } from './context/UserContext';
+import { BranchProvider } from './context/BranchContext';
 
 import IncomingMerchant from './pages/admin/IncomingMerchant';
 import AdminUsers from './pages/admin/AdminUsers';
 import Stickers from './pages/admin/Stickers';
+import AdminBranches from './pages/admin/AdminBranches';
 import DriverCommission from './pages/admin/DriverCommission';
 import AdminFinance from './pages/admin/AdminFinance';
 import AdminMerchantAccounts from './pages/admin/AdminMerchantAccounts';
@@ -62,8 +64,9 @@ export default function App() {
   return (
     <AuthProvider>
       <UserProvider>
-        <OrderProvider>
-          <BrowserRouter>
+        <BranchProvider>
+          <OrderProvider>
+            <BrowserRouter>
           <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/track/:id" element={<CustomerTracking />} />
@@ -73,6 +76,7 @@ export default function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="incoming-merchant" element={<IncomingMerchant />} />
           <Route path="warehouses" element={<AdminWarehouses />} />
+          <Route path="branches" element={<AdminBranches />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="stickers" element={<Stickers />} />
           <Route path="drivers" element={<AdminDrivers />} />
@@ -119,9 +123,10 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
-  </OrderProvider>
-  </UserProvider>
-</AuthProvider>
+        </OrderProvider>
+        </BranchProvider>
+      </UserProvider>
+    </AuthProvider>
   );
 }
 

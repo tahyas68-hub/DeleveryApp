@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { Users, Search, Filter, Plus, Shield, X } from 'lucide-react';
+import { Users, Search, Filter, Plus, Shield, X, MapPin } from 'lucide-react';
 import { useUsers, UserRole } from '../../context/UserContext';
+import { useBranches } from '../../context/BranchContext';
 
 export default function AdminUsers() {
   const { users, addUser, updateUser, deleteUser } = useUsers();
+  const { branches } = useBranches();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newUser, setNewUser] = useState({
     name: '',
     role: 'driver' as UserRole,
     phone: '',
+    branch: '',
     username: '',
     password: '',
   });
@@ -21,7 +24,7 @@ export default function AdminUsers() {
       case 'admin': return { label: 'إدارة', color: 'bg-red-50 text-red-600 border-red-100' };
       case 'merchant': return { label: 'تاجر', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' };
       case 'driver': return { label: 'مندوب', color: 'bg-blue-50 text-blue-600 border-blue-100' };
-      case 'warehouse': return { label: 'مخزن', color: 'bg-orange-50 text-orange-600 border-orange-100' };
+      case 'branch_manager': return { label: 'مدير فرع', color: 'bg-orange-50 text-orange-600 border-orange-100' };
       default: return { label: 'مستخدم', color: 'bg-slate-50 text-slate-600 border-slate-100' };
     }
   };
@@ -50,6 +53,7 @@ export default function AdminUsers() {
         name: newUser.name,
         role: newUser.role,
         phone: newUser.phone,
+        branch: newUser.branch,
         username: newUser.username,
         password: newUser.password,
       });
@@ -59,6 +63,7 @@ export default function AdminUsers() {
         name: newUser.name,
         role: newUser.role,
         phone: newUser.phone,
+        branch: newUser.branch,
         username: newUser.username,
         password: newUser.password,
         status: 'active',
@@ -129,6 +134,11 @@ export default function AdminUsers() {
                     <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${roleInfo.color}`}>
                       {roleInfo.label}
                     </span>
+                    {user.branch && (
+                      <div className="mt-2 text-xs font-medium text-slate-500 whitespace-nowrap">
+                        <MapPin className="w-3 h-3 inline ml-1"/> {user.branch}
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 font-en font-bold text-slate-600">{user.phone}</td>
                   <td className="px-6 py-4 font-en font-bold text-slate-600">{user.username || '-'}</td>
@@ -199,9 +209,26 @@ export default function AdminUsers() {
                 >
                   <option value="driver">مندوب</option>
                   <option value="merchant">تاجر</option>
+                  <option value="branch_manager">مدير فرع</option>
                   <option value="admin">إدارة</option>
                 </select>
               </div>
+
+              {(newUser.role === 'branch_manager' || newUser.role === 'driver') && (
+                <div className="space-y-2">
+                  <label className="block text-slate-700 font-bold text-sm">الفرع التابع له (اختياري للمندوب)</label>
+                  <select 
+                    value={newUser.branch}
+                    onChange={e => setNewUser({...newUser, branch: e.target.value})}
+                    className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none bg-white font-bold" 
+                  >
+                    <option value="">اختر الفرع...</option>
+                    {branches.map(b => (
+                      <option key={b.id} value={b.name}>{b.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <label className="block text-slate-700 font-bold text-sm">رقم الهاتف</label>

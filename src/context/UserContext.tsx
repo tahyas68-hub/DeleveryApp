@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-export type UserRole = 'admin' | 'merchant' | 'driver';
+export type UserRole = 'admin' | 'merchant' | 'driver' | 'branch_manager';
 
 export interface AppUser {
   id: string;
@@ -10,6 +10,7 @@ export interface AppUser {
   username?: string;
   password?: string;
   status: 'active' | 'inactive' | 'busy' | 'offline';
+  branch?: string;
   // Driver specific
   rating?: number;
   vehicleType?: 'van' | 'motorcycle' | 'truck';

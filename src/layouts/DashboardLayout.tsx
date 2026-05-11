@@ -56,6 +56,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
               { label: 'المخزن الرئيسي', icon: Warehouse, to: '/admin/warehouses' },
             ]
           },
+          { label: 'الفروع', icon: Building2, to: '/admin/branches' },
           { label: 'المستخدمين', icon: Users, to: '/admin/users' },
           { 
             label: 'التجار', 
