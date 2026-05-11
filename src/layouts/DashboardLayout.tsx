@@ -5,7 +5,7 @@ import {
   Bell, Search, Menu, X, LogOut, FileText, Inbox, Star,
   Warehouse, Building2, ClipboardList, Calculator, Wallet,
   Briefcase, UserCircle, ArrowDown, History, Store,
-  Bike, Percent, DollarSign, Shield, Tags, ChevronLeft, ChevronDown
+  Bike, Percent, DollarSign, Shield, Tags, ChevronLeft, ChevronDown, Activity
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
@@ -84,7 +84,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
             ]
           },
           { label: 'التقارير', icon: FileText, to: '/admin/reports' },
-          { label: 'سجل العمليات', icon: Shield, to: '/admin/operations' },
+          { label: 'بوابة العمليات', icon: Activity, to: '/admin/operations' },
           { label: 'تسعير التجار', icon: Tags, to: '/admin/merchant-pricing' },
           { label: 'الإشعارات', icon: Bell, to: '/admin/notifications' },
           { label: 'الإعدادات', icon: Settings, to: '/admin/settings' },

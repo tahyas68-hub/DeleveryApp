@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Package, Search, Calendar, CheckSquare, XCircle, ArrowLeft } from 'lucide-react';
+import { Package, Search, Calendar, CheckSquare, XCircle, ArrowLeft, Printer } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
+import { Link } from 'react-router-dom';
 
 export default function IncomingMerchant() {
   const { orders, updateOrderStatus } = useOrders();
@@ -58,12 +59,22 @@ export default function IncomingMerchant() {
                       <span className="bg-orange-50 text-orange-600 px-2.5 py-1 rounded-full text-xs font-bold border border-orange-100">استلام من التاجر</span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <button 
-                        onClick={() => handleReceive(o.id)}
-                        className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors"
-                      >
-                        استلام من التاجر
-                      </button>
+                      <div className="flex items-center justify-center gap-2">
+                        <Link 
+                          to={`/admin/print-sticker/${o.id}`}
+                          target="_blank"
+                          className="text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors flex items-center gap-1"
+                          title="طباعة الستكر"
+                        >
+                          <Printer className="w-4 h-4" />
+                        </Link>
+                        <button 
+                          onClick={() => handleReceive(o.id)}
+                          className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors"
+                        >
+                          استلام من التاجر
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

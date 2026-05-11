@@ -53,6 +53,8 @@ import AdminOperations from './pages/admin/AdminOperations';
 import AdminMerchantPricing from './pages/admin/AdminMerchantPricing';
 import AdminNotifications from './pages/admin/AdminNotifications';
 
+import PrintSticker from './pages/admin/PrintSticker';
+
 // Placeholder Pages
 const PlaceholderPage = ({ title }: { title: string }) => (
   <div className="flex items-center justify-center h-full min-h-[400px]">
@@ -73,6 +75,7 @@ export default function App() {
           <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/track/:id" element={<CustomerTracking />} />
+        <Route path="/admin/print-sticker/:id" element={<PrintSticker />} />
         
         {/* Admin Routes */}
         <Route path="/admin" element={<DashboardLayout role="admin" />}>
