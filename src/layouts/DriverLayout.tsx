@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Map, ListTodo, Wallet, User, Bell } from 'lucide-react';
+import { Map, ListTodo, Wallet, User, Bell, FileText } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 interface NavItemProps {
@@ -28,6 +28,7 @@ export default function DriverLayout() {
 
   const navItems = [
     { label: 'المهام', icon: ListTodo, to: '/driver' },
+    { label: 'التقارير', icon: FileText, to: '/driver/reports' },
     { label: 'الخريطة', icon: Map, to: '/driver/map' },
     { label: 'المحفظة', icon: Wallet, to: '/driver/wallet' },
     { label: 'حسابي', icon: User, to: '/driver/profile' },

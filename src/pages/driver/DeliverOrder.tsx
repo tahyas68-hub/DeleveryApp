@@ -12,8 +12,16 @@ export default function DeliverOrder() {
   const selectedOrder = driverOrders.find(o => o.id === selectedOrderId);
 
   const handleDeliver = () => {
-    if (selectedOrderId) {
-      updateOrderStatus(selectedOrderId, 'delivered');
+    if (selectedOrderId && selectedOrder) {
+      if (receivedAmount && !isNaN(Number(receivedAmount))) {
+        const amountNum = parseFloat(receivedAmount);
+        const newAmount = amountNum - selectedOrder.deliveryFee;
+        updateOrderStatus(selectedOrderId, 'delivered', {
+           amount: newAmount
+        });
+      } else {
+        updateOrderStatus(selectedOrderId, 'delivered');
+      }
       setSelectedOrderId('');
       setReceivedAmount('');
       alert('تم تأشير الطلب كمسلم بنجاح وإرسال التحديث للإدارة');

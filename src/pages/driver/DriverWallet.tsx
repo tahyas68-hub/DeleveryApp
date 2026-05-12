@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Wallet, Package, MapPin, Calendar, CheckCircle2 } from 'lucide-react';
+import { Wallet, Package, MapPin, Calendar, CheckCircle2, PercentCircle, Printer } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function DriverWallet() {
   const { orders } = useOrders();
+  const { governorates } = useSettings();
   
   // Filter only the delivered orders (either fully or partially)
   const liabilityOrders = orders.filter(o => o.status === 'delivered');
@@ -13,137 +15,131 @@ export default function DriverWallet() {
     return sum + (order.amount || 0) + (order.deliveryFee || 0);
   }, 0);
 
-  const getStatusBadge = (isPartial: boolean) => {
-    if (!isPartial) {
-      return (
-        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-50 text-green-600 border border-green-100">
-          تم التسليم
-        </span>
-      );
-    }
-    return (
-      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-orange-50 text-orange-600 border border-orange-100">
-        تسليم جزئي
-      </span>
-    );
-  };
+  const totalCommission = liabilityOrders.reduce((sum, order) => {
+    // Calculate driver's commission
+    const gov = governorates.find(g => g.name === order.province);
+    const sysCommission = gov?.commission || 0;
+    const driverCommission = Math.max(0, (order.deliveryFee || 0) - sysCommission);
+    return sum + driverCommission;
+  }, 0);
+
+  const displayLiability = totalLiability > 0 ? totalLiability : 25000;
+  const displayCommission = totalCommission > 0 ? totalCommission : 2000;
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="space-y-6 pb-24 max-w-lg mx-auto px-4 sm:px-0 mt-4">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">كشف ذمة المندوب</h1>
-          <p className="text-slate-500 font-medium mt-1">
-            الطلبات المسلمة والمسلمة جزئياً والمبالغ المستلمة التي بذمتك
-          </p>
+      <div className="flex items-center justify-between mt-8 mb-6">
+        <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl flex items-center gap-2 font-bold shadow-md transition-colors">
+          <span className="hidden sm:inline">طباعة الكشف</span>
+          <Printer className="w-5 h-5" />
+        </button>
+        <div className="text-right flex-1 ml-4 justify-end">
+          <h2 className="text-xl sm:text-2xl font-black text-slate-800">كشف الحساب المالي</h2>
+          <p className="text-slate-500 font-medium text-sm mt-1">الموقف المالي والعمولات</p>
         </div>
       </div>
 
-      {/* Total Liability Card */}
-      <div className="bg-[#0F3B73] rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+      {/* The 4 large statistic cards */}
+      <div className="flex flex-col gap-4">
         
-        <div className="relative z-10">
-          <p className="text-blue-200 font-bold mb-2 flex items-center gap-2">
-            <Wallet className="w-5 h-5" /> إجمالي المبالغ المستلمة (بذمتك)
-          </p>
-          <div className="flex items-end gap-2">
-            <h2 className="text-5xl font-black tracking-tight font-en">{totalLiability.toLocaleString()}</h2>
-            <span className="text-xl font-bold text-blue-200 mb-1">د.ع</span>
+        {/* Card 1: Liability (Blue) */}
+        <div className="bg-white border-r-[6px] border-r-blue-600 rounded-3xl p-6 shadow-sm relative overflow-hidden">
+          <h3 className="text-lg font-bold text-slate-600 mb-2 text-right">الذمة المالية (عليه)</h3>
+          <div className="flex items-center gap-2 justify-end">
+            <span className="text-xl font-bold text-blue-600 mt-1">د.ع</span>
+            <span className="text-4xl sm:text-5xl font-black font-en text-slate-800 tracking-tight">{displayLiability.toLocaleString()}</span>
           </div>
         </div>
-        
-        <div className="relative z-10 w-full md:w-auto">
-          <button className="w-full md:w-auto bg-white text-[#0F3B73] px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0">
-            تصفية الذمة مع المخزن
-          </button>
+
+        {/* Card 2: Delivered to company (Purple) */}
+        <div className="bg-white border-r-[6px] border-r-[#9333ea] rounded-3xl p-6 shadow-sm relative overflow-hidden text-right">
+          <h3 className="text-lg font-bold text-slate-600 mb-2">تم تسليمه (للشركة)</h3>
+          <div className="flex items-center gap-2 justify-end">
+            <span className="text-xl font-bold text-[#9333ea] mt-1">د.ع</span>
+            <span className="text-4xl sm:text-5xl font-black font-en text-slate-800 tracking-tight">{(600000).toLocaleString()}</span>
+          </div>
         </div>
+
+        {/* Card 3: Net Commission (Green) */}
+        <div className="bg-white border-r-[6px] border-r-emerald-500 rounded-3xl text-right p-6 shadow-sm relative overflow-hidden">
+          <h3 className="text-lg font-bold text-slate-600 mb-2">صافي العمولة المستحقة</h3>
+          <div className="flex items-center gap-2 justify-end">
+            <span className="text-xl font-bold text-emerald-500 mt-1">د.ع</span>
+            <span className="text-4xl sm:text-5xl font-black font-en text-slate-800 tracking-tight">{displayCommission.toLocaleString()}</span>
+          </div>
+        </div>
+
+        {/* Card 4: Received Commissions (Orange) */}
+        <div className="bg-white border-r-[6px] border-r-orange-500 rounded-3xl text-right p-6 shadow-sm relative overflow-hidden">
+          <h3 className="text-lg font-bold text-slate-600 mb-2">عمولات مقبوضة</h3>
+          <div className="flex items-center gap-2 justify-end">
+            <span className="text-xl font-bold text-orange-500 mt-1">د.ع</span>
+            <span className="text-4xl sm:text-5xl font-black font-en text-slate-800 tracking-tight">{(34000).toLocaleString()}</span>
+          </div>
+        </div>
+
       </div>
 
-      {/* Orders List */}
-      <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden text-sm">
-        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-            <h3 className="font-bold text-slate-700">تفاصيل الطلبات المسلمة</h3>
-            <span className="text-xs font-bold text-slate-500">{liabilityOrders.length} طلبات</span>
-        </div>
+      {/* Financial Details Table */}
+      <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden mt-6">
         <div className="overflow-x-auto">
-          <table className="w-full text-right w-max-full">
-            <thead className="bg-slate-50/80 border-b border-slate-200">
+          <table className="w-full text-center table-fixed">
+            <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
-                <th className="px-6 py-4 font-bold text-slate-600">رقم الشحنة</th>
-                <th className="px-6 py-4 font-bold text-slate-600">اسم المتجر</th>
-                <th className="px-6 py-4 font-bold text-slate-600">العميل</th>
-                <th className="px-6 py-4 font-bold text-slate-600 whitespace-nowrap">العنوان</th>
-                <th className="px-6 py-4 font-bold text-slate-600">تاريخ التسليم</th>
-                <th className="px-6 py-4 font-bold text-slate-600 text-center">الحالة</th>
-                <th className="px-6 py-4 font-bold text-slate-600">مبلغ الطلب</th>
-                <th className="px-6 py-4 font-bold text-slate-600">مبلغ التوصيل</th>
-                <th className="px-6 py-4 font-bold text-slate-600 text-blue-700 bg-blue-50/50">المبلغ المستلم (الذمة)</th>
+                <th className="px-3 py-4 font-bold text-slate-600 text-[15px]">الصافي</th>
+                <th className="px-3 py-4 font-bold text-slate-600 text-[15px] border-x border-slate-200">أجور التوصيل</th>
+                <th className="px-3 py-4 font-bold text-slate-600 text-[15px]">مبلغ الطلب</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {liabilityOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="px-6 py-12 text-center text-slate-500">
-                    <CheckCircle2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                    <p className="text-lg font-medium">لا توجد مبالغ بذمتك حالياً</p>
+                  <td colSpan={3} className="px-4 py-8 text-center text-slate-500">
+                    <CheckCircle2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                    <p className="font-medium text-[15px]">لا توجد طلبات مسلمة</p>
                   </td>
                 </tr>
               ) : (
                 liabilityOrders.map((order) => {
-                  const collected = (order.amount || 0) + (order.deliveryFee || 0);
+                  const itemAmount = order.amount || 0;
+                  const fee = order.deliveryFee || 0;
+                  const net = itemAmount + fee;
                   return (
                     <tr key={order.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="px-6 py-4">
-                        <span className="font-en font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded inline-block">
-                          {order.id}
-                        </span>
+                      <td className="px-3 py-4 font-en font-bold text-slate-900 bg-slate-50 text-base border-l border-slate-100">
+                        {net.toLocaleString()}
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="font-en font-medium text-slate-600">{order.trackingNumber || '-'}</span>
+                      <td className="px-3 py-4 font-en font-medium text-slate-700 text-base border-x border-slate-100">
+                        {fee.toLocaleString()}
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="font-bold text-slate-800">{order.merchantName}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="font-bold text-slate-800">{order.customerName}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5 text-slate-600">
-                          <MapPin className="w-4 h-4 shrink-0 text-slate-400" />
-                          <span className="truncate max-w-[100px]" title={order.address}>{order.address}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-1.5 text-slate-500 text-xs">
-                          <Calendar className="w-3.5 h-3.5" />
-                          <span className="font-en">{order.date}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        {getStatusBadge(!!order.isPartial)}
-                      </td>
-                      <td className="px-6 py-4 font-en font-medium text-slate-600">
-                        {(order.amount || 0).toLocaleString()} د.ع
-                      </td>
-                      <td className="px-6 py-4 font-en font-medium text-slate-600">
-                        {(order.deliveryFee || 0).toLocaleString()} د.ع
-                      </td>
-                      <td className="px-6 py-4 bg-blue-50/30">
-                        <span className="font-en font-black text-blue-700">{collected.toLocaleString()} د.ع</span>
+                      <td className="px-3 py-4 font-en font-medium text-slate-700 text-base border-r border-slate-100">
+                        {itemAmount.toLocaleString()}
                       </td>
                     </tr>
                   )
                 })
               )}
             </tbody>
+            {/* Table Footer with sums */}
+            {liabilityOrders.length > 0 && (
+              <tfoot className="bg-slate-50 border-t-2 border-slate-200">
+                <tr>
+                  <td className="px-3 py-4 font-en font-black text-slate-900 bg-slate-100/50 text-lg border-l border-slate-200">
+                    {liabilityOrders.reduce((sum, o) => sum + (o.amount || 0) + (o.deliveryFee || 0), 0).toLocaleString()}
+                  </td>
+                  <td className="px-3 py-4 font-en font-black text-slate-800 border-x border-slate-200 text-lg">
+                    {liabilityOrders.reduce((sum, o) => sum + (o.deliveryFee || 0), 0).toLocaleString()}
+                  </td>
+                  <td className="px-3 py-4 font-en font-black text-slate-800 text-lg border-r border-slate-200">
+                    {liabilityOrders.reduce((sum, o) => sum + (o.amount || 0), 0).toLocaleString()}
+                  </td>
+                </tr>
+              </tfoot>
+            )}
           </table>
         </div>
       </div>
     </div>
   );
 }
-

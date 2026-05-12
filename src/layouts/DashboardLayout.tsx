@@ -85,6 +85,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
           },
           { label: 'التقارير', icon: FileText, to: '/admin/reports' },
           { label: 'بوابة العمليات', icon: Activity, to: '/admin/operations' },
+          { label: 'سجل العمليات', icon: History, to: '/admin/history' },
           { label: 'تسعير التجار', icon: Tags, to: '/admin/merchant-pricing' },
           { label: 'الإشعارات', icon: Bell, to: '/admin/notifications' },
           { label: 'الإعدادات', icon: Settings, to: '/admin/settings' },
@@ -114,7 +115,6 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
           { label: 'التقارير', icon: FileText, to: '/driver/reports' },
           { label: 'كشف ذمة المندوب', icon: Wallet, to: '/driver/wallet' },
           { label: 'السجل', icon: History, to: '/driver/history' },
-          { label: 'الحسابات', icon: DollarSign, to: '/driver/finance' },
           { label: 'الإعدادات', icon: Settings, to: '/driver/settings' },
         ];
       default: // merchant

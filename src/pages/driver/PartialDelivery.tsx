@@ -20,24 +20,28 @@ export default function PartialDelivery() {
     if (!selectedOrder) return;
 
     const amountNum = parseFloat(receivedAmount) || 0;
+    const newAmount = amountNum - selectedOrder.deliveryFee;
+
     updateOrderStatus(selectedOrder.id, 'delivered', {
-      amount: amountNum,
+      amount: newAmount,
       isPartial: true
     });
 
-    const remainderAmount = selectedOrder.amount - amountNum;
+    const originalTotal = selectedOrder.amount + selectedOrder.deliveryFee;
+    const remainderTotal = originalTotal - amountNum;
+
     addOrder({
       id: `${selectedOrder.id}-P`,
-      trackingNumber: selectedOrder.trackingNumber,
+      trackingNumber: `${selectedOrder.trackingNumber}-P`,
       merchantName: selectedOrder.merchantName,
       customerName: selectedOrder.customerName,
       customerPhone: selectedOrder.customerPhone,
       address: selectedOrder.address,
       province: selectedOrder.province,
       pieces: selectedOrder.pieces,
-      amount: remainderAmount > 0 ? remainderAmount : 0,
+      amount: remainderTotal > 0 ? remainderTotal : 0,
       deliveryFee: 0, 
-      status: 'returned_partial',
+      status: 'returned',
       date: new Date().toISOString().split('T')[0]
     });
 

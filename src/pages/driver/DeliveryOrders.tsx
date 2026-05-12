@@ -46,25 +46,29 @@ export default function DeliveryOrders() {
     
     // 1. Update current order to 'delivered' with new partial amount
     const amountNum = parseFloat(partialAmount) || 0;
+    const newAmount = amountNum - selectedOrder.deliveryFee;
+    
     updateOrderStatus(selectedOrder.id, 'delivered', {
-      amount: amountNum, 
+      amount: newAmount, 
       isPartial: true
     });
     
     // 2. Create a new "returned" order for the un-delivered part
-    const remainderAmount = selectedOrder.amount - amountNum;
+    const originalTotal = selectedOrder.amount + selectedOrder.deliveryFee;
+    const remainderTotal = originalTotal - amountNum;
+    
     addOrder({
       id: `${selectedOrder.id}-P`,
-      trackingNumber: selectedOrder.trackingNumber,
+      trackingNumber: `${selectedOrder.trackingNumber}-P`,
       merchantName: selectedOrder.merchantName,
       customerName: selectedOrder.customerName,
       customerPhone: selectedOrder.customerPhone,
       address: selectedOrder.address,
       province: selectedOrder.province,
       pieces: selectedOrder.pieces,
-      amount: remainderAmount > 0 ? remainderAmount : 0,
+      amount: remainderTotal > 0 ? remainderTotal : 0,
       deliveryFee: 0, // Fee already taken by the delivered part
-      status: 'returned_partial',
+      status: 'returned',
       date: new Date().toISOString().split('T')[0]
     });
     
@@ -115,9 +119,7 @@ export default function DeliveryOrders() {
               <tr>
                 <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
                 <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
-                <th className="px-6 py-4 font-bold text-slate-600">مبلغ الطلب</th>
-                <th className="px-6 py-4 font-bold text-slate-600">مبلغ التوصيل</th>
-                <th className="px-6 py-4 font-bold text-slate-600">الاجمالي</th>
+                <th className="px-6 py-4 font-bold text-slate-600">الاجمالي المطلوب</th>
                 <th className="px-6 py-4 font-bold text-slate-600 whitespace-nowrap">العنوان</th>
                 <th className="px-6 py-4 font-bold text-slate-600">التاريخ</th>
                 <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراءات</th>
@@ -126,7 +128,7 @@ export default function DeliveryOrders() {
             <tbody className="divide-y divide-slate-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
                     <Package className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                     <p className="text-lg font-medium">لا توجد طلبات جارية</p>
                   </td>
@@ -151,12 +153,6 @@ export default function DeliveryOrders() {
                     </td>
                     <td className="px-6 py-4">
                       <span className="font-bold text-slate-800">{order.merchantName}</span>
-                    </td>
-                    <td className="px-6 py-4 font-en font-medium text-slate-600">
-                      {order.amount.toLocaleString()} د.ع
-                    </td>
-                    <td className="px-6 py-4 font-en font-medium text-slate-600">
-                      {order.deliveryFee.toLocaleString()} د.ع
                     </td>
                     <td className="px-6 py-4">
                       <span className="font-en font-bold text-blue-600">{(order.amount + order.deliveryFee).toLocaleString()} د.ع</span>
