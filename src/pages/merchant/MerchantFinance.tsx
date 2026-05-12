@@ -1,19 +1,81 @@
-import React from 'react';
-import { FileText, Wallet, Printer, FileDown, Clock, ArrowRight, Menu, HelpCircle, Landmark } from 'lucide-react';
+import React, { useRef } from 'react';
+import { FileText, Wallet, Printer, FileDown, Clock, ArrowRight, Landmark } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useOrders } from '../../context/OrderContext';
+import * as XLSX from 'xlsx';
+import { useReactToPrint } from 'react-to-print';
 
 export default function MerchantFinance() {
   const { user } = useAuth();
-  const merchantName = user?.name || 'بوتيك نايا';
-  
-  const transactions: any[] = [];
+  const { orders } = useOrders();
+  const printRef = useRef<HTMLDivElement>(null);
+
+  // Filter out returned orders for pending calculation if needed. 
+  // Let's define the groups explicitly:
+  const pendingStatuses = ['merchant_pending', 'main_warehouse', 'branch_transfering', 'branch_warehouse', 'driver_assigned', 'postponed'];
+  const deliveredStatuses = ['delivered', 'returned_partial'];
+
+  // Current balance: delivered and partial
+  const currentBalance = orders
+    .filter(o => deliveredStatuses.includes(o.status))
+    .reduce((sum, o) => sum + (o.amount || 0), 0);
+
+  // Pending balance: not delivered, not totally returned
+  const pendingAmount = orders
+    .filter(o => pendingStatuses.includes(o.status))
+    .reduce((sum, o) => sum + (o.amount || 0), 0);
+
+  const withdrawals = 0; // Mock
+
+  // Generate transactions from Delivered & Returned_Partial orders
+  const transactions = orders
+    .filter(o => deliveredStatuses.includes(o.status) || o.status === 'returned')
+    .map((o) => {
+      let typeStr = 'توصيل ناجح';
+      if (o.status === 'returned_partial') typeStr = 'توصيل جزئي';
+      if (o.status === 'returned') typeStr = 'مرتجع';
+      return {
+        id: o.id,
+        trxId: `TRX-${o.id.split('-')[1] || Math.floor(Math.random() * 10000)}`,
+        type: typeStr,
+        details: o.trackingNumber,
+        date: o.date,
+        amount: o.amount || 0
+      };
+    });
+
+  const exportToExcel = () => {
+    const wsData = transactions.map((trx, index) => ({
+      'التسلسل': index + 1,
+      'رقم العملية': trx.trxId,
+      'النوع': trx.type,
+      'رقم الطلب': trx.details,
+      'المبلغ (د.ع)': trx.amount,
+      'تاريخ': trx.date,
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(wsData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "العمليات_المالية");
+    XLSX.writeFile(workbook, "كشف_حساب.xlsx");
+  };
+
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: 'كشف_حساب',
+    pageStyle: `
+      @media print {
+        body { margin: 0; padding: 20px; background: white; }
+        .no-print { display: none !important; }
+      }
+    `,
+  });
 
   return (
     <div className="min-h-screen bg-[#f8fafc] -m-4 lg:-m-8 text-right pb-20 overflow-x-hidden" dir="rtl">
-      <div className="p-6 md:p-10 space-y-12 max-w-7xl mx-auto">
+      <div className="p-6 md:p-10 space-y-12 max-w-7xl mx-auto" ref={printRef}>
         {/* Top Action Bar */}
-        <div className="flex justify-start">
+        <div className="flex justify-start no-print">
           <Link to="/merchant" className="bg-[#0F3B73] text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-opacity-90 transition-all active:scale-95 shadow-lg shadow-[#0F3B73]/20 w-fit">
             <ArrowRight className="w-5 h-5" />
             <span>العودة للرئيسية</span>
@@ -29,12 +91,12 @@ export default function MerchantFinance() {
             <p className="text-slate-500 font-medium tracking-wide">متابعة رصيدك المالي وتفاصيل العمليات</p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-             <button className="w-full sm:w-auto bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-6 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2.5 transition-all">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto no-print">
+             <button onClick={exportToExcel} className="w-full sm:w-auto bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-6 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2.5 transition-all">
                 <FileDown className="w-5 h-5" />
                 <span>تصدير Excel</span>
              </button>
-             <button className="w-full sm:w-auto bg-[#2B6CB0] text-white px-7 py-3.5 rounded-xl font-black flex items-center justify-center gap-2.5 hover:bg-opacity-95 shadow-xl shadow-blue-500/20 transition-all active:scale-95">
+             <button onClick={() => handlePrint()} className="w-full sm:w-auto bg-[#2B6CB0] text-white px-7 py-3.5 rounded-xl font-black flex items-center justify-center gap-2.5 hover:bg-opacity-95 shadow-xl shadow-blue-500/20 transition-all active:scale-95">
                 <Printer className="w-6 h-6" />
                 <span className="text-lg">طباعة الكشف</span>
              </button>
@@ -44,82 +106,91 @@ export default function MerchantFinance() {
         {/* Financial Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
            {/* Current Balance Card (Green) */}
-           <div className="bg-[#10b981] p-6 md:p-8 rounded-3xl flex flex-col items-center text-center shadow-lg relative group overflow-hidden">
-              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
-                <Wallet className="w-8 h-8 text-white" />
+           <div className="bg-[#10b981] p-6 md:p-8 rounded-3xl flex flex-col items-center text-center shadow-lg relative group overflow-hidden print:border print:border-gray-300 print:text-black print:bg-white print:shadow-none">
+              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4 print:bg-gray-100">
+                <Wallet className="w-8 h-8 text-white print:text-gray-800" />
               </div>
-              <h3 className="text-white font-black text-xl mb-2">الرصيد الحالي</h3>
+              <h3 className="text-white font-black text-xl mb-2 print:text-gray-800">الرصيد الحالي</h3>
               <div className="flex items-baseline gap-2 mb-2">
-                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter">0</span>
-                 <span className="text-xl font-black text-white/90">د.ع</span>
+                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900">{currentBalance.toLocaleString()}</span>
+                 <span className="text-xl font-black text-white/90 print:text-gray-600">د.ع</span>
               </div>
-              <p className="text-white/80 font-bold text-sm md:text-base">جاهز للسحب</p>
+              <p className="text-white/80 font-bold text-sm md:text-base print:text-gray-500">جاهز للسحب</p>
            </div>
 
            {/* Withdrawals Card (Blue) */}
-           <div className="bg-[#3b82f6] p-6 md:p-8 rounded-3xl flex flex-col items-center text-center shadow-lg relative group overflow-hidden">
-              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
-                <Landmark className="w-8 h-8 text-white" />
+           <div className="bg-[#3b82f6] p-6 md:p-8 rounded-3xl flex flex-col items-center text-center shadow-lg relative group overflow-hidden print:border print:border-gray-300 print:text-black print:bg-white print:shadow-none">
+              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4 print:bg-gray-100">
+                <Landmark className="w-8 h-8 text-white print:text-gray-800" />
               </div>
-              <h3 className="text-white font-black text-xl mb-2">المسحوبات</h3>
+              <h3 className="text-white font-black text-xl mb-2 print:text-gray-800">المسحوبات</h3>
               <div className="flex items-baseline gap-2 mb-2">
-                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter">0</span>
-                 <span className="text-xl font-black text-white/90">د.ع</span>
+                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900">{withdrawals.toLocaleString()}</span>
+                 <span className="text-xl font-black text-white/90 print:text-gray-600">د.ع</span>
               </div>
-              <p className="text-white/80 font-bold text-sm md:text-base">تم تسليمها للتاجر</p>
+              <p className="text-white/80 font-bold text-sm md:text-base print:text-gray-500">تم تسليمها للتاجر</p>
            </div>
 
            {/* Pending Amounts Card (Orange) - Full Width */}
-           <div className="md:col-span-2 bg-[#f59e0b] p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-lg relative group overflow-hidden">
-              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
-                <Clock className="w-8 h-8 text-white" />
+           <div className="md:col-span-2 bg-[#f59e0b] p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-lg relative group overflow-hidden print:border print:border-gray-300 print:text-black print:bg-white print:shadow-none">
+              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4 print:bg-gray-100">
+                <Clock className="w-8 h-8 text-white print:text-gray-800" />
               </div>
-              <h3 className="text-white font-black text-xl mb-2">مبالغ معلقة (قيد التوصيل)</h3>
+              <h3 className="text-white font-black text-xl mb-2 print:text-gray-800">مبالغ معلقة (قيد التوصيل)</h3>
               <div className="flex items-baseline gap-2 mb-2">
-                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter">0</span>
-                 <span className="text-xl font-black text-white/90">د.ع</span>
+                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900">{pendingAmount.toLocaleString()}</span>
+                 <span className="text-xl font-black text-white/90 print:text-gray-600">د.ع</span>
               </div>
-              <p className="text-white/80 font-bold text-sm md:text-base">انتظار إتمام عمليات التوصيل</p>
+              <p className="text-white/80 font-bold text-sm md:text-base print:text-gray-500">انتظار إتمام عمليات التوصيل</p>
            </div>
         </div>
 
         {/* Transactions Section */}
-        <div className="overflow-hidden rounded-[2rem] border border-slate-100 shadow-xl bg-white">
-          <div className="bg-[#0F3B73] px-10 py-6">
-            <h2 className="text-2xl font-black text-white">سجل العمليات المالية</h2>
+        <div className="overflow-hidden rounded-[2rem] border border-slate-100 shadow-xl bg-white print:border-gray-300 print:shadow-none">
+          <div className="bg-[#0F3B73] px-10 py-6 print:bg-gray-100">
+            <h2 className="text-2xl font-black text-white print:text-gray-800">سجل العمليات المالية</h2>
           </div>
           
           <div className="overflow-x-auto">
             <table className="w-full text-right">
-              <thead className="bg-slate-50 text-slate-400 uppercase tracking-wider text-sm font-black border-b border-slate-100">
+              <thead className="bg-slate-50 text-slate-400 uppercase tracking-wider text-sm font-black border-b border-slate-100 print:bg-gray-50 print:text-gray-700">
                 <tr>
                   <th className="px-10 py-6">التسلسل</th>
                   <th className="px-10 py-6">رقم العملية</th>
                   <th className="px-10 py-6 text-center">النوع</th>
+                  <th className="px-10 py-6">المبلغ (د.ع)</th>
                   <th className="px-10 py-6">التفاصيل (رقم الطلب)</th>
                   <th className="px-10 py-6">تاريخ</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {transactions.map((trx, index) => (
+                {transactions.length > 0 ? transactions.map((trx, index) => (
                   <tr key={trx.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-10 py-7 font-black text-slate-800 text-lg">{index + 1}</td>
                     <td className="px-10 py-7 font-en font-black text-slate-800 text-lg">{trx.trxId}</td>
                     <td className="px-10 py-7 text-center">
-                      <span className="bg-slate-100 text-slate-700 px-6 py-2.5 rounded-xl font-black text-sm whitespace-nowrap border border-slate-100">
+                      <span className={`px-6 py-2.5 rounded-xl font-black text-sm whitespace-nowrap border ${trx.type === 'مرتجع' ? 'bg-red-50 text-red-700 border-red-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100'}`}>
                         {trx.type}
                       </span>
+                    </td>
+                    <td className="px-10 py-7 font-en font-black text-slate-800 text-lg">
+                      {trx.amount.toLocaleString()}
                     </td>
                     <td className="px-10 py-7 font-bold text-slate-600 text-lg">{trx.details}</td>
                     <td className="px-10 py-7 font-en font-bold text-slate-400 text-lg">{trx.date}</td>
                   </tr>
-                ))}
+                )) : (
+                  <tr>
+                    <td colSpan={6} className="px-10 py-12 text-center text-slate-500 font-bold text-lg">
+                      لا توجد عمليات مالية مكتملة حتى الآن
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
         </div>
       </div>
     </div>
-
   );
 }

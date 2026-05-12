@@ -22,7 +22,7 @@ export default function MerchantDashboard() {
   
   // New order state
   const [newOrder, setNewOrder] = useState({
-    pieces: 1, trackingNumber: '', customerPhone: '', customerName: '', address: '', province: ''
+    pieces: 1, trackingNumber: '', customerPhone: '', customerName: '', address: '', province: '', amount: ''
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -97,11 +97,16 @@ export default function MerchantDashboard() {
   };
   
   const handleCreateOrder = () => {
-    if(!newOrder.customerName || !newOrder.customerPhone || !newOrder.province) {
-       alert("الرجاء ملء كافة الحقول المطلوبة (الاسم، الهاتف، المحافظة)");
+    if(!newOrder.customerName || !newOrder.customerPhone || !newOrder.province || !newOrder.amount) {
+       alert("الرجاء ملء كافة الحقول المطلوبة (الاسم، الهاتف، المحافظة، المبلغ)");
        return;
     }
     const deliveryFee = getDeliveryFee(newOrder.province, user?.id || 'm-1');
+    const enteredAmount = parseFloat(newOrder.amount) || 0;
+    
+    // المبلغ المدخل هو المبلغ الإجمالي (مع التوصيل)
+    const amountForMerchant = enteredAmount - deliveryFee;
+
     const order: MainOrder = {
        id: `ORD-${1000 + orders.length + 1}`,
        trackingNumber: newOrder.trackingNumber || `SHP-${Math.floor(Math.random() * 100000)}`,
@@ -111,16 +116,16 @@ export default function MerchantDashboard() {
        customerPhone: newOrder.customerPhone,
        address: newOrder.address,
        province: newOrder.province,
-       amount: 25000,
+       amount: amountForMerchant,
        deliveryFee: deliveryFee,
-       totalAmount: 25000 + deliveryFee,
+       totalAmount: enteredAmount,
        date: new Date().toISOString().split('T')[0],
        pieces: newOrder.pieces,
        status: 'merchant_pending'
     };
     addOrder(order);
     setIsAddModalOpen(false);
-    setNewOrder({ pieces: 1, trackingNumber: '', customerPhone: '', customerName: '', address: '', province: '' });
+    setNewOrder({ pieces: 1, trackingNumber: '', customerPhone: '', customerName: '', address: '', province: '', amount: '' });
   };
 
   return (
@@ -316,10 +321,14 @@ export default function MerchantDashboard() {
                   <div className="w-20 h-0.5 bg-[#0F3B73] rounded-full opacity-20"></div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="block text-slate-600 font-bold text-xs text-right">المبلغ المطلوب (مع التوصيل) <span className="text-red-500">*</span></label>
+                    <input type="number" min="0" value={newOrder.amount} onChange={e => setNewOrder({...newOrder, amount: e.target.value})} placeholder="أدخل المبلغ بالدينار العراقي" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-center text-slate-800 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
+                  </div>
                   <div className="space-y-2">
                     <label className="block text-slate-600 font-bold text-xs text-right">عدد القطع <span className="text-red-500">*</span></label>
-                    <input type="number" min="1" value={newOrder.pieces} onChange={e => setNewOrder({...newOrder, pieces: parseInt(e.target.value) || 1})} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-center text-slate-800 focus:bg-white focus:border-[#0F3B73] focus:ring-4 focus:ring-[#0F3B73]/5 transition-all outline-none" />
+                    <input type="number" min="1" value={newOrder.pieces} onChange={e => setNewOrder({...newOrder, pieces: parseInt(e.target.value) || 1})} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-center text-slate-800 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
                   </div>
                   <div className="space-y-2">
                     <label className="block text-slate-600 font-bold text-xs text-right">رقم الشحنة (اختياري)</label>
