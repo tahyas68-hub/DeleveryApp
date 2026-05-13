@@ -102,9 +102,14 @@ export default function AdminReturns() {
                       <div className="font-bold text-slate-700">{order.province}</div>
                       <div className="text-xs text-slate-500 truncate max-w-[120px]">{order.address}</div>
                     </td>
-                    <td className="px-6 py-4 font-en font-bold text-slate-700 whitespace-nowrap">{order.totalAmount?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-en font-bold text-slate-700 whitespace-nowrap">
+                      {order.totalAmount?.toLocaleString() || (order.amount + (order.deliveryFee || 0)).toLocaleString()} د.ع
+                    </td>
                     <td className="px-6 py-4 font-en font-bold text-amber-600 whitespace-nowrap">{order.deliveryFee?.toLocaleString()} د.ع</td>
-                    <td className="px-6 py-4 font-en font-bold text-emerald-600 whitespace-nowrap">{order.amount?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-en font-bold text-emerald-600 whitespace-nowrap">
+                      {order.amount?.toLocaleString()} د.ع
+                      {order.id.endsWith('-P') && <span className="text-xs text-orange-600 block mt-1 font-sans">المبلغ المتبقي للراجع</span>}
+                    </td>
                     <td className="px-6 py-4 font-en font-bold text-blue-600 text-center">{order.pieces}</td>
                     <td className="px-6 py-4 text-center">
                       <span className="bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-bold border border-red-100">

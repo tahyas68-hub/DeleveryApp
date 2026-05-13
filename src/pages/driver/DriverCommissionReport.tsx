@@ -1,24 +1,17 @@
 import React, { useState } from 'react';
-import { Printer, Calendar, FileText, Download } from 'lucide-react';
+import { Printer, Calendar, FileText } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useSettings } from '../../context/SettingsContext';
-import { useUsers } from '../../context/UserContext';
 
-export default function DriverCommission() {
+export default function DriverCommissionReport() {
   const { orders } = useOrders();
   const { governorates } = useSettings();
-  const { users } = useUsers();
 
-  const drivers = users.filter(u => u.role === 'driver');
-  const [selectedDriverId, setSelectedDriverId] = useState<string>('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
 
-  // We should only consider delivered orders assigned to the selected driver
-  const relevantOrders = orders.filter(
-    o => (o.status === 'delivered' || o.status === 'returned_partial') && 
-         (!selectedDriverId || o.driverId === selectedDriverId)
-  );
+  // We should only consider delivered orders
+  const relevantOrders = orders.filter(o => o.status === 'delivered' || o.status === 'returned_partial');
 
   // Filter based on dates
   const filteredOrders = relevantOrders.filter(order => {
@@ -32,13 +25,14 @@ export default function DriverCommission() {
       orderDate = new Date(order.date);
     }
     
-    if (isNaN(orderDate.getTime())) return true;
+    if (isNaN(orderDate.getTime())) return true; // fallback if can't parse
 
     let keep = true;
     if (dateFrom) {
       keep = keep && orderDate >= new Date(dateFrom);
     }
     if (dateTo) {
+      // Set to time to end of day
       const to = new Date(dateTo);
       to.setHours(23, 59, 59, 999);
       keep = keep && orderDate <= to;
@@ -55,57 +49,33 @@ export default function DriverCommission() {
   const totalCommission = filteredOrders.reduce((sum, order) => sum + getDriverCommission(order), 0);
 
   const handlePrint = () => {
-    if (!selectedDriverId && drivers.length > 0) {
-      alert('الرجاء اختيار مندوب قبل الطباعة');
-      return;
-    }
     window.print();
   };
 
   return (
-    <div className="space-y-6 pb-24 max-w-5xl mx-auto px-4 sm:px-0" dir="rtl">
+    <div className="space-y-6 pb-24 max-w-5xl mx-auto px-4 sm:px-0 mt-4" dir="rtl">
+      
       {/* Header & Print Button */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm print:hidden">
         <div>
-          <h1 className="text-3xl font-black text-slate-800">عمولة المندوب</h1>
-          <p className="text-slate-500 font-medium mt-1">إعداد ومتابعة حسابات عمولات المندوبين</p>
+          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <FileText className="w-6 h-6 text-blue-600" />
+            كشف عمولة المندوب
+          </h1>
+          <p className="text-slate-500 mt-1 text-sm">عرض تفاصيل العمولات المستحقة للمندوب بناءً على الطلبات المسلمة</p>
         </div>
         
-        <div className="flex items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
-          <button 
-            onClick={handlePrint}
-            className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-2.5 rounded-xl flex items-center gap-2 font-bold transition-colors text-sm w-full sm:w-auto justify-center"
-          >
-            <Printer className="w-5 h-5" />
-            طباعة كشف المندوب
-          </button>
-          
-          <button 
-            onClick={handlePrint}
-            className="bg-[#0F3B73] hover:bg-[#0F3B73]/90 text-white px-6 py-2.5 rounded-xl flex items-center gap-2 font-bold shadow-sm transition-colors text-sm w-full sm:w-auto justify-center"
-          >
-            <Printer className="w-5 h-5" />
-            طباعة تقرير: كشف عمولة
-          </button>
-        </div>
+        <button 
+          onClick={handlePrint}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl flex items-center gap-2 font-bold shadow-sm transition-colors text-sm w-full sm:w-auto justify-center"
+        >
+          <Printer className="w-5 h-5" />
+          طباعة كشف عمولة مندوب
+        </button>
       </div>
 
-      {/* Selectors and Filters */}
+      {/* Date Filters */}
       <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-end gap-4 print:hidden">
-        <div className="flex-1 w-full relative">
-          <label className="block text-xs font-bold text-slate-600 mb-2">اختر المندوب</label>
-          <select
-            value={selectedDriverId}
-            onChange={(e) => setSelectedDriverId(e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-slate-700"
-          >
-            <option value="">جميع المندوبين</option>
-            {drivers.map(d => (
-              <option key={d.id} value={d.id}>{d.name}</option>
-            ))}
-          </select>
-        </div>
-        
         <div className="flex-1 w-full relative">
           <label className="block text-xs font-bold text-slate-600 mb-2">من تاريخ</label>
           <div className="relative">
@@ -118,7 +88,6 @@ export default function DriverCommission() {
             />
           </div>
         </div>
-        
         <div className="flex-1 w-full relative">
           <label className="block text-xs font-bold text-slate-600 mb-2">إلى تاريخ</label>
           <div className="relative">
@@ -134,8 +103,8 @@ export default function DriverCommission() {
       </div>
 
       <div className="hidden print:block mb-8 text-center">
-         <h2 className="text-2xl font-black text-slate-900 border-b-2 border-slate-900 pb-2 inline-block">كشف عمولة مندوب</h2>
-         <p className="mt-4 text-slate-600 font-bold">المندوب: {drivers.find(d => d.id === selectedDriverId)?.name || 'الكل'} | التاريخ: {dateFrom || 'الكل'} إلى {dateTo || 'الكل'}</p>
+         <h2 className="text-2xl font-black text-slate-900 border-b-2 border-slate-900 pb-2 inline-block">كشف عمولة المندوب</h2>
+         <p className="mt-4 text-slate-600 font-bold">التاريخ: {dateFrom || 'الكل'} إلى {dateTo || 'الكل'}</p>
       </div>
 
       {/* Table */}
@@ -144,7 +113,7 @@ export default function DriverCommission() {
           <table className="w-full text-right text-sm">
             <thead className="bg-[#0F3B73] text-white print:bg-slate-100 print:text-slate-900">
               <tr>
-                <th className="px-6 py-4 font-bold rounded-tr-3xl print:rounded-none print:border print:border-slate-300">مسلسل</th>
+                <th className="px-6 py-4 font-bold rounded-tr-3xl print:rounded-none print:border print:border-slate-300">التسلسل</th>
                 <th className="px-6 py-4 font-bold print:border print:border-slate-300">تاريخ تسليم الطلب</th>
                 <th className="px-6 py-4 font-bold rounded-tl-3xl print:rounded-none print:border print:border-slate-300">المبلغ الواصل</th>
               </tr>
@@ -188,6 +157,7 @@ export default function DriverCommission() {
           </table>
         </div>
       </div>
+
     </div>
   );
 }

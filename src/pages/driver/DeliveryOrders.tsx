@@ -206,15 +206,25 @@ export default function DeliveryOrders() {
               </button>
             </div>
             <div className="p-6 space-y-4">
-              <div className="space-y-2">
-                <label className="block text-slate-600 font-bold text-xs text-right">المبلغ المستلم (الجزء المسلم) <span className="text-red-500">*</span></label>
-                <input 
-                  type="number" 
-                  value={partialAmount}
-                  onChange={(e) => setPartialAmount(e.target.value)}
-                  placeholder="أدخل المبلغ..."
-                  className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 placeholder-slate-300 focus:bg-white focus:border-[#0F3B73] focus:ring-2 focus:ring-[#0F3B73]/20 transition-all outline-none" 
-                />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="block text-slate-600 font-bold text-xs text-right">المبلغ المستلم (الجزء المسلم) <span className="text-red-500">*</span></label>
+                  <input 
+                    type="number" 
+                    value={partialAmount}
+                    onChange={(e) => setPartialAmount(e.target.value)}
+                    placeholder="أدخل المبلغ..."
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 placeholder-slate-300 focus:bg-white focus:border-[#0F3B73] focus:ring-2 focus:ring-[#0F3B73]/20 transition-all outline-none" 
+                  />
+                </div>
+                {partialAmount && !isNaN(Number(partialAmount)) && (
+                  <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 text-sm font-bold text-orange-800 flex justify-between items-center">
+                    <span>المبلغ المتبقي (للراجع):</span>
+                    <span className="font-en">
+                      {Math.max(0, (selectedOrder.amount + selectedOrder.deliveryFee) - Number(partialAmount)).toLocaleString()} د.ع
+                    </span>
+                  </div>
+                )}
               </div>
               <p className="text-xs text-slate-500">
                 سيتم معاملة هذا المبلغ على أنه الطلب المسلم، وسيتم إنشاء طلب راجع بالباقي.

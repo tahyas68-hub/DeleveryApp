@@ -36,6 +36,7 @@ import PartialDelivery from "./pages/driver/PartialDelivery";
 import ReturnOrder from "./pages/driver/ReturnOrder";
 import PostponeOrder from "./pages/driver/PostponeOrder";
 import PostponedReturnedOrders from "./pages/driver/PostponedReturnedOrders";
+import DriverCommissionReport from "./pages/driver/DriverCommissionReport";
 import ActionHistory from "./pages/common/ActionHistory";
 
 import { AuthProvider } from "./context/AuthContext";
@@ -185,6 +186,7 @@ export default function App() {
                       element={<PostponedReturnedOrders />}
                     />
                     <Route path="reports" element={<DriverPerformance />} />
+                    <Route path="commission-report" element={<DriverCommissionReport />} />
                     <Route path="wallet" element={<DriverWallet />} />
                     <Route path="history" element={<ActionHistory />} />
                     <Route path="settings" element={<DriverSettings />} />

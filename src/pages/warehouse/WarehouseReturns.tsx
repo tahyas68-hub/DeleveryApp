@@ -75,6 +75,7 @@ export default function WarehouseReturns() {
               <tr>
                 <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
                 <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
+                <th className="px-6 py-4 font-bold text-slate-600">المبلغ</th>
                 <th className="px-6 py-4 font-bold text-slate-600">تفاصيل العميل</th>
                 <th className="px-6 py-4 font-bold text-slate-600">العنوان</th>
                 <th className="px-6 py-4 font-bold text-slate-600 border-r border-slate-200 text-center" colSpan={2}>الإجراءات</th>
@@ -98,6 +99,13 @@ export default function WarehouseReturns() {
                       <div className="text-xs text-slate-400">{order.date}</div>
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-800">{order.merchantName}</td>
+                    <td className="px-6 py-4">
+                      <span className="font-en font-bold text-emerald-600">
+                        {order.amount?.toLocaleString()} د.ع
+                        {order.id.endsWith('-P') && <span className="text-xs text-orange-600 block mt-1 font-sans">المبلغ المتبقي للراجع</span>}
+                        {order.status === 'returned_partial' && !order.id.endsWith('-P') && <span className="text-xs text-orange-600 block mt-1 font-sans">راجع جزئي</span>}
+                      </span>
+                    </td>
                     <td className="px-6 py-4">
                       <div className="font-bold text-slate-800">{order.customerName}</div>
                       <div className="text-xs text-slate-500 font-en">{order.customerPhone}</div>

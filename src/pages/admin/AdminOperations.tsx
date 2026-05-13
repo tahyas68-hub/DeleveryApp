@@ -106,6 +106,12 @@ export default function AdminOperations() {
                  </div>
                  {getStatusBadge(searchedOrder.status)}
               </div>
+              {searchedOrder.id.endsWith('-P') && (
+                <div className="mb-3 bg-orange-50 text-orange-700 p-2 rounded-lg text-xs font-bold border border-orange-100 flex justify-between items-center">
+                  <span>مبلغ الراجع المتبقي:</span>
+                  <span className="font-en">{(searchedOrder.amount + (searchedOrder.deliveryFee || 0)).toLocaleString()} د.ع</span>
+                </div>
+              )}
               <div className="flex flex-wrap gap-2">
                  <button onClick={() => handleAction('delivered')} className="bg-[#E5F5D0] text-[#10b981] hover:bg-[#10b981] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
                     تسليم كامل

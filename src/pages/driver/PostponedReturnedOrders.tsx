@@ -75,6 +75,7 @@ export default function PostponedReturnedOrders() {
               <tr>
                 <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
                 <th className="px-6 py-4 font-bold text-slate-600">رقم الشحنة</th>
+                <th className="px-6 py-4 font-bold text-slate-600">المبلغ</th>
                 <th className="px-6 py-4 font-bold text-slate-600">اسم المتجر او التاجر</th>
                 <th className="px-6 py-4 font-bold text-slate-600 whitespace-nowrap">العميل</th>
                 <th className="px-6 py-4 font-bold text-slate-600 whitespace-nowrap">العنوان</th>
@@ -113,6 +114,13 @@ export default function PostponedReturnedOrders() {
                     </td>
                     <td className="px-6 py-4">
                       <span className="font-en font-medium text-slate-600">{order.trackingNumber || '-'}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-en font-bold text-blue-600">
+                        {(order.amount + (order.deliveryFee || 0)).toLocaleString()} د.ع
+                        {order.id.endsWith('-P') && <span className="text-xs text-orange-600 block leading-tight mt-1">المبلغ المتبقي للراجع</span>}
+                        {order.status === 'returned_partial' && !order.id.endsWith('-P') && <span className="text-xs text-orange-600 block leading-tight mt-1">راجع جزئي</span>}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
                       <span className="font-bold text-slate-800">{order.merchantName}</span>

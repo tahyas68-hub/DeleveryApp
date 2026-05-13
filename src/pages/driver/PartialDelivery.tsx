@@ -137,8 +137,18 @@ export default function PartialDelivery() {
                 </div>
               </div>
             </div>
+            
+            {receivedAmount && !isNaN(Number(receivedAmount)) && (
+              <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 text-sm font-bold text-orange-800 flex justify-between items-center mt-4">
+                <span>المبلغ المتبقي (للراجع):</span>
+                <span className="font-en">
+                  {Math.max(0, (selectedOrder.amount + selectedOrder.deliveryFee) - Number(receivedAmount)).toLocaleString()} د.ع
+                </span>
+              </div>
+            )}
+
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">سبب التسليم الجزئي والتفاصيل <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-bold text-slate-700 mb-2 mt-4">سبب التسليم الجزئي والتفاصيل <span className="text-red-500">*</span></label>
               <div className="relative">
                 <textarea
                   value={reason}

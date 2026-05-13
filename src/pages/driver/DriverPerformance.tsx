@@ -32,13 +32,25 @@ export default function DriverPerformance() {
       </div>
 
       {/* Print Buttons */}
-      <div className="flex justify-end">
-        <button className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 rounded-2xl p-4 flex items-center gap-4 transition-colors shadow-sm w-full sm:w-auto">
+      <div className="flex flex-col sm:flex-row justify-between gap-4">
+        <button 
+          onClick={() => window.location.href = '/driver/commission-report'}
+          className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 rounded-2xl p-4 flex items-center justify-between gap-4 transition-colors shadow-sm w-full"
+        >
           <div className="text-right flex-1">
-            <p className="font-bold text-sm">طباعة تقرير</p>
-            <p className="font-bold text-sm mb-1">الطلبيات</p>
+            <p className="font-bold text-sm">طباعة كشف المندوب</p>
           </div>
-          <FileText className="w-8 h-8 text-slate-400 opacity-80" />
+          <Printer className="w-8 h-8 text-blue-600 opacity-80" />
+        </button>
+
+        <button 
+          onClick={() => window.location.href = '/driver/commission-report'}
+          className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 rounded-2xl p-4 flex items-center justify-between gap-4 transition-colors shadow-sm w-full"
+        >
+          <div className="text-right flex-1">
+            <p className="font-bold text-sm">طباعة تقرير: كشف عمولة مندوب</p>
+          </div>
+          <FileText className="w-8 h-8 text-blue-600 opacity-80" />
         </button>
       </div>
 
