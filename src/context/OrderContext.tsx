@@ -9,6 +9,7 @@ export type OrderStatus =
   | 'delivered'        // delivered
   | 'returned_partial'
   | 'returned'
+  | 'returned_to_merchant'
   | 'postponed';
 
 export interface MainOrder {

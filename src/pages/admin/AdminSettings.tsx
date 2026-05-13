@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Save, Plus, MapPin, Search } from 'lucide-react';
 import { useSettings } from '../../context/SettingsContext';
+import { Link } from 'react-router-dom';
 
 export default function AdminSettings() {
-  const [activeTab, setActiveTab] = useState<'delivery' | 'general'>('delivery');
+  const [activeTab, setActiveTab] = useState<'delivery' | 'app'>('delivery');
   const { governorates, updateGovernorate } = useSettings();
 
   return (
@@ -30,10 +31,10 @@ export default function AdminSettings() {
             تسعيرة التوصيل (المحافظات)
           </button>
           <button 
-            className={`flex-1 py-4 text-center font-bold uppercase tracking-wider text-sm transition-colors ${activeTab === 'general' ? 'text-primary border-b-2 border-primary bg-primary-50/50' : 'text-slate-500 hover:bg-slate-50'}`}
-            onClick={() => setActiveTab('general')}
+            className={`flex-1 py-4 text-center font-bold uppercase tracking-wider text-sm transition-colors ${activeTab === 'app' ? 'text-primary border-b-2 border-primary bg-primary-50/50' : 'text-slate-500 hover:bg-slate-50'}`}
+            onClick={() => setActiveTab('app')}
           >
-            الإعدادات العامة
+            إعدادات التطبيق
           </button>
         </div>
 
@@ -120,70 +121,80 @@ export default function AdminSettings() {
               </table>
             </div>
             <div className="p-4 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 font-medium">
-              * يمكن تحديد أسعار خاصة لكل تاجر من خلال <a href="#" className="text-primary hover:underline font-bold">إدارة التجار</a>. الأسعار أعلاه هي الأسعار الافتراضية.
+              * يمكن تحديد أسعار خاصة لكل تاجر من خلال <Link to="/admin/merchant-pricing" className="text-primary hover:underline font-bold">تسعيرة التجار</Link>. الأسعار أعلاه هي الأسعار الافتراضية.
             </div>
           </div>
         )}
 
-        {activeTab === 'general' && (
+        {activeTab === 'app' && (
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-               <h3 className="font-bold text-slate-800 border-b border-slate-100 pb-2">سياسة العمولات المحددة من الإدارة</h3>
+            <div className="space-y-6">
+               <h3 className="font-bold text-slate-800 border-b border-slate-100 pb-2">تفاصيل الشركة</h3>
                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">عمولة المندوب الافتراضية (استقطاع أو نسبة)</label>
-                  <div className="relative w-32">
-                    <input type="number" defaultValue={20} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 font-en focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
-                    <span className="absolute left-4 top-2 text-slate-400 font-bold">%</span>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">اسم الشركة</label>
+                  <input type="text" defaultValue="شركة الراصد للتوصيل السريع" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
+               </div>
+               <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">عمولة المندوب (الافتراضية)</label>
+                  <div className="relative">
+                    <input type="number" defaultValue={3000} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-bold font-en text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-right" />
+                    <span className="absolute left-4 top-3.5 text-slate-400 font-bold">د.ع</span>
                   </div>
                </div>
                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">عمولة التاجر الافتراضية</label>
-                  <div className="relative w-32">
-                    <input type="number" defaultValue={5} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 font-en focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
-                    <span className="absolute left-4 top-2 text-slate-400 font-bold">%</span>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">شعار الشركة</label>
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer">
+                    <div className="space-y-1 text-center">
+                      <svg className="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <div className="flex text-sm text-slate-600 justify-center">
+                        <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary-focus focus-within:outline-none">
+                          <span>تحميل الشعار</span>
+                          <input id="file-upload" name="file-upload" type="file" className="sr-only" />
+                        </label>
+                      </div>
+                      <p className="text-xs text-slate-500">PNG, JPG حتى 2MB</p>
+                    </div>
                   </div>
                </div>
                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">عمولة النقل للمحافظات</label>
-                  <div className="relative w-32">
-                    <input type="number" defaultValue={10} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 font-en focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
-                    <span className="absolute left-4 top-2 text-slate-400 font-bold">%</span>
-                  </div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">رقم هاتف الشركة</label>
+                  <input type="text" dir="ltr" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-en text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-right" placeholder="07XXXXXXXXX" />
+               </div>
+               <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">عنوان الشركة</label>
+                  <input type="text" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="بغداد، الكرادة" />
                </div>
             </div>
 
-            <div className="space-y-4">
-               <h3 className="font-bold text-slate-800 border-b border-slate-100 pb-2">الضريبة والقيمة المضافة</h3>
-               <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">نسبة ضريبة القيمة المضافة (VAT)</label>
-                  <div className="relative w-32">
-                    <input type="number" defaultValue={15} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 font-en focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
-                    <span className="absolute left-4 top-2 text-slate-400 font-bold">%</span>
-                  </div>
+            <div className="space-y-6">
+               <h3 className="font-bold text-slate-800 border-b border-slate-100 pb-2">إدارة البيانات والنظام</h3>
+               <div className="space-y-4">
+                  <button className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    تصدير قاعدة البيانات (Backup)
+                  </button>
+                  
+                  <button className="w-full bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-bold py-3 px-4 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    استيراد قاعدة البيانات (Restore)
+                  </button>
                </div>
-               <div>
-                 <label className="relative inline-flex items-center cursor-pointer mt-2">
-                    <input type="checkbox" defaultChecked className="sr-only peer" />
-                    <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
-                    <span className="ml-3 text-sm font-bold text-slate-700 mr-3">تضمين الضريبة في سعر التوصيل النهائي</span>
-                 </label>
-               </div>
-            </div>
-            
-            <div className="space-y-4 md:col-span-2">
-               <h3 className="font-bold text-slate-800 border-b border-slate-100 pb-2">سياسة التوزيع الآلي</h3>
-               <div className="flex flex-col md:flex-row gap-8">
-                 <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">الحد الأقصى للطلبات لكل مندوب (في نفس الوقت)</label>
-                    <input type="number" defaultValue={40} className="w-full max-w-[200px] bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 font-en focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
-                 </div>
-                 <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">نطاق التوزيع الذكي (كيلومتر)</label>
-                    <div className="relative max-w-[200px]">
-                      <input type="number" defaultValue={15} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 font-en focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
-                      <span className="absolute left-4 top-2 text-slate-400 font-bold text-xs pt-0.5">KM</span>
-                    </div>
-                 </div>
+
+               <div className="mt-8 pt-6 border-t border-red-100">
+                  <h4 className="font-bold text-red-600 mb-2">منطقة الخطر</h4>
+                  <p className="text-xs text-slate-500 mb-4 line-clamp-2">تحذير: سيقوم هذا الإجراء بحذف جميع بيانات النظام الحالية واستعادتها لحالة المصنع.</p>
+                  <button className="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    تصفير بيانات النظام
+                  </button>
                </div>
             </div>
           </div>

@@ -12,9 +12,8 @@ export interface GovernoratePrice {
 
 export interface MerchantPrice {
   id: string; // The merchant user id
-  name: string;
-  defaultPrice: number;
-  customPrice: number;
+  name: string; // Not strictly necessary but keeping for logs if needed
+  provincePrices: Record<string, number>;
 }
 
 interface SettingsContextType {
@@ -45,6 +44,7 @@ const defaultGovernorates: GovernoratePrice[] = [
   { id: 17, name: 'السليمانية', base: 7000, commission: 1500, peak: 0, hours: '-', active: false },
   { id: 18, name: 'دهوك', base: 7000, commission: 1500, peak: 0, hours: '-', active: false },
   { id: 19, name: 'حلبجة', base: 7000, commission: 1500, peak: 0, hours: '-', active: false },
+  { id: 20, name: 'أطراف بغداد', base: 6000, commission: 800, peak: 0, hours: '-', active: false },
 ];
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -67,9 +67,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         return JSON.parse(saved);
       } catch (e) {}
     }
-    return [
-      { id: 'm-1', name: 'متجر الأناقة', defaultPrice: 5000, customPrice: 4000 }
-    ];
+    return [];
   });
 
   React.useEffect(() => {
@@ -90,17 +88,17 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       if (exists) {
         return prev.map(m => m.id === id ? { ...m, ...data } : m);
       } else {
-        return [...prev, { id, name: data.name || '', defaultPrice: data.defaultPrice || 5000, customPrice: data.customPrice || 5000 } as MerchantPrice];
+        return [...prev, { id, name: data.name || '', provincePrices: data.provincePrices || {} } as MerchantPrice];
       }
     });
   };
 
   const getDeliveryFee = (province: string, merchantId?: string) => {
-    // 1) First check merchant specific price
+    // 1) First check merchant specific price for this province
     if (merchantId) {
        const m = merchants.find(m => m.id === merchantId);
-       if (m && m.customPrice > 0) {
-         return m.customPrice; // overwrite the governorate price
+       if (m && m.provincePrices && m.provincePrices[province] !== undefined && m.provincePrices[province] >= 0) {
+         return m.provincePrices[province]; // overwrite the governorate price
        }
     }
     // 2) Check province default

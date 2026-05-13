@@ -16,8 +16,8 @@ import TrackingMap from "./pages/merchant/TrackingMap";
 import DriverApp from "./pages/driver/DriverApp";
 import CustomerTracking from "./pages/CustomerTracking";
 import WarehouseIncomingOrders from "./pages/warehouse/WarehouseIncomingOrders";
-
 import WarehouseDispatch from "./pages/warehouse/WarehouseDispatch";
+import WarehouseReturns from "./pages/warehouse/WarehouseReturns";
 
 import DriverMap from "./pages/driver/DriverMap";
 import DriverWallet from "./pages/driver/DriverWallet";
@@ -48,8 +48,12 @@ import IncomingMerchant from "./pages/admin/IncomingMerchant";
 import AdminUsers from "./pages/admin/AdminUsers";
 import Stickers from "./pages/admin/Stickers";
 import AdminBranches from "./pages/admin/AdminBranches";
+import AdminReturns from "./pages/admin/AdminReturns";
 import DriverCommission from "./pages/admin/DriverCommission";
 import AdminFinance from "./pages/admin/AdminFinance";
+import AdminBranchIncomes from "./pages/admin/AdminBranchIncomes";
+import AdminMerchants from "./pages/admin/AdminMerchants";
+import AdminMerchantDetails from "./pages/admin/AdminMerchantDetails";
 import AdminMerchantAccounts from "./pages/admin/AdminMerchantAccounts";
 import AdminTreasury from "./pages/admin/AdminTreasury";
 import AdminReports from "./pages/admin/AdminReports";
@@ -98,8 +102,11 @@ export default function App() {
                       element={<IncomingMerchant />}
                     />
                     <Route path="warehouses" element={<AdminWarehouses />} />
+                    <Route path="returns" element={<AdminReturns />} />
                     <Route path="branches" element={<AdminBranches />} />
                     <Route path="users" element={<AdminUsers />} />
+                    <Route path="merchants" element={<AdminMerchants />} />
+                    <Route path="merchants/:id" element={<AdminMerchantDetails />} />
                     <Route path="stickers" element={<Stickers />} />
                     <Route path="drivers" element={<AdminDrivers />} />
                     <Route
@@ -111,6 +118,7 @@ export default function App() {
                       path="merchant-accounts"
                       element={<AdminMerchantAccounts />}
                     />
+                    <Route path="branch-incomes" element={<AdminBranchIncomes />} />
                     <Route path="treasury" element={<AdminTreasury />} />
                     <Route path="reports" element={<AdminReports />} />
                     <Route path="operations" element={<AdminOperations />} />
@@ -139,7 +147,7 @@ export default function App() {
                     <Route path="dispatch" element={<WarehouseDispatch />} />
                     <Route
                       path="returns"
-                      element={<PlaceholderPage title="إدارة المرتجعات" />}
+                      element={<WarehouseReturns />}
                     />
                   </Route>
 

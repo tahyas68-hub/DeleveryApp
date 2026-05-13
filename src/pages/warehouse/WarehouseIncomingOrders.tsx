@@ -84,17 +84,23 @@ export default function WarehouseIncomingOrders() {
                     checked={selectedIds.length === filteredOrders.length && filteredOrders.length > 0}
                   />
                 </th>
-                <th className="px-6 py-4 font-bold">رقم الطلب</th>
-                <th className="px-6 py-4 font-bold">التاجر</th>
-                <th className="px-6 py-4 font-bold">المخزن المحول منه</th>
-                <th className="px-6 py-4 font-bold">الحالة</th>
-                <th className="px-6 py-4 font-bold text-center">إجراءات</th>
+                <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
+                <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
+                <th className="px-6 py-4 font-bold text-slate-600">تفاصيل العميل</th>
+                <th className="px-6 py-4 font-bold text-slate-600">العنوان</th>
+                <th className="px-6 py-4 font-bold text-slate-600">المبلغ الكلي</th>
+                <th className="px-6 py-4 font-bold text-slate-600">أجور التوصيل</th>
+                <th className="px-6 py-4 font-bold text-slate-600">مبلغ الطلب</th>
+                <th className="px-6 py-4 font-bold text-slate-600 text-center">المخزن المحول منه</th>
+                <th className="px-6 py-4 font-bold text-slate-600 text-center">الكمية</th>
+                <th className="px-6 py-4 font-bold text-slate-600 text-center">الحالة</th>
+                <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={12} className="px-6 py-12 text-center text-slate-500">
                     <div className="flex flex-col items-center justify-center">
                       <Package className="w-12 h-12 text-slate-300 mb-3" />
                       <p className="font-bold">لا توجد طلبات واردة بانتظار الإستلام</p>
@@ -115,16 +121,31 @@ export default function WarehouseIncomingOrders() {
                         }}
                       />
                     </td>
-                    <td className="px-6 py-4 font-en font-bold text-slate-800">{order.id}</td>
+                    <td className="px-6 py-4 font-en font-bold text-[#0F3B73]">
+                      <div>{order.id}</div>
+                      <div className="text-xs text-slate-400">{order.date}</div>
+                    </td>
                     <td className="px-6 py-4 font-bold text-slate-800">{order.merchantName}</td>
-                    <td className="px-6 py-4 font-bold text-slate-600">المخزن الرئيسي</td>
                     <td className="px-6 py-4">
+                      <div className="font-bold text-slate-800">{order.customerName}</div>
+                      <div className="text-xs text-slate-500 font-en">{order.customerPhone}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-slate-700">{order.province}</div>
+                      <div className="text-xs text-slate-500 truncate max-w-[120px]">{order.address}</div>
+                    </td>
+                    <td className="px-6 py-4 font-en font-bold text-slate-700 whitespace-nowrap">{order.totalAmount?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-en font-bold text-amber-600 whitespace-nowrap">{order.deliveryFee?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-en font-bold text-emerald-600 whitespace-nowrap">{order.amount?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-bold text-slate-600 text-center">المخزن الرئيسي</td>
+                    <td className="px-6 py-4 font-en font-bold text-blue-600 text-center">{order.pieces}</td>
+                    <td className="px-6 py-4 text-center">
                       {getStatusBadge(order.status)}
                     </td>
                     <td className="px-6 py-4">
                         <button 
                           onClick={() => handleReceiveOrder(order.id)}
-                          className="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-4 py-2 rounded-xl font-bold flex items-center justify-center gap-2 w-full transition-colors text-xs"
+                          className="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-4 py-2 rounded-xl font-bold flex items-center justify-center gap-2 w-full transition-colors text-xs whitespace-nowrap"
                         >
                           <Check className="w-4 h-4" /> تأكيد استلام
                         </button>

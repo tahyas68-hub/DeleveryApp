@@ -65,25 +65,42 @@ export default function AdminWarehouses() {
               <tr>
                 <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
                 <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
-                <th className="px-6 py-4 font-bold text-slate-600">الكمية (طرود)</th>
-                <th className="px-6 py-4 font-bold text-slate-600">محافظة التسليم</th>
+                <th className="px-6 py-4 font-bold text-slate-600">تفاصيل العميل</th>
+                <th className="px-6 py-4 font-bold text-slate-600">العنوان</th>
+                <th className="px-6 py-4 font-bold text-slate-600">المبلغ الكلي</th>
+                <th className="px-6 py-4 font-bold text-slate-600">أجور التوصيل</th>
+                <th className="px-6 py-4 font-bold text-slate-600">مبلغ الطلب</th>
+                <th className="px-6 py-4 font-bold text-slate-600 text-center">الكمية</th>
                 <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراءات التحويل</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {mainOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-20 text-center text-slate-300 font-bold text-lg">
+                  <td colSpan={9} className="px-6 py-20 text-center text-slate-300 font-bold text-lg">
                     لا توجد طلبات في المخزن الرئيسي حالياً
                   </td>
                 </tr>
               ) : (
                 mainOrders.map((o) => (
                   <tr key={o.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-en font-bold text-slate-800">{o.id}</td>
+                    <td className="px-6 py-4 font-en font-bold text-[#0F3B73]">
+                      <div>{o.id}</div>
+                      <div className="text-xs text-slate-400">{o.date}</div>
+                    </td>
                     <td className="px-6 py-4 font-bold text-slate-800">{o.merchantName}</td>
-                    <td className="px-6 py-4 font-en font-bold text-blue-600">{o.pieces}</td>
-                    <td className="px-6 py-4 font-bold text-slate-800">{o.province}</td>
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-slate-800">{o.customerName}</div>
+                      <div className="text-xs text-slate-500 font-en">{o.customerPhone}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-slate-700">{o.province}</div>
+                      <div className="text-xs text-slate-500 truncate max-w-[120px]">{o.address}</div>
+                    </td>
+                    <td className="px-6 py-4 font-en font-bold text-slate-700 whitespace-nowrap">{o.totalAmount?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-en font-bold text-amber-600 whitespace-nowrap">{o.deliveryFee?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-en font-bold text-emerald-600 whitespace-nowrap">{o.amount?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-en font-bold text-blue-600 text-center">{o.pieces}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">
                          <select 

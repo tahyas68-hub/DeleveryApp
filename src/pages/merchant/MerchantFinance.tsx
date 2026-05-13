@@ -41,7 +41,12 @@ export default function MerchantFinance() {
         type: typeStr,
         details: o.trackingNumber,
         date: o.date,
-        amount: o.amount || 0
+        amount: o.amount || 0, // order amount (merchant net)
+        deliveryFee: o.deliveryFee || 0,
+        totalAmount: o.totalAmount || ((o.amount || 0) + (o.deliveryFee || 0)),
+        customerName: o.customerName || '',
+        customerPhone: o.customerPhone || '',
+        address: `${o.province || ''} - ${o.address || ''}`
       };
     });
 
@@ -49,9 +54,14 @@ export default function MerchantFinance() {
     const wsData = transactions.map((trx, index) => ({
       'التسلسل': index + 1,
       'رقم العملية': trx.trxId,
-      'النوع': trx.type,
       'رقم الطلب': trx.details,
-      'المبلغ (د.ع)': trx.amount,
+      'اسم العميل': trx.customerName,
+      'هاتف العميل': trx.customerPhone,
+      'العنوان': trx.address,
+      'النوع': trx.type,
+      'المبلغ الكلي (المحصل)': trx.totalAmount,
+      'أجور التوصيل': trx.deliveryFee,
+      'مبلغ الطلب': trx.amount,
       'تاريخ': trx.date,
     }));
     const worksheet = XLSX.utils.json_to_sheet(wsData);
@@ -148,40 +158,59 @@ export default function MerchantFinance() {
         {/* Transactions Section */}
         <div className="overflow-hidden rounded-[2rem] border border-slate-100 shadow-xl bg-white print:border-gray-300 print:shadow-none">
           <div className="bg-[#0F3B73] px-10 py-6 print:bg-gray-100">
-            <h2 className="text-2xl font-black text-white print:text-gray-800">سجل العمليات المالية</h2>
+            <h2 className="text-2xl font-black text-white print:text-gray-800">سجل العمليات المالية (الفاتورة)</h2>
           </div>
           
           <div className="overflow-x-auto">
             <table className="w-full text-right">
               <thead className="bg-slate-50 text-slate-400 uppercase tracking-wider text-sm font-black border-b border-slate-100 print:bg-gray-50 print:text-gray-700">
                 <tr>
-                  <th className="px-10 py-6">التسلسل</th>
-                  <th className="px-10 py-6">رقم العملية</th>
-                  <th className="px-10 py-6 text-center">النوع</th>
-                  <th className="px-10 py-6">المبلغ (د.ع)</th>
-                  <th className="px-10 py-6">التفاصيل (رقم الطلب)</th>
-                  <th className="px-10 py-6">تاريخ</th>
+                  <th className="px-6 py-4">التسلسل</th>
+                  <th className="px-6 py-4">رقم الطلب</th>
+                  <th className="px-6 py-4">تفاصيل العميل</th>
+                  <th className="px-6 py-4 text-center">النوع</th>
+                  <th className="px-6 py-4">المبلغ الكلي</th>
+                  <th className="px-6 py-4">أجور التوصيل</th>
+                  <th className="px-6 py-4">مبلغ الطلب</th>
+                  <th className="px-6 py-4">تاريخ</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
                 {transactions.length > 0 ? transactions.map((trx, index) => (
                   <tr key={trx.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-10 py-7 font-black text-slate-800 text-lg">{index + 1}</td>
-                    <td className="px-10 py-7 font-en font-black text-slate-800 text-lg">{trx.trxId}</td>
-                    <td className="px-10 py-7 text-center">
-                      <span className={`px-6 py-2.5 rounded-xl font-black text-sm whitespace-nowrap border ${trx.type === 'مرتجع' ? 'bg-red-50 text-red-700 border-red-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100'}`}>
+                    <td className="px-6 py-5 font-black text-slate-800">{index + 1}</td>
+                    <td className="px-6 py-5 font-bold text-slate-600">
+                      <div className="flex flex-col">
+                        <span className="text-[#0F3B73] font-en">{trx.details}</span>
+                        <span className="text-xs text-slate-400 font-en">{trx.trxId}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-700">{trx.customerName}</span>
+                        <span className="text-sm font-en text-slate-500">{trx.customerPhone}</span>
+                        <span className="text-xs text-slate-400 truncate max-w-[120px]">{trx.address}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 text-center">
+                      <span className={`px-4 py-1.5 rounded-lg font-bold text-xs whitespace-nowrap border ${trx.type === 'مرتجع' ? 'bg-red-50 text-red-700 border-red-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100'}`}>
                         {trx.type}
                       </span>
                     </td>
-                    <td className="px-10 py-7 font-en font-black text-slate-800 text-lg">
+                    <td className="px-6 py-5 font-en font-bold text-slate-700">
+                      {trx.totalAmount.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-5 font-en font-bold text-amber-600">
+                      {trx.deliveryFee.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-5 font-en font-black text-emerald-600">
                       {trx.amount.toLocaleString()}
                     </td>
-                    <td className="px-10 py-7 font-bold text-slate-600 text-lg">{trx.details}</td>
-                    <td className="px-10 py-7 font-en font-bold text-slate-400 text-lg">{trx.date}</td>
+                    <td className="px-6 py-5 font-en font-bold text-slate-400 text-sm">{trx.date}</td>
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan={6} className="px-10 py-12 text-center text-slate-500 font-bold text-lg">
+                    <td colSpan={8} className="px-10 py-12 text-center text-slate-500 font-bold text-lg">
                       لا توجد عمليات مالية مكتملة حتى الآن
                     </td>
                   </tr>

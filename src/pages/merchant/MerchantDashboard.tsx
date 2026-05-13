@@ -14,7 +14,7 @@ export default function MerchantDashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { orders, addOrder, deleteOrder } = useOrders();
-  const { getDeliveryFee } = useSettings();
+  const { getDeliveryFee, governorates } = useSettings();
   const [activeTab, setActiveTab] = useState('جديد');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -382,25 +382,9 @@ export default function MerchantDashboard() {
                       <label className="block text-slate-600 font-bold text-xs text-right">محافظة التوصيل <span className="text-red-500">*</span></label>
                       <select value={newOrder.province} onChange={e => setNewOrder({...newOrder, province: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 focus:bg-white focus:border-[#0F3B73] transition-all outline-none appearance-none cursor-pointer">
                         <option value="">اختر المحافظة</option>
-                        <option>بغداد</option>
-                        <option>البصرة</option>
-                        <option>نينوى</option>
-                        <option>أربيل</option>
-                        <option>النجف</option>
-                        <option>كربلاء</option>
-                        <option>ذي قار</option>
-                        <option>بابل</option>
-                        <option>الأنبار</option>
-                        <option>كركوك</option>
-                        <option>صلاح الدين</option>
-                        <option>ديالى</option>
-                        <option>ميسان</option>
-                        <option>القادسية</option>
-                        <option>المثنى</option>
-                        <option>واسط</option>
-                        <option>السليمانية</option>
-                        <option>دهوك</option>
-                        <option>حلبجة</option>
+                        {governorates.filter(g => g.active).map(g => (
+                          <option key={g.id} value={g.name}>{g.name}</option>
+                        ))}
                       </select>
                     </div>
                   </div>

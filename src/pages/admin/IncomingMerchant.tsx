@@ -33,10 +33,14 @@ export default function IncomingMerchant() {
           <table className="w-full text-right">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-4 font-bold text-slate-600">رقم الإرسالية</th>
+                <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
                 <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
+                <th className="px-6 py-4 font-bold text-slate-600">تفاصيل العميل</th>
+                <th className="px-6 py-4 font-bold text-slate-600">العنوان</th>
+                <th className="px-6 py-4 font-bold text-slate-600">المبلغ الكلي</th>
+                <th className="px-6 py-4 font-bold text-slate-600">أجور التوصيل</th>
+                <th className="px-6 py-4 font-bold text-slate-600">مبلغ الطلب</th>
                 <th className="px-6 py-4 font-bold text-slate-600">الكمية (طرود)</th>
-                <th className="px-6 py-4 font-bold text-slate-600">التاريخ</th>
                 <th className="px-6 py-4 font-bold text-slate-600 text-center">الحالة</th>
                 <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراءات</th>
               </tr>
@@ -44,19 +48,32 @@ export default function IncomingMerchant() {
             <tbody className="divide-y divide-slate-100">
               {incomingOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-20 text-center text-slate-300 font-bold text-lg">
+                  <td colSpan={10} className="px-6 py-20 text-center text-slate-300 font-bold text-lg">
                     لا توجد شحنات واردة من التجار حالياً
                   </td>
                 </tr>
               ) : (
                 incomingOrders.map((o) => (
                   <tr key={o.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-en font-bold text-slate-800">{o.id}</td>
+                    <td className="px-6 py-4 font-en font-bold text-[#0F3B73]">
+                      <div>{o.id}</div>
+                      <div className="text-xs text-slate-400">{o.date}</div>
+                    </td>
                     <td className="px-6 py-4 font-bold text-slate-800">{o.merchantName}</td>
-                    <td className="px-6 py-4 font-en font-bold text-blue-600">{o.pieces}</td>
-                    <td className="px-6 py-4 font-en text-slate-500">{o.date}</td>
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-slate-800">{o.customerName}</div>
+                      <div className="text-xs text-slate-500 font-en">{o.customerPhone}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-slate-700">{o.province}</div>
+                      <div className="text-xs text-slate-500 truncate max-w-[120px]">{o.address}</div>
+                    </td>
+                    <td className="px-6 py-4 font-en font-bold text-slate-700">{o.totalAmount?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-en font-bold text-amber-600">{o.deliveryFee?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-en font-bold text-emerald-600">{o.amount?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-en font-bold text-blue-600 text-center">{o.pieces}</td>
                     <td className="px-6 py-4 text-center">
-                      <span className="bg-orange-50 text-orange-600 px-2.5 py-1 rounded-full text-xs font-bold border border-orange-100">استلام من التاجر</span>
+                      <span className="bg-orange-50 text-orange-600 px-2.5 py-1 rounded-full text-xs font-bold border border-orange-100 whitespace-nowrap">استلام من التاجر</span>
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center gap-2">
@@ -70,9 +87,9 @@ export default function IncomingMerchant() {
                         </Link>
                         <button 
                           onClick={() => handleReceive(o.id)}
-                          className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors"
+                          className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
                         >
-                          استلام من التاجر
+                          استلام الطلب
                         </button>
                       </div>
                     </td>

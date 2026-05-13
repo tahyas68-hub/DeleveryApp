@@ -162,11 +162,11 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
           <div className="flex items-center mt-auto pb-1 shrink-0 px-2 my-2 justify-between w-full h-[25mm]">
             <div className="flex flex-col items-center justify-center pt-2">
               <div className="font-bold font-en text-lg tracking-widest leading-none bg-white z-10 translate-y-2">
-                {order.trackingNumber}
+                {order.id}
               </div>
               <div className="h-16 flex items-center justify-center">
                 <Barcode
-                  value={order.trackingNumber}
+                  value={order.id}
                   format="CODE128"
                   width={2}
                   height={55}

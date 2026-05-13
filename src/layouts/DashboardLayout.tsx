@@ -5,7 +5,7 @@ import {
   Bell, Search, Menu, X, LogOut, FileText, Inbox, Star,
   Warehouse, Building2, ClipboardList, Calculator, Wallet,
   Briefcase, UserCircle, ArrowDown, History, Store,
-  Bike, Percent, DollarSign, Shield, Tags, ChevronLeft, ChevronDown, Activity
+  Bike, Percent, DollarSign, Shield, Tags, ChevronLeft, ChevronDown, Activity, ArrowRightLeft
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
@@ -54,6 +54,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
             subItems: [
               { label: 'الوارد من التاجر', icon: ArrowDown, to: '/admin/incoming-merchant' },
               { label: 'المخزن الرئيسي', icon: Warehouse, to: '/admin/warehouses' },
+              { label: 'الرواجع', icon: ArrowRightLeft, to: '/admin/returns' },
             ]
           },
           { label: 'الفروع', icon: Building2, to: '/admin/branches' },
@@ -62,7 +63,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
             label: 'التجار', 
             icon: Store, 
             subItems: [
-              { label: 'قائمة التجار', to: '/admin/users' }, // reusing /users for merchants list as placeholder
+              { label: 'قائمة التجار', to: '/admin/merchants' },
               { label: 'طباعة الستكرات', to: '/admin/stickers' },
             ]
           },
@@ -80,6 +81,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
             subItems: [
               { label: 'الحسابات المالية', to: '/admin/finance' },
               { label: 'حسابات التجار', to: '/admin/merchant-accounts' },
+              { label: 'واردات الفروع', to: '/admin/branch-incomes' },
               { label: 'الصندوق المالي', icon: Wallet, to: '/admin/treasury' },
             ]
           },

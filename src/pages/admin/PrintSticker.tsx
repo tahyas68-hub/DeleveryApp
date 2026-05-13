@@ -126,9 +126,9 @@ export default function PrintSticker() {
                 <QRCode value={order.trackingNumber} size={70} level="M" />
               </div>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', transform: 'scale(1.1)' }}>
-                 <div style={{ fontWeight: 'bold', fontSize: '16px', marginBottom: '2px' }}>{order.trackingNumber.replace(/\D/g, '').substring(0, 5) || '10007'}</div>
+                 <div style={{ fontWeight: 'bold', fontSize: '16px', marginBottom: '2px' }}>{order.id.replace(/\D/g, '').substring(0, 5) || order.id}</div>
                  <Barcode 
-                   value={order.trackingNumber} 
+                   value={order.id} 
                    width={1.6} 
                    height={45} 
                    displayValue={false} 
