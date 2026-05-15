@@ -1,34 +1,22 @@
 import React from 'react';
 import { 
-  Package, LayoutDashboard, Plus, FileDown, 
-  Layers, CreditCard, MessageCircle, ArrowRight,
-  TrendingUp, CheckCircle2, Clock
+  ClipboardList, CheckSquare, Clock, XSquare, PackageSearch, PackageMinus, 
+  Calculator, Receipt, PackageCheck, FileText, CheckCircle2, AlertCircle, RefreshCcw,
+  Plus, FileDown, Layers, CreditCard
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useOrders } from '../../context/OrderContext';
+import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 
 export default function MerchantOverview() {
   const { user } = useAuth();
   const { orders } = useOrders();
   
   const latestOrders = orders.slice(0, 5);
+
   const activeOrdersCount = orders.filter(o => o.status !== 'delivered' && o.status !== 'returned').length;
   const completedOrdersCount = orders.filter(o => o.status === 'delivered').length;
-
-  const getStatusBadge = (status: string) => {
-    switch(status) {
-      case 'delivered':
-        return <span className="bg-[#E5F5D0]/10 text-[#10b981] px-4 py-1.5 rounded-full font-bold text-xs">تم التسليم</span>;
-      case 'driver_assigned':
-        return <span className="bg-purple-100/10 text-purple-500 px-4 py-1.5 rounded-full font-bold text-xs">قيد التسليم</span>;
-      case 'returned_partial':
-      case 'returned':
-        return <span className="text-slate-400 font-bold text-xs whitespace-nowrap">راجع من مندوب (بانتظار سحب)</span>;
-      default:
-        return <span className="bg-amber-100/10 text-amber-500 px-4 py-1.5 rounded-full font-bold text-xs">معالجة</span>;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#f8fafc] -m-4 lg:-m-8 p-6 md:p-10 space-y-10 text-right overflow-x-hidden" dir="rtl">
@@ -36,7 +24,7 @@ export default function MerchantOverview() {
       <div className="relative pr-6 pt-4">
         <div className="absolute right-0 top-0 bottom-0 w-1 bg-[#0F3B73] rounded-full"></div>
         <p className="text-slate-400 font-bold mb-2 text-sm">نظرة عامة</p>
-        <h1 className="text-5xl font-black text-[#0F3B73] tracking-tight">مرحباً، {user?.name || 'بوتيك نايا'}</h1>
+        <h1 className="text-5xl font-black text-[#0F3B73] tracking-tight">مرحباً، {user?.name || 'التاجر'}</h1>
       </div>
 
       {/* Summary Mini Cards */}
@@ -51,7 +39,7 @@ export default function MerchantOverview() {
               <h2 className="text-4xl font-black text-[#0F3B73] font-en tracking-tighter">{activeOrdersCount}</h2>
            </div>
            <div className="w-16 h-16 bg-[#0F3B73]/5 rounded-2xl flex items-center justify-center">
-              <Package className="w-8 h-8 text-[#0F3B73]" />
+              <PackageSearch className="w-8 h-8 text-[#0F3B73]" />
            </div>
         </div>
 
@@ -74,7 +62,6 @@ export default function MerchantOverview() {
 
       {/* Quick Action Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-        {/* Add Order */}
         <Link 
           to="/merchant/orders?action=add" 
           className="bg-[#0F3B73] hover:bg-opacity-95 p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-xl transition-all hover:scale-[1.02] active:scale-95 group relative overflow-hidden"
@@ -86,7 +73,6 @@ export default function MerchantOverview() {
           <p className="text-white/80 font-bold text-sm md:text-base">بدء شحنة جديدة</p>
         </Link>
 
-        {/* Excel Import */}
         <button 
           className="bg-[#10b981] hover:bg-emerald-600 p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-xl transition-all hover:scale-[1.02] active:scale-95 group relative overflow-hidden w-full"
         >
@@ -97,7 +83,6 @@ export default function MerchantOverview() {
           <p className="text-white/80 font-bold text-sm md:text-base">رفع طلبات متعددة</p>
         </button>
 
-        {/* All Orders */}
         <Link 
           to="/merchant/orders" 
           className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-md transition-all hover:scale-[1.02] active:scale-95 group"
@@ -109,7 +94,6 @@ export default function MerchantOverview() {
           <p className="text-slate-400 font-bold text-sm md:text-base">متابعة كافة الشحنات</p>
         </Link>
 
-        {/* Account Statement */}
         <Link 
           to="/merchant/finance" 
           className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-md transition-all hover:scale-[1.02] active:scale-95 group"
@@ -124,44 +108,47 @@ export default function MerchantOverview() {
 
       {/* Latest Orders Section */}
       <div className="overflow-hidden rounded-[2rem] border border-slate-100 shadow-xl bg-white mt-10">
-        <div className="px-10 py-8 flex items-center justify-between border-b border-slate-50">
-          <h2 className="text-2xl font-black text-[#0F3B73]">أحدث الطلبات</h2>
-          <Link to="/merchant/orders" className="text-[#0F3B73] font-bold hover:underline">
-            عرض الكل
-          </Link>
-        </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full text-right">
-            <thead className="bg-slate-50">
-              <tr>
-                <th className="px-10 py-6 text-slate-400 font-black text-xs uppercase">رقم الطلب</th>
-                <th className="px-10 py-6 text-slate-400 font-black text-xs uppercase">رقم الشحنة</th>
-                <th className="px-10 py-6 text-slate-400 font-black text-xs uppercase">العميل</th>
-                <th className="px-10 py-6 text-slate-400 font-black text-xs uppercase">الحالة</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {latestOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-10 py-7 font-black text-slate-800 text-lg">#{order.id}</td>
-                  <td className="px-10 py-7 font-en font-bold text-slate-500 text-lg">{order.trackingNumber}</td>
-                  <td className="px-10 py-7">
-                    <div className="flex flex-col items-start gap-1">
-                      <span className="font-bold text-slate-800 text-lg">{order.customerName}</span>
-                      <div className="flex items-center gap-1.5 text-slate-400 font-en font-bold text-sm">
-                        <MessageCircle className="w-4 h-4 text-[#10b981]" />
-                        <span>{order.customerPhone}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-10 py-7">
-                    {getStatusBadge(order.status)}
-                  </td>
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-black text-[#0F3B73]">أحدث الطلبات</h2>
+            <Link to="/merchant/orders" className="text-[#0F3B73] font-bold text-sm hover:underline">
+              عرض الكل
+            </Link>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full text-right">
+              <thead className="bg-[#0F3B73]/5 rounded-xl">
+                <tr>
+                  <th className="px-6 py-4 text-[#0F3B73] font-black text-xs uppercase rounded-r-xl w-32">رقم الطلب</th>
+                  <th className="px-6 py-4 text-[#0F3B73] font-black text-xs uppercase w-40">رقم الشحنة</th>
+                  <th className="px-6 py-4 text-[#0F3B73] font-black text-xs uppercase">العميل</th>
+                  <th className="px-6 py-4 text-[#0F3B73] font-black text-xs uppercase rounded-l-xl w-48">الحالة</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {latestOrders.map((order) => (
+                  <tr key={order.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-5 font-black text-slate-800">#{order.id}</td>
+                    <td className="px-6 py-5 font-en font-bold text-slate-500">{order.trackingNumber}</td>
+                    <td className="px-6 py-5">
+                      <span className="font-bold text-slate-800">{order.customerName}</span>
+                    </td>
+                    <td className="px-6 py-5">
+                      <OrderStatusBadge status={order.status} />
+                    </td>
+                  </tr>
+                ))}
+                {latestOrders.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-10 text-center text-slate-400 font-bold">
+                      لا توجد طلبات حديثة
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

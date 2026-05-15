@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Package, Search, Calendar, MapPin, Edit3 } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
+import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 
 export default function PostponedReturnedOrders() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,31 +15,6 @@ export default function PostponedReturnedOrders() {
       (o.trackingNumber && o.trackingNumber.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (o.customerPhone && o.customerPhone.includes(searchTerm)))
   );
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'returned':
-        return (
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-100">
-            مرتجع
-          </span>
-        );
-      case 'postponed':
-        return (
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-600 border border-purple-100">
-            مؤجل
-          </span>
-        );
-      case 'returned_partial':
-        return (
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-orange-50 text-orange-600 border border-orange-100">
-            راجع جزئي
-          </span>
-        );
-      default:
-        return null;
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -118,8 +94,18 @@ export default function PostponedReturnedOrders() {
                     <td className="px-6 py-4">
                       <span className="font-en font-bold text-blue-600">
                         {(order.amount + (order.deliveryFee || 0)).toLocaleString()} د.ع
-                        {order.id.endsWith('-P') && <span className="text-xs text-orange-600 block leading-tight mt-1">المبلغ المتبقي للراجع</span>}
-                        {order.status === 'returned_partial' && !order.id.endsWith('-P') && <span className="text-xs text-orange-600 block leading-tight mt-1">راجع جزئي</span>}
+                        {(order.id.endsWith('-P') || order.remainingAmount !== undefined) ? (
+                            <div className="flex flex-col gap-1 mt-1 font-sans">
+                              <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-1.5 py-0.5 rounded">
+                                المبلغ المتبقي للراجع: {order.remainingAmount !== undefined ? order.remainingAmount.toLocaleString() : order.amount.toLocaleString()} د.ع
+                              </span>
+                              {order.receivedAmount !== undefined && (
+                                <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">
+                                  تم استلام: {order.receivedAmount.toLocaleString()} د.ع
+                                </span>
+                              )}
+                            </div>
+                        ) : order.status === 'returned_partial' && !order.id.endsWith('-P') && <span className="text-xs text-orange-600 block leading-tight mt-1">راجع جزئي</span>}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -144,7 +130,7 @@ export default function PostponedReturnedOrders() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      {getStatusBadge(order.status)}
+                      <OrderStatusBadge status={order.status} />
                     </td>
                   </tr>
                 ))

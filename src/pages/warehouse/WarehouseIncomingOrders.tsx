@@ -3,6 +3,7 @@ import { Package, Search, History, Building2, Truck, Star, ArrowLeftRight, Check
 import { useOrders } from '../../context/OrderContext';
 import { useUsers } from '../../context/UserContext';
 import { useBranches } from '../../context/BranchContext';
+import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 
 export default function WarehouseIncomingOrders() {
   const { orders, updateOrderStatus } = useOrders();
@@ -27,13 +28,6 @@ export default function WarehouseIncomingOrders() {
   const filteredOrders = branchOrders.filter(o => {
     return o.id.includes(searchQuery) || o.merchantName.includes(searchQuery);
   });
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'branch_transfering': return <span className="px-3 py-1 bg-yellow-50 text-yellow-600 rounded-full text-xs font-bold border border-yellow-100">وارد من المخزن الرئيسي</span>;
-      default: return <span className="px-3 py-1 bg-slate-50 text-slate-600 rounded-full text-xs font-bold border border-slate-200">غير معروف</span>;
-    }
-  };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto" dir="rtl">
@@ -140,7 +134,7 @@ export default function WarehouseIncomingOrders() {
                     <td className="px-6 py-4 font-bold text-slate-600 text-center">المخزن الرئيسي</td>
                     <td className="px-6 py-4 font-en font-bold text-blue-600 text-center">{order.pieces}</td>
                     <td className="px-6 py-4 text-center">
-                      {getStatusBadge(order.status)}
+                      <OrderStatusBadge status={order.status} />
                     </td>
                     <td className="px-6 py-4">
                         <button 

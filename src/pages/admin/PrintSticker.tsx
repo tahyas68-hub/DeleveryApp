@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useOrders } from '../../context/OrderContext';
+import { useUsers } from '../../context/UserContext';
 import Barcode from 'react-barcode';
 import QRCode from 'react-qr-code';
 
@@ -8,8 +9,12 @@ export default function PrintSticker() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { orders } = useOrders();
+  const { users } = useUsers();
   const order = orders.find(o => o.id === id || o.trackingNumber === id);
   const printedRef = useRef(false);
+
+  // Find merchant to display their phone number
+  const merchant = users.find(u => u.name === order?.merchantName || u.id === order?.merchantId);
 
   useEffect(() => {
     if (order && !printedRef.current) {
@@ -114,10 +119,18 @@ export default function PrintSticker() {
               <div style={{ flex: 1, fontSize: '14px', fontWeight: 'bold' }}>{order.notes || 'يفتح يعلم المندوب'}</div>
             </div>
             
-            {/* Store Name */}
-            <div style={{ padding: '8px 16px', borderBottom: '2px solid black', display: 'flex' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '16px', width: '90px' }}>اسم المتجر:</div>
-              <div style={{ flex: 1, fontSize: '16px', fontWeight: 'bold' }}>{order.merchantName}</div>
+            {/* Store Name and Phone */}
+            <div style={{ padding: '8px 16px', borderBottom: '2px solid black', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div style={{ display: 'flex' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '16px', width: '90px' }}>اسم المتجر:</div>
+                <div style={{ flex: 1, fontSize: '16px', fontWeight: 'bold' }}>{order.merchantName}</div>
+              </div>
+              {merchant?.phone && (
+                <div style={{ display: 'flex' }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '16px', width: '90px' }}>هاتف المتجر:</div>
+                  <div style={{ flex: 1, fontSize: '16px', fontWeight: 'bold', direction: 'ltr', textAlign: 'right' }}>{merchant.phone}</div>
+                </div>
+              )}
             </div>
 
             {/* Footer with barcodes */}

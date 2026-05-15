@@ -19,7 +19,14 @@ export default function PostponeOrder() {
     }
     if (!selectedOrder) return;
 
-    updateOrderStatus(selectedOrder.id, 'postponed');
+    updateOrderStatus(selectedOrder.id, 'postponed', {
+      collectedAmount: 0,
+       deliveryFee: 0,
+       merchantDue: 0,
+       driverCommission: 0,
+       companyProfit: 0,
+       financialStatus: 'pending'
+    });
     setSelectedOrderId('');
     setReason('');
     setPostponeDate('');

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Package, Search, Calendar, MapPin, Check, X, Clock, SplitSquareHorizontal, Copy } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function DeliveryOrders() {
   const { orders, updateOrderStatus, addOrder } = useOrders();
+  const { getDriverCommission } = useSettings();
   const driverOrders = orders.filter(o => o.status === 'driver_assigned');
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,18 +22,39 @@ export default function DeliveryOrders() {
       (o.address && o.address.includes(searchTerm))
   );
 
-  const handleDeliver = (id: string) => {
-    updateOrderStatus(id, 'delivered');
+  const handleDeliver = (order: any) => {
+    const commission = getDriverCommission(order.province);
+    updateOrderStatus(order.id, 'delivered', {
+       collectedAmount: order.totalAmount, 
+       merchantDue: order.totalAmount - order.deliveryFee,
+       driverCommission: commission,
+       companyProfit: order.deliveryFee - commission,
+       financialStatus: 'collected_from_driver'
+    });
     alert("تم تسليم الطلب");
   };
 
   const handleReturn = (id: string) => {
-    updateOrderStatus(id, 'returned');
+    updateOrderStatus(id, 'returned', {
+      collectedAmount: 0,
+       deliveryFee: 0,
+       merchantDue: 0,
+       driverCommission: 0,
+       companyProfit: 0,
+       financialStatus: 'pending'
+    });
     alert("تم إرجاع الطلب");
   };
 
   const handlePostpone = (id: string) => {
-    updateOrderStatus(id, 'postponed');
+    updateOrderStatus(id, 'postponed', {
+      collectedAmount: 0,
+       deliveryFee: 0,
+       merchantDue: 0,
+       driverCommission: 0,
+       companyProfit: 0,
+       financialStatus: 'pending'
+    });
     alert("تم تأجيل الطلب");
   };
 
@@ -44,18 +67,27 @@ export default function DeliveryOrders() {
   const handlePartialDelivery = () => {
     if (!selectedOrder || !partialAmount) return;
     
-    // 1. Update current order to 'delivered' with new partial amount
     const amountNum = parseFloat(partialAmount) || 0;
-    const newAmount = amountNum - selectedOrder.deliveryFee;
     
-    updateOrderStatus(selectedOrder.id, 'delivered', {
-      amount: newAmount, 
+    // Financial logic for partial:
+    const applyDeliveryFee = amountNum > 0 ? selectedOrder.deliveryFee : 0;
+    const newOrderAmount = amountNum > 0 ? amountNum - applyDeliveryFee : 0;
+    const commission = amountNum > 0 ? getDriverCommission(selectedOrder.province) : 0;
+    const companyProfit = applyDeliveryFee - commission;
+
+    const remainderTotal = selectedOrder.totalAmount - amountNum;
+
+    updateOrderStatus(selectedOrder.id, 'delivered_partial', {
+      orderAmount: newOrderAmount,
+      amount: newOrderAmount,
+      collectedAmount: amountNum, 
+      deliveryFee: applyDeliveryFee, 
+      merchantDue: newOrderAmount,
+      driverCommission: commission,
+      companyProfit: companyProfit,
+      financialStatus: amountNum > 0 ? 'collected_from_driver' : 'pending',
       isPartial: true
     });
-    
-    // 2. Create a new "returned" order for the un-delivered part
-    const originalTotal = selectedOrder.amount + selectedOrder.deliveryFee;
-    const remainderTotal = originalTotal - amountNum;
     
     addOrder({
       id: `${selectedOrder.id}-P`,
@@ -66,9 +98,19 @@ export default function DeliveryOrders() {
       address: selectedOrder.address,
       province: selectedOrder.province,
       pieces: selectedOrder.pieces,
+      
       amount: remainderTotal > 0 ? remainderTotal : 0,
-      deliveryFee: 0, // Fee already taken by the delivered part
-      status: 'returned',
+      totalAmount: remainderTotal > 0 ? remainderTotal : 0,
+      orderAmount: remainderTotal > 0 ? remainderTotal : 0,
+      collectedAmount: 0,
+      deliveryFee: 0, 
+      merchantDue: 0,
+      driverCommission: 0,
+      companyProfit: 0,
+      financialStatus: 'pending',
+
+      status: 'returned_partial',
+      isPartial: true,
       date: new Date().toISOString().split('T')[0]
     });
     
@@ -171,7 +213,7 @@ export default function DeliveryOrders() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 justify-center">
-                        <button onClick={() => handleDeliver(order.id)} className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white flex items-center justify-center transition-colors" title="تسليم">
+                        <button onClick={() => handleDeliver(order)} className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white flex items-center justify-center transition-colors" title="تسليم">
                           <Check className="w-4 h-4" />
                         </button>
                         <button onClick={() => openPartialModal(order)} className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-colors" title="تسليم جزئي">

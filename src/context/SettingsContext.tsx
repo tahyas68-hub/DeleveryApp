@@ -22,29 +22,30 @@ interface SettingsContextType {
   merchants: MerchantPrice[];
   updateMerchant: (id: string, data: Partial<MerchantPrice>) => void;
   getDeliveryFee: (province: string, merchantId?: string) => number;
+  getDriverCommission: (province: string) => number;
 }
 
 const defaultGovernorates: GovernoratePrice[] = [
-  { id: 1, name: 'بغداد', base: 5000, commission: 500, peak: 20, hours: '04:00 PM - 09:00 PM', active: true },
-  { id: 2, name: 'البصرة', base: 6000, commission: 1000, peak: 15, hours: '05:00 PM - 10:00 PM', active: true },
-  { id: 3, name: 'نينوى', base: 6500, commission: 1200, peak: 10, hours: '03:00 PM - 08:00 PM', active: true },
-  { id: 4, name: 'أربيل', base: 7000, commission: 1500, peak: 25, hours: '06:00 PM - 11:00 PM', active: true },
-  { id: 5, name: 'بابل', base: 5500, commission: 800, peak: 0, hours: '-', active: true },
-  { id: 6, name: 'النجف', base: 5500, commission: 800, peak: 15, hours: '04:00 PM - 08:00 PM', active: true },
-  { id: 7, name: 'ذي قار', base: 6000, commission: 1000, peak: 0, hours: '-', active: true },
-  { id: 8, name: 'كربلاء', base: 5500, commission: 800, peak: 20, hours: '05:00 PM - 10:00 PM', active: true },
-  { id: 9, name: 'واسط', base: 5500, commission: 800, peak: 0, hours: '-', active: true },
-  { id: 10, name: 'ميسان', base: 6000, commission: 1000, peak: 0, hours: '-', active: true },
-  { id: 11, name: 'القادسية', base: 5500, commission: 800, peak: 0, hours: '-', active: true },
-  { id: 12, name: 'المثنى', base: 6000, commission: 1000, peak: 0, hours: '-', active: true },
-  { id: 13, name: 'الأنبار', base: 6500, commission: 1200, peak: 0, hours: '-', active: false },
-  { id: 14, name: 'صلاح الدين', base: 6000, commission: 1000, peak: 0, hours: '-', active: false },
-  { id: 15, name: 'ديالى', base: 5500, commission: 800, peak: 0, hours: '-', active: false },
-  { id: 16, name: 'كركوك', base: 6000, commission: 1000, peak: 0, hours: '-', active: false },
-  { id: 17, name: 'السليمانية', base: 7000, commission: 1500, peak: 0, hours: '-', active: false },
-  { id: 18, name: 'دهوك', base: 7000, commission: 1500, peak: 0, hours: '-', active: false },
-  { id: 19, name: 'حلبجة', base: 7000, commission: 1500, peak: 0, hours: '-', active: false },
-  { id: 20, name: 'أطراف بغداد', base: 6000, commission: 800, peak: 0, hours: '-', active: false },
+  { id: 1, name: 'بغداد', base: 5000, commission: 0, peak: 20, hours: '04:00 PM - 09:00 PM', active: true },
+  { id: 2, name: 'البصرة', base: 6000, commission: 0, peak: 15, hours: '05:00 PM - 10:00 PM', active: true },
+  { id: 3, name: 'نينوى', base: 6500, commission: 0, peak: 10, hours: '03:00 PM - 08:00 PM', active: true },
+  { id: 4, name: 'أربيل', base: 7000, commission: 0, peak: 25, hours: '06:00 PM - 11:00 PM', active: true },
+  { id: 5, name: 'بابل', base: 5500, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 6, name: 'النجف', base: 5500, commission: 0, peak: 15, hours: '04:00 PM - 08:00 PM', active: true },
+  { id: 7, name: 'ذي قار', base: 6000, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 8, name: 'كربلاء', base: 5500, commission: 0, peak: 20, hours: '05:00 PM - 10:00 PM', active: true },
+  { id: 9, name: 'واسط', base: 5500, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 10, name: 'ميسان', base: 6000, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 11, name: 'القادسية', base: 5500, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 12, name: 'المثنى', base: 6000, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 13, name: 'الأنبار', base: 6500, commission: 0, peak: 0, hours: '-', active: false },
+  { id: 14, name: 'صلاح الدين', base: 6000, commission: 0, peak: 0, hours: '-', active: false },
+  { id: 15, name: 'ديالى', base: 5500, commission: 0, peak: 0, hours: '-', active: false },
+  { id: 16, name: 'كركوك', base: 6000, commission: 0, peak: 0, hours: '-', active: false },
+  { id: 17, name: 'السليمانية', base: 7000, commission: 0, peak: 0, hours: '-', active: false },
+  { id: 18, name: 'دهوك', base: 7000, commission: 0, peak: 0, hours: '-', active: false },
+  { id: 19, name: 'حلبجة', base: 7000, commission: 0, peak: 0, hours: '-', active: false },
+  { id: 20, name: 'أطراف بغداد', base: 6000, commission: 0, peak: 0, hours: '-', active: false },
 ];
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -101,17 +102,17 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
          return m.provincePrices[province]; // overwrite the governorate price
        }
     }
-    // 2) Check province default
-    const povIdx = governorates.findIndex(g => g.name === province);
-    let basePrice = 5000;
-    if (povIdx > -1) {
-      basePrice = governorates[povIdx].base;
-    }
-    return basePrice;
+    // Default to 0, since pricing must be entered by admin per merchant
+    return 0;
+  };
+
+  const getDriverCommission = (province: string) => {
+    const gov = governorates.find(g => g.name === province);
+    return gov?.commission || 0;
   };
 
   return (
-    <SettingsContext.Provider value={{ governorates, updateGovernorate, merchants, updateMerchant, getDeliveryFee }}>
+    <SettingsContext.Provider value={{ governorates, updateGovernorate, merchants, updateMerchant, getDeliveryFee, getDriverCommission }}>
       {children}
     </SettingsContext.Provider>
   );

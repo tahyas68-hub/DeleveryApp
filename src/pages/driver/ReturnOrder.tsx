@@ -18,7 +18,14 @@ export default function ReturnOrder() {
     }
     if (!selectedOrder) return;
 
-    updateOrderStatus(selectedOrder.id, 'returned');
+    updateOrderStatus(selectedOrder.id, 'returned', {
+      collectedAmount: 0,
+       deliveryFee: 0,
+       merchantDue: 0,
+       driverCommission: 0,
+       companyProfit: 0,
+       financialStatus: 'pending' // Meaning there's nothing to process financially
+    });
     setSelectedOrderId('');
     setReason('');
     alert('تم تأشير الطلب كمرتجع بنجاح وإرسال التحديث للإدارة');

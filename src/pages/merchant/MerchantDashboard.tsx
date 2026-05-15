@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { 
   Plus, FileDown, Printer, Trash2, Search, 
   Star, Warehouse, Truck, Building2, 
@@ -9,13 +9,17 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useOrders, MainOrder } from '../../context/OrderContext';
 import { useSettings } from '../../context/SettingsContext';
+import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 
 export default function MerchantDashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { orders, addOrder, deleteOrder } = useOrders();
   const { getDeliveryFee, governorates } = useSettings();
-  const [activeTab, setActiveTab] = useState('جديد');
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'الكل');
+  const queryStatus = searchParams.get('status');
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -28,30 +32,125 @@ export default function MerchantDashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Tabs configuration mappings to OrderStatus
-  const tabs = [
-    { name: 'الكل', icon: Package, status: 'all' },
-    { name: 'جديد', icon: Star, status: 'merchant_pending' },
-    { name: 'في المخزن', icon: Warehouse, status: 'main_warehouse' },
-    { name: 'تحويل للفرع', icon: Truck, status: 'branch_transfering' },
-    { name: 'في الفرع', icon: Building2, status: 'branch_warehouse' },
-    { name: 'قيد التوصيل', icon: Truck, status: 'driver_assigned' },
-    { name: 'تم التسليم', icon: Building2, status: 'delivered' },
-    { name: 'مسلم جزئياً', icon: Package, status: 'returned_partial' },
-    { name: 'مؤجل', icon: Clock, status: 'postponed' },
-    { name: 'مرتجع', icon: RotateCcw, status: 'returned' },
+  const stats = [
+    {
+      title: 'بحوزة المندوب',
+      count: orders.filter(o => o.status === 'driver_assigned').length,
+      icon: <Truck className="w-8 h-8 text-black/50" />,
+      bg: 'bg-[#ffff00]', // Bright Yellow
+      textColor: 'text-black',
+      statusId: 'driver_assigned'
+    },
+    {
+      title: 'في المخزن الرئيسي',
+      count: orders.filter(o => o.status === 'main_warehouse').length,
+      icon: <Warehouse className="w-8 h-8 text-black/50" />,
+      bg: 'bg-[#fbc02d]',
+      textColor: 'text-black',
+      statusId: 'main_warehouse'
+    },
+    {
+      title: 'في مخزن الفرع',
+      count: orders.filter(o => o.status === 'branch_warehouse').length,
+      icon: <Building2 className="w-8 h-8 text-black/50" />,
+      bg: 'bg-[#f57f17]',
+      textColor: 'text-black',
+      statusId: 'branch_warehouse'
+    },
+    {
+      title: 'قيد التنفيذ',
+      count: orders.filter(o => ['merchant_pending', 'branch_transfering'].includes(o.status)).length,
+      icon: <Star className="w-8 h-8 text-black/50" />,
+      bg: 'bg-[#ffeb3b]', // Yellow
+      textColor: 'text-black',
+      statusId: 'pending'
+    },
+    {
+      title: 'مؤجل',
+      count: orders.filter(o => o.status === 'postponed').length,
+      icon: <Clock className="w-8 h-8 text-black/50" />,
+      bg: 'bg-[#ff9800]', // Orange
+      textColor: 'text-black',
+      statusId: 'postponed'
+    },
+    {
+      title: 'تم التسليم',
+      count: orders.filter(o => o.status === 'delivered').length,
+      icon: <Building2 className="w-8 h-8 text-white/50" />,
+      bg: 'bg-[#4caf50]', // Green
+      textColor: 'text-white',
+      statusId: 'delivered'
+    },
+    {
+      title: 'واصل جزئي',
+      count: orders.filter(o => o.status === 'delivered_partial').length,
+      icon: <Package className="w-8 h-8 text-white/50" />,
+      bg: 'bg-[#388e3c]', // Dark Green
+      textColor: 'text-white',
+      statusId: 'delivered_partial'
+    },
+    {
+      title: 'رفض',
+      count: orders.filter(o => o.status === 'returned').length,
+      icon: <RotateCcw className="w-8 h-8 text-white/50" />,
+      bg: 'bg-[#f44336]', // Red
+      textColor: 'text-white',
+      statusId: 'returned'
+    },
+    {
+      title: 'راجع مخزن',
+      count: orders.filter(o => o.status === 'returned_to_merchant').length,
+      icon: <RotateCcw className="w-8 h-8 text-white/50" />,
+      bg: 'bg-[#9c27b0]', // Purple
+      textColor: 'text-white',
+      statusId: 'returned_to_merchant'
+    },
+    {
+      title: 'راجع جزئي',
+      count: orders.filter(o => o.status === 'returned_partial').length,
+      icon: <RotateCcw className="w-8 h-8 text-white/50" />,
+      bg: 'bg-[#ab47bc]', // Lighter Purple
+      textColor: 'text-white',
+      statusId: 'returned_partial'
+    },
+    // The following two are requested but no clear logic to determine them yet.
+    // {
+    //   title: 'تم محاسبة المندوب',
+    //   count: 0,
+    //   icon: <Receipt className="w-8 h-8 text-white/50" />,
+    //   bg: 'bg-[#1e1e24]',
+    //   textColor: 'text-white',
+    //   statusId: 'driver_accounted'
+    // },
+    // {
+    //   title: 'تم محاسبة العميل',
+    //   count: 0,
+    //   icon: <Receipt className="w-8 h-8 text-white/50" />,
+    //   bg: 'bg-[#1a237e]',
+    //   textColor: 'text-white',
+    //   statusId: 'customer_accounted'
+    // }
   ];
 
   // Filter and Search Logic
-  const filteredOrders = useMemo(() => {
+  let filteredOrders = useMemo(() => {
     return orders.filter(order => {
-      const matchesTab = activeTab === 'الكل' ? true : activeTab === 'جديد' ? order.status === 'merchant_pending' : order.status === tabs.find(t => t.name === activeTab)?.status;
+      let matchesStatus = true;
+      if (activeTab && activeTab !== 'all') {
+        if (activeTab === 'pending') {
+          matchesStatus = ['merchant_pending', 'branch_transfering'].includes(order.status);
+        } else {
+          matchesStatus = order.status === activeTab;
+        }
+      }
+
       const matchesSearch = 
         order.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         order.trackingNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         order.id?.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesTab && matchesSearch;
+      return matchesStatus && matchesSearch;
     });
-  }, [orders, activeTab, searchQuery]);
+  }, [orders, activeTab, searchQuery, queryStatus]);
 
   // Selection Handlers
   const toggleSelectAll = () => {
@@ -116,9 +215,17 @@ export default function MerchantDashboard() {
        customerPhone: newOrder.customerPhone,
        address: newOrder.address,
        province: newOrder.province,
-       amount: amountForMerchant,
-       deliveryFee: deliveryFee,
+       
+       amount: amountForMerchant, // Legacy
        totalAmount: enteredAmount,
+       deliveryFee: deliveryFee,
+       orderAmount: amountForMerchant,
+       collectedAmount: 0,
+       merchantDue: amountForMerchant,
+       driverCommission: 0, // This will be calculated later when assigned/delivered
+       companyProfit: deliveryFee,
+       financialStatus: 'pending',
+
        date: new Date().toISOString().split('T')[0],
        pieces: newOrder.pieces,
        status: 'merchant_pending'
@@ -189,20 +296,33 @@ export default function MerchantDashboard() {
 
         {/* Search and Filters Card */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-6 shadow-sm">
-          <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
-            {tabs.map((tab) => (
-              <button
-                key={tab.name}
-                onClick={() => setActiveTab(tab.name)}
-                className={`flex items-center gap-2 px-6 py-4 rounded-2xl font-bold whitespace-nowrap transition-all border ${
-                  activeTab === tab.name
-                  ? 'bg-[#0F3B73] text-white border-[#0F3B73] shadow-lg scale-105'
-                  : 'bg-slate-50 text-slate-400 border-slate-200 hover:border-slate-300'
-                }`}
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+            {/* The "All" Tab which is not in stats */}
+            <div 
+              onClick={() => setActiveTab('all')}
+              className={`bg-slate-100 text-slate-800 p-6 rounded-xl flex flex-col items-center justify-center text-center shadow-md transform transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer relative overflow-hidden ${activeTab === 'all' ? 'ring-4 ring-[#0F3B73] scale-105' : ''}`}
+            >
+              <div className="mb-3 relative z-10 w-full flex justify-center">
+                <div><Package className="w-8 h-8 text-black/50" /></div>
+              </div>
+              <h2 className="text-4xl font-black mb-1 z-10">{orders.length}</h2>
+              <p className="font-bold text-base z-10 opacity-90">الكل</p>
+            </div>
+            
+            {stats.map((stat, idx) => (
+              <div 
+                key={idx}
+                onClick={() => setActiveTab(stat.statusId)}
+                className={`${stat.bg} ${stat.textColor} p-6 rounded-xl flex flex-col items-center justify-center text-center shadow-md transform transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer relative overflow-hidden ${activeTab === stat.statusId ? 'ring-4 ring-[#0F3B73] scale-105' : ''}`}
               >
-                <tab.icon className={`w-5 h-5 ${activeTab === tab.name ? 'text-white' : 'text-slate-400'}`} />
-                <span>{tab.name}</span>
-              </button>
+                <div className="mb-3 relative z-10 w-full flex justify-center">
+                  <div>
+                    {stat.icon}
+                  </div>
+                </div>
+                <h2 className="text-4xl font-black mb-1 z-10">{stat.count}</h2>
+                <p className="font-bold text-base z-10 opacity-90">{stat.title}</p>
+              </div>
             ))}
           </div>
 
@@ -275,14 +395,7 @@ export default function MerchantDashboard() {
                     <td className="px-6 py-5 font-black text-slate-800 text-center">{order.pieces}</td>
                     <td className="px-6 py-5 font-en font-bold text-slate-500 text-center">{order.date}</td>
                     <td className="px-6 py-5">
-                      <span className={`px-4 py-2 rounded-xl font-bold text-[11px] whitespace-nowrap shadow-sm border ${
-                        order.status === 'delivered' ? 'bg-[#E5F5D0] text-[#10b981] border-[#10b981]/10' :
-                        order.status === 'merchant_pending' ? 'bg-amber-100 text-amber-700 border-amber-200' :
-                        'bg-slate-100 text-slate-700 border-slate-200'
-                      }`}>
-                        {order.status === 'delivered' ? 'تم التسليم' : 
-                         order.status === 'merchant_pending' ? 'جديد' : 'قيد المعالجة'}
-                      </span>
+                      <OrderStatusBadge status={order.status} />
                     </td>
                   </tr>
                 ))

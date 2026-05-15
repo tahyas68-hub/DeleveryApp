@@ -44,6 +44,7 @@ import { OrderProvider } from "./context/OrderContext";
 import { UserProvider } from "./context/UserContext";
 import { BranchProvider } from "./context/BranchContext";
 import { SettingsProvider } from "./context/SettingsContext";
+import { FinanceProvider } from "./context/FinanceContext";
 
 import IncomingMerchant from "./pages/admin/IncomingMerchant";
 import AdminUsers from "./pages/admin/AdminUsers";
@@ -83,9 +84,10 @@ export default function App() {
         <BranchProvider>
           <SettingsProvider>
             <OrderProvider>
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Login />} />
+              <FinanceProvider>
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Login />} />
                   <Route path="/track/:id" element={<CustomerTracking />} />
                   <Route
                     path="/admin/print-sticker/:id"
@@ -197,8 +199,9 @@ export default function App() {
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </BrowserRouter>
-            </OrderProvider>
-          </SettingsProvider>
+            </FinanceProvider>
+          </OrderProvider>
+        </SettingsProvider>
         </BranchProvider>
       </UserProvider>
     </AuthProvider>

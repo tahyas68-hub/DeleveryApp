@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Package, Search, Calendar, MapPin, CheckCircle2, DollarSign, XCircle, FileText } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function PartialDelivery() {
   const { orders, updateOrderStatus, addOrder } = useOrders();
+  const { getDriverCommission } = useSettings();
   const driverOrders = orders.filter(o => o.status === 'driver_assigned');
 
   const [selectedOrderId, setSelectedOrderId] = useState<string>('');
@@ -20,16 +22,35 @@ export default function PartialDelivery() {
     if (!selectedOrder) return;
 
     const amountNum = parseFloat(receivedAmount) || 0;
-    const newAmount = amountNum - selectedOrder.deliveryFee;
+    
+    // Financial logic for partial:
+    // Only charge delivery fee if collected amount > 0
+    // The actual delivery fee for this branch/province
+    const applyDeliveryFee = amountNum > 0 ? selectedOrder.deliveryFee : 0;
+    
+    // Recalculate true order amount based on collected
+    const newOrderAmount = amountNum > 0 ? amountNum - applyDeliveryFee : 0;
+    
+    const commission = amountNum > 0 ? getDriverCommission(selectedOrder.province) : 0;
+    const companyProfit = applyDeliveryFee - commission;
 
-    updateOrderStatus(selectedOrder.id, 'delivered', {
-      amount: newAmount,
+    const remainderTotal = selectedOrder.totalAmount - amountNum;
+
+    // Update current order as partial delivered
+    updateOrderStatus(selectedOrder.id, 'delivered_partial', {
+      orderAmount: newOrderAmount,
+      amount: newOrderAmount, // Keep backward compatibility
+      collectedAmount: amountNum, 
+      deliveryFee: applyDeliveryFee, // ensure if 0 it reflects
+      merchantDue: newOrderAmount,
+      driverCommission: commission,
+      companyProfit: companyProfit,
+      financialStatus: amountNum > 0 ? 'collected_from_driver' : 'pending',
       isPartial: true
     });
 
-    const originalTotal = selectedOrder.amount + selectedOrder.deliveryFee;
-    const remainderTotal = originalTotal - amountNum;
-
+    // Sub-order for the remaining (Returned)
+    // No delivery fee, no driver commission
     addOrder({
       id: `${selectedOrder.id}-P`,
       trackingNumber: `${selectedOrder.trackingNumber}-P`,
@@ -39,9 +60,19 @@ export default function PartialDelivery() {
       address: selectedOrder.address,
       province: selectedOrder.province,
       pieces: selectedOrder.pieces,
+      
       amount: remainderTotal > 0 ? remainderTotal : 0,
+      totalAmount: remainderTotal > 0 ? remainderTotal : 0,
+      orderAmount: remainderTotal > 0 ? remainderTotal : 0,
+      collectedAmount: 0,
       deliveryFee: 0, 
-      status: 'returned',
+      merchantDue: 0,
+      driverCommission: 0,
+      companyProfit: 0,
+      financialStatus: 'pending',
+
+      status: 'returned_partial',
+      isPartial: true,
       date: new Date().toISOString().split('T')[0]
     });
 

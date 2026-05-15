@@ -55,7 +55,6 @@ export default function AdminSettings() {
                 <thead className="bg-slate-50 text-slate-500 uppercase tracking-widest text-[10px] font-bold border-b border-slate-200">
                   <tr>
                     <th className="px-6 py-4">المحافظة</th>
-                    <th className="px-6 py-4">السعر الأساسي للتوصيل</th>
                     <th className="px-6 py-4">عمولة النقل</th>
                     <th className="px-6 py-4">زيادة وقت الذروة (%)</th>
                     <th className="px-6 py-4">أوقات الذروة</th>
@@ -68,17 +67,6 @@ export default function AdminSettings() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 font-bold text-slate-800">
                           <MapPin className="w-4 h-4 text-primary" /> {gov.name}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="relative w-24">
-                          <input 
-                            type="number" 
-                            value={gov.base} 
-                            onChange={(e) => updateGovernorate(gov.id, { base: Number(e.target.value) })}
-                            className="w-full border border-slate-200 rounded-md px-2 py-1 pr-8 font-en focus:outline-none focus:ring-1 focus:ring-primary" 
-                          />
-                          <span className="absolute right-2 top-1.5 text-xs text-slate-400 font-bold">د.ع</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">

@@ -2,6 +2,7 @@ import React from "react";
 import QRCode from "react-qr-code";
 import Barcode from "react-barcode";
 import { MainOrder } from "../context/OrderContext";
+import { useUsers } from "../context/UserContext";
 
 interface ThermalLabelProps {
   order: MainOrder;
@@ -9,6 +10,9 @@ interface ThermalLabelProps {
 
 export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
   ({ order }, ref) => {
+    const { users } = useUsers();
+    const merchant = users.find(u => u.name === order.merchantName || u.id === order.merchantId);
+
     const orderAmount = order.amount || 0;
     const deliveryFee = order.deliveryFee || 0;
     const totalAmount = orderAmount + deliveryFee;
@@ -146,13 +150,23 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
               <div className="w-full border-b-[2px] border-dotted border-black mt-1"></div>
             </div>
 
-            <div className="flex z-10 w-full mt-2 relative">
+            <div className="flex z-10 w-full mt-2 relative items-center">
               <span className="font-bold text-xs whitespace-nowrap ml-2 bg-white pr-1">
                 اسم المتجر:{" "}
               </span>
               <span className="text-lg font-bold leading-none -mt-0.5">
                 {order.merchantName}
               </span>
+              {merchant?.phone && (
+                <>
+                  <span className="font-bold text-xs whitespace-nowrap mx-2 bg-white pr-1 text-slate-500">
+                    هاتف المتجر:
+                  </span>
+                  <span className="text-base font-bold font-en tracking-wide leading-none dir-ltr mr-auto">
+                    {merchant.phone}
+                  </span>
+                </>
+              )}
             </div>
             {/* Dots */}
             <div className="w-full border-b-[2px] border-dotted border-black mt-[14px]"></div>

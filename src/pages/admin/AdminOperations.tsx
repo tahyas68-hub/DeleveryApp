@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Activity, Search, Package, Check, Clock, AlertTriangle, RotateCcw, Copy } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { OrderStatus } from '../../context/OrderContext';
+import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 
 type TabView = 'all' | 'driver_assigned' | 'returned_partial' | 'returned' | 'postponed';
 
@@ -54,17 +55,6 @@ export default function AdminOperations() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch(status) {
-      case 'driver_assigned': return <span className="px-2 py-1 bg-purple-50 text-purple-600 rounded-md text-xs font-bold border border-purple-100">قيد التوصيل</span>;
-      case 'delivered': return <span className="px-2 py-1 bg-emerald-50 text-emerald-600 rounded-md text-xs font-bold border border-emerald-100">تم التسليم</span>;
-      case 'returned_partial': return <span className="px-2 py-1 bg-orange-50 text-orange-600 rounded-md text-xs font-bold border border-orange-100">مسلم جزئياً</span>;
-      case 'returned': return <span className="px-2 py-1 bg-red-50 text-red-600 rounded-md text-xs font-bold border border-red-100">راجع</span>;
-      case 'postponed': return <span className="px-2 py-1 bg-blue-50 text-blue-600 rounded-md text-xs font-bold border border-blue-100">مؤجل</span>;
-      default: return <span className="px-2 py-1 bg-slate-50 text-slate-600 rounded-md text-xs font-bold border border-slate-200">{getStatusText(status)}</span>;
-    }
-  };
-
   const tabs: { id: TabView, label: string, icon: any, count: number }[] = [
     { id: 'all', label: 'الطلبيات', icon: Package, count: orders.length },
     { id: 'driver_assigned', label: 'قيد التوصيل', icon: Activity, count: orders.filter(o => o.status === 'driver_assigned').length },
@@ -104,12 +94,20 @@ export default function AdminOperations() {
                     <span className="text-xs font-bold text-slate-500 block">الطلب: <span className="font-en text-slate-800">{searchedOrder.trackingNumber}</span></span>
                     <span className="text-sm font-bold text-slate-800 mt-1 block">{searchedOrder.customerName}</span>
                  </div>
-                 {getStatusBadge(searchedOrder.status)}
+                 <OrderStatusBadge status={searchedOrder.status} />
               </div>
-              {searchedOrder.id.endsWith('-P') && (
-                <div className="mb-3 bg-orange-50 text-orange-700 p-2 rounded-lg text-xs font-bold border border-orange-100 flex justify-between items-center">
-                  <span>مبلغ الراجع المتبقي:</span>
-                  <span className="font-en">{(searchedOrder.amount + (searchedOrder.deliveryFee || 0)).toLocaleString()} د.ع</span>
+              {(searchedOrder.id.endsWith('-P') || searchedOrder.remainingAmount !== undefined) && (
+                <div className="mb-3 space-y-1">
+                  <div className="bg-orange-50 text-orange-700 p-2 rounded-lg text-xs font-bold border border-orange-100 flex justify-between items-center">
+                    <span>مبلغ الراجع المتبقي:</span>
+                    <span className="font-en">{searchedOrder.remainingAmount !== undefined ? searchedOrder.remainingAmount.toLocaleString() : (searchedOrder.amount + (searchedOrder.deliveryFee || 0)).toLocaleString()} د.ع</span>
+                  </div>
+                  {searchedOrder.receivedAmount !== undefined && (
+                    <div className="bg-emerald-50 text-emerald-700 p-2 rounded-lg text-xs font-bold border border-emerald-100 flex justify-between items-center">
+                      <span>تم استلام:</span>
+                      <span className="font-en">{searchedOrder.receivedAmount.toLocaleString()} د.ع</span>
+                    </div>
+                  )}
                 </div>
               )}
               <div className="flex flex-wrap gap-2">
@@ -203,7 +201,7 @@ export default function AdminOperations() {
                      <td className="px-6 py-4 font-en text-slate-600">{order.id}</td>
                      <td className="px-6 py-4 font-bold text-slate-800">{order.merchantName}</td>
                      <td className="px-6 py-4 font-bold text-slate-600">{order.driverName || '-'}</td>
-                     <td className="px-6 py-4">{getStatusBadge(order.status)}</td>
+                     <td className="px-6 py-4"><OrderStatusBadge status={order.status} /></td>
                      <td className="px-6 py-4 text-center">
                         <button 
                           onClick={() => {

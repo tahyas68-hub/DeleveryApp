@@ -67,7 +67,6 @@ export default function AdminMerchantPricing() {
              <thead className="bg-slate-50 border-b border-slate-200">
                <tr>
                  <th className="px-6 py-4 font-bold text-slate-600">المحافظة</th>
-                 <th className="px-6 py-4 font-bold text-slate-600">السعر الافتراضي للمنصة</th>
                  <th className="px-6 py-4 font-bold text-slate-600">تسعيرة التاجر الخاصة</th>
                </tr>
              </thead>
@@ -81,13 +80,12 @@ export default function AdminMerchantPricing() {
                        <MapPin className="w-4 h-4 inline ml-1 text-slate-400" />
                        {g.name}
                      </td>
-                     <td className="px-6 py-4 font-en text-slate-500">{g.base.toLocaleString()} د.ع</td>
                      <td className="px-6 py-4">
                         <div className="flex items-center gap-2 max-w-[200px]">
                           <input 
                             type="number" 
                             min="0"
-                            placeholder="السعر الافتراضي"
+                            placeholder="أدخل تسعيرة التاجر"
                             value={currentVal !== undefined ? currentVal : ''}
                             onChange={(e) => handleCustomPriceChange(selectedUser.id, selectedUser.name, g.name, e.target.value)}
                             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 font-en font-bold text-emerald-600 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-left placeholder-slate-300"

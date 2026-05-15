@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Package, Search, Calendar, MapPin, CheckCircle2, DollarSign } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function DeliverOrder() {
   const { orders, updateOrderStatus } = useOrders();
+  const { getDriverCommission } = useSettings();
   const driverOrders = orders.filter(o => o.status === 'driver_assigned');
 
   const [selectedOrderId, setSelectedOrderId] = useState<string>('');
@@ -15,12 +17,24 @@ export default function DeliverOrder() {
     if (selectedOrderId && selectedOrder) {
       if (receivedAmount && !isNaN(Number(receivedAmount))) {
         const amountNum = parseFloat(receivedAmount);
-        const newAmount = amountNum - selectedOrder.deliveryFee;
+        const commission = getDriverCommission(selectedOrder.province);
+        
         updateOrderStatus(selectedOrderId, 'delivered', {
-           amount: newAmount
+           collectedAmount: amountNum,
+           merchantDue: amountNum - selectedOrder.deliveryFee,
+           driverCommission: commission,
+           companyProfit: selectedOrder.deliveryFee - commission,
+           financialStatus: 'collected_from_driver' // driver has it, next is transferring
         });
       } else {
-        updateOrderStatus(selectedOrderId, 'delivered');
+        const commission = getDriverCommission(selectedOrder.province);
+        updateOrderStatus(selectedOrderId, 'delivered', {
+           collectedAmount: selectedOrder.totalAmount, // assume full amount collected if not specified manually
+           merchantDue: selectedOrder.totalAmount - selectedOrder.deliveryFee,
+           driverCommission: commission,
+           companyProfit: selectedOrder.deliveryFee - commission,
+           financialStatus: 'collected_from_driver'
+        });
       }
       setSelectedOrderId('');
       setReceivedAmount('');

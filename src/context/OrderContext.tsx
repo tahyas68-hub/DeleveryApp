@@ -7,10 +7,18 @@ export type OrderStatus =
   | 'branch_warehouse'
   | 'driver_assigned'  // with driver
   | 'delivered'        // delivered
-  | 'returned_partial'
+  | 'delivered_partial' // واصل جزئي
+  | 'returned_partial' // راجع جزئي
   | 'returned'
   | 'returned_to_merchant'
   | 'postponed';
+
+export type FinancialStatus = 
+  | 'pending'
+  | 'collected_from_driver'
+  | 'branch_transferred'
+  | 'merchant_paid'
+  | 'driver_commission_paid';
 
 export interface MainOrder {
   id: string;
@@ -21,15 +29,39 @@ export interface MainOrder {
   customerPhone: string;
   address: string;
   province: string;
-  amount: number;
-  deliveryFee: number;
-  totalAmount: number;
+  
+  // Financial Fields
+  totalAmount: number; // الإجمالي المكتوب (شامل التوصيل)
+  deliveryFee: number; // مبلغ التوصيل
+  orderAmount: number; // مبلغ الطلب الحقيقي (بدون توصيل)
+  collectedAmount: number; // ما تم تحصيله فعلياً
+  merchantDue: number; // مستحقات التاجر
+  driverCommission: number; // عمولة المندوب
+  companyProfit: number; // ربح الشركة
+  financialStatus: FinancialStatus;
+
+  // Legacy/Alias Fields for compatibility
+  amount: number; 
+  
   date: string;
   pieces: number;
   status: OrderStatus;
   driverId?: string;
   driverName?: string;
   branchName?: string;
+  isPartial?: boolean;
+}
+
+export interface FinancialTransaction {
+  id: string;
+  type: 'receipt' | 'payment' | 'transfer'; // قبض | صرف | تحويل
+  amount: number;
+  fromEntity: string; // e.g. branch, driver, admin
+  toEntity: string; // e.g. merchant, Admin, driver
+  referenceId: string; // orderId
+  userId: string;
+  timestamp: string;
+  description: string;
 }
 
 const defaultOrders: MainOrder[] = [];
