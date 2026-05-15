@@ -22,7 +22,7 @@ export default function MerchantDashboard() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(searchParams.get('action') === 'add');
   
   // New order state
   const [newOrder, setNewOrder] = useState({
@@ -495,9 +495,14 @@ export default function MerchantDashboard() {
                       <label className="block text-slate-600 font-bold text-xs text-right">محافظة التوصيل <span className="text-red-500">*</span></label>
                       <select value={newOrder.province} onChange={e => setNewOrder({...newOrder, province: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 focus:bg-white focus:border-[#0F3B73] transition-all outline-none appearance-none cursor-pointer">
                         <option value="">اختر المحافظة</option>
-                        {governorates.filter(g => g.active).map(g => (
-                          <option key={g.id} value={g.name}>{g.name}</option>
-                        ))}
+                        {governorates.map(g => {
+                          const fee = getDeliveryFee(g.name, user?.id);
+                          return (
+                            <option key={g.id} value={g.name}>
+                              {g.name} (توصيل: {fee.toLocaleString()} د.ع)
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
                   </div>

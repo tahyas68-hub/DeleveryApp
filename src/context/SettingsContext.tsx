@@ -19,10 +19,13 @@ export interface MerchantPrice {
 interface SettingsContextType {
   governorates: GovernoratePrice[];
   updateGovernorate: (id: number, data: Partial<GovernoratePrice>) => void;
+  bulkUpdateGovernorates: (govs: GovernoratePrice[]) => void;
   merchants: MerchantPrice[];
   updateMerchant: (id: string, data: Partial<MerchantPrice>) => void;
   getDeliveryFee: (province: string, merchantId?: string) => number;
   getDriverCommission: (province: string) => number;
+  defaultDriverCommission: number;
+  updateDefaultDriverCommission: (val: number) => void;
 }
 
 const defaultGovernorates: GovernoratePrice[] = [
@@ -51,6 +54,11 @@ const defaultGovernorates: GovernoratePrice[] = [
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
+  const [defaultDriverCommission, setDefaultDriverCommission] = useState<number>(() => {
+    const saved = localStorage.getItem('app_default_driver_commission');
+    return saved ? Number(saved) : 3000;
+  });
+
   const [governorates, setGovernorates] = useState<GovernoratePrice[]>(() => {
     const saved = localStorage.getItem('app_governorates');
     if (saved) {
@@ -79,6 +87,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('app_merchants_pricing', JSON.stringify(merchants));
   }, [merchants]);
 
+  React.useEffect(() => {
+    localStorage.setItem('app_default_driver_commission', String(defaultDriverCommission));
+  }, [defaultDriverCommission]);
+
   const updateGovernorate = (id: number, data: Partial<GovernoratePrice>) => {
     setGovernorates(prev => prev.map(g => g.id === id ? { ...g, ...data } : g));
   };
@@ -102,17 +114,25 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
          return m.provincePrices[province]; // overwrite the governorate price
        }
     }
-    // Default to 0, since pricing must be entered by admin per merchant
-    return 0;
+    // 2) Fallback to default governorate price
+    const gov = governorates.find(g => g.name === province);
+    return gov?.base || 0;
   };
 
   const getDriverCommission = (province: string) => {
     const gov = governorates.find(g => g.name === province);
-    return gov?.commission || 0;
+    return gov?.commission || defaultDriverCommission;
+  };
+
+  const bulkUpdateGovernorates = (newGovs: GovernoratePrice[]) => {
+    setGovernorates(newGovs);
   };
 
   return (
-    <SettingsContext.Provider value={{ governorates, updateGovernorate, merchants, updateMerchant, getDeliveryFee, getDriverCommission }}>
+    <SettingsContext.Provider value={{
+      governorates, updateGovernorate, bulkUpdateGovernorates, merchants, updateMerchant,
+      getDeliveryFee, getDriverCommission, defaultDriverCommission, updateDefaultDriverCommission: setDefaultDriverCommission
+    }}>
       {children}
     </SettingsContext.Provider>
   );

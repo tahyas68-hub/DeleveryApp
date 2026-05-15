@@ -5,7 +5,29 @@ import { Link } from 'react-router-dom';
 
 export default function AdminSettings() {
   const [activeTab, setActiveTab] = useState<'delivery' | 'app'>('delivery');
-  const { governorates, updateGovernorate } = useSettings();
+  const { governorates, bulkUpdateGovernorates, defaultDriverCommission, updateDefaultDriverCommission } = useSettings();
+  
+  const [localGovs, setLocalGovs] = useState([...governorates]);
+  const [defaultDriverCommissionLocal, setDefaultDriverCommissionLocal] = useState(defaultDriverCommission);
+
+  // Sync if context updates externally (e.g. initial load)
+  React.useEffect(() => {
+    setLocalGovs(governorates);
+  }, [governorates]);
+
+  React.useEffect(() => {
+    setDefaultDriverCommissionLocal(defaultDriverCommission);
+  }, [defaultDriverCommission]);
+
+  const handleUpdateLocal = (id: number, data: any) => {
+    setLocalGovs(prev => prev.map(g => g.id === id ? { ...g, ...data } : g));
+  };
+
+  const handleSaveChanges = () => {
+    bulkUpdateGovernorates(localGovs);
+    updateDefaultDriverCommission(defaultDriverCommissionLocal);
+    alert('تم حفظ الإعدادات بنجاح!');
+  };
 
   return (
     <div className="space-y-6">
@@ -15,7 +37,7 @@ export default function AdminSettings() {
           <p className="text-slate-500">إدارة تسعيرة التوصيل، أوقات الذروة، والمحافظات.</p>
         </div>
         <div className="flex gap-2">
-          <button className="bg-primary hover:bg-primary-600 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg shadow-blue-500/20 active:scale-95 transition-transform flex items-center gap-2 whitespace-nowrap">
+          <button onClick={handleSaveChanges} className="bg-primary hover:bg-primary-600 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg shadow-blue-500/20 active:scale-95 transition-transform flex items-center gap-2 whitespace-nowrap">
             <Save className="w-5 h-5" />
             حفظ التغييرات
           </button>
@@ -55,14 +77,15 @@ export default function AdminSettings() {
                 <thead className="bg-slate-50 text-slate-500 uppercase tracking-widest text-[10px] font-bold border-b border-slate-200">
                   <tr>
                     <th className="px-6 py-4">المحافظة</th>
-                    <th className="px-6 py-4">عمولة النقل</th>
+                    <th className="px-6 py-4">تسعيرة التوصيل</th>
+                    <th className="px-6 py-4">عمولة المندوب</th>
                     <th className="px-6 py-4">زيادة وقت الذروة (%)</th>
                     <th className="px-6 py-4">أوقات الذروة</th>
                     <th className="px-6 py-4">حالة التوصيل</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {governorates.map((gov) => (
+                  {localGovs.map((gov) => (
                     <tr key={gov.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 font-bold text-slate-800">
@@ -73,8 +96,19 @@ export default function AdminSettings() {
                         <div className="relative w-24">
                           <input 
                             type="number" 
+                            value={gov.base} 
+                            onChange={(e) => handleUpdateLocal(gov.id, { base: Number(e.target.value) })}
+                            className="w-full border border-slate-200 rounded-md px-2 py-1 pr-8 font-en focus:outline-none focus:ring-1 focus:ring-blue-500" 
+                          />
+                          <span className="absolute right-2 top-1.5 text-xs text-slate-400 font-bold">د.ع</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="relative w-24">
+                          <input 
+                            type="number" 
                             value={gov.commission} 
-                            onChange={(e) => updateGovernorate(gov.id, { commission: Number(e.target.value) })}
+                            onChange={(e) => handleUpdateLocal(gov.id, { commission: Number(e.target.value) })}
                             className="w-full border border-slate-200 rounded-md px-2 py-1 pr-8 font-en focus:outline-none focus:ring-1 focus:ring-emerald-500" 
                           />
                           <span className="absolute right-2 top-1.5 text-xs text-slate-400 font-bold">د.ع</span>
@@ -85,7 +119,7 @@ export default function AdminSettings() {
                           <input 
                             type="number" 
                             value={gov.peak} 
-                            onChange={(e) => updateGovernorate(gov.id, { peak: Number(e.target.value) })}
+                            onChange={(e) => handleUpdateLocal(gov.id, { peak: Number(e.target.value) })}
                             className="w-full border border-slate-200 rounded-md px-2 py-1 pr-6 font-en focus:outline-none focus:ring-1 focus:ring-primary" 
                           />
                           <span className="absolute right-2 top-1.5 text-xs text-slate-400 font-bold">%</span>
@@ -97,7 +131,7 @@ export default function AdminSettings() {
                           <input 
                             type="checkbox" 
                             checked={gov.active} 
-                            onChange={(e) => updateGovernorate(gov.id, { active: e.target.checked })}
+                            onChange={(e) => handleUpdateLocal(gov.id, { active: e.target.checked })}
                             className="sr-only peer" 
                           />
                           <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
@@ -125,7 +159,12 @@ export default function AdminSettings() {
                <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">عمولة المندوب (الافتراضية)</label>
                   <div className="relative">
-                    <input type="number" defaultValue={3000} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-bold font-en text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-right" />
+                    <input 
+                      type="number" 
+                      value={defaultDriverCommissionLocal} 
+                      onChange={(e) => setDefaultDriverCommissionLocal(Number(e.target.value))}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-bold font-en text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-right" 
+                    />
                     <span className="absolute left-4 top-3.5 text-slate-400 font-bold">د.ع</span>
                   </div>
                </div>
