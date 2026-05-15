@@ -18,6 +18,7 @@ import CustomerTracking from "./pages/CustomerTracking";
 import WarehouseIncomingOrders from "./pages/warehouse/WarehouseIncomingOrders";
 import WarehouseDispatch from "./pages/warehouse/WarehouseDispatch";
 import WarehouseReturns from "./pages/warehouse/WarehouseReturns";
+import WarehouseDriverIncomes from "./pages/warehouse/WarehouseDriverIncomes";
 
 import DriverMap from "./pages/driver/DriverMap";
 import DriverWallet from "./pages/driver/DriverWallet";
@@ -151,6 +152,10 @@ export default function App() {
                     <Route
                       path="returns"
                       element={<WarehouseReturns />}
+                    />
+                    <Route
+                      path="incomes"
+                      element={<WarehouseDriverIncomes />}
                     />
                   </Route>
 

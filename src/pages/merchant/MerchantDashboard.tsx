@@ -17,7 +17,8 @@ export default function MerchantDashboard() {
   const { orders, addOrder, deleteOrder } = useOrders();
   const { getDeliveryFee, governorates } = useSettings();
   const [searchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'الكل');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'all');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const queryStatus = searchParams.get('status');
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -294,53 +295,70 @@ export default function MerchantDashboard() {
           )}
         </div>
 
-        {/* Search and Filters Card */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-6 shadow-sm">
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-            {/* The "All" Tab which is not in stats */}
-            <div 
-              onClick={() => setActiveTab('all')}
-              className={`bg-slate-100 text-slate-800 p-6 rounded-xl flex flex-col items-center justify-center text-center shadow-md transform transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer relative overflow-hidden ${activeTab === 'all' ? 'ring-4 ring-[#0F3B73] scale-105' : ''}`}
-            >
-              <div className="mb-3 relative z-10 w-full flex justify-center">
-                <div><Package className="w-8 h-8 text-black/50" /></div>
-              </div>
-              <h2 className="text-4xl font-black mb-1 z-10">{orders.length}</h2>
-              <p className="font-bold text-base z-10 opacity-90">الكل</p>
-            </div>
-            
-            {stats.map((stat, idx) => (
+        {/* Search and Filters Card / Cards View */}
+        {viewMode === 'cards' && (
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-6 shadow-sm">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+              {/* The "All" Tab which is not in stats */}
               <div 
-                key={idx}
-                onClick={() => setActiveTab(stat.statusId)}
-                className={`${stat.bg} ${stat.textColor} p-6 rounded-xl flex flex-col items-center justify-center text-center shadow-md transform transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer relative overflow-hidden ${activeTab === stat.statusId ? 'ring-4 ring-[#0F3B73] scale-105' : ''}`}
+                onClick={() => { setActiveTab('all'); setViewMode('table'); }}
+                className={`bg-slate-100 text-slate-800 p-6 rounded-xl flex flex-col items-center justify-center text-center shadow-md transform transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer relative overflow-hidden`}
               >
                 <div className="mb-3 relative z-10 w-full flex justify-center">
-                  <div>
-                    {stat.icon}
-                  </div>
+                  <div><Package className="w-8 h-8 text-black/50" /></div>
                 </div>
-                <h2 className="text-4xl font-black mb-1 z-10">{stat.count}</h2>
-                <p className="font-bold text-base z-10 opacity-90">{stat.title}</p>
+                <h2 className="text-4xl font-black mb-1 z-10">{orders.length}</h2>
+                <p className="font-bold text-base z-10 opacity-90">الكل</p>
               </div>
-            ))}
+              
+              {stats.map((stat, idx) => (
+                <div 
+                  key={idx}
+                  onClick={() => { setActiveTab(stat.statusId); setViewMode('table'); }}
+                  className={`${stat.bg} ${stat.textColor} p-6 rounded-xl flex flex-col items-center justify-center text-center shadow-md transform transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer relative overflow-hidden`}
+                >
+                  <div className="mb-3 relative z-10 w-full flex justify-center">
+                    <div>
+                      {stat.icon}
+                    </div>
+                  </div>
+                  <h2 className="text-4xl font-black mb-1 z-10">{stat.count}</h2>
+                  <p className="font-bold text-base z-10 opacity-90">{stat.title}</p>
+                </div>
+              ))}
+            </div>
           </div>
+        )}
 
-          <div className="relative">
-            <input 
-              type="text" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="بحث بالاسم أو الهاتف أو التتبع..." 
-              className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 px-6 font-bold text-slate-800 placeholder-slate-400 focus:border-[#0F3B73] focus:bg-white focus:outline-none shadow-inner text-right transition-all"
-            />
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400" />
-          </div>
-        </div>
+        {/* Table View */}
+        {viewMode === 'table' && (
+          <div className="space-y-6">
+            <div className="flex flex-col md:flex-row gap-4 items-center">
+              {/* Back to cards button */}
+              <button 
+                onClick={() => setViewMode('cards')}
+                className="bg-white border border-slate-200 text-slate-700 px-6 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors shadow-sm w-full md:w-auto"
+              >
+                <ChevronLeft className="w-5 h-5 opacity-50" />
+                العودة للبطاقات
+              </button>
+              
+              {/* Search bar inside table view */}
+              <div className="relative flex-1 w-full">
+                <input 
+                  type="text" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="بحث بالاسم أو الهاتف أو التتبع..." 
+                  className="w-full bg-white border border-slate-200 rounded-2xl py-4 px-6 font-bold text-slate-800 placeholder-slate-400 focus:border-[#0F3B73] focus:outline-none shadow-sm text-right transition-all"
+                />
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400" />
+              </div>
+            </div>
 
-        {/* Orders Table */}
-        <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl overflow-x-auto">
-          <table className="w-full text-right border-collapse min-w-[800px]">
+            {/* Orders Table */}
+            <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl overflow-x-auto">
+              <table className="w-full text-right border-collapse min-w-[800px]">
             <thead className="bg-[#f8fafc] border-b border-slate-100">
               <tr>
                 <th className="px-6 py-5 w-16">
@@ -403,6 +421,8 @@ export default function MerchantDashboard() {
             </tbody>
           </table>
         </div>
+          </div>
+        )}
       </div>
 
       {/* Add Order Modal Layer */}

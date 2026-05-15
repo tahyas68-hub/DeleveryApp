@@ -98,6 +98,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
           { label: 'الطلبات الواردة', icon: Inbox, to: '/warehouse/incoming' },
           { label: 'توزيع المندوبين', icon: Truck, to: '/warehouse/dispatch' },
           { label: 'إدارة المراجعات', icon: Star, to: '/warehouse/returns' },
+          { label: 'الواردات من المندوبين', icon: DollarSign, to: '/warehouse/incomes' },
         ];
       case 'driver':
         return [
