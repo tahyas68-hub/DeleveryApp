@@ -6,7 +6,7 @@ import { useUsers } from '../../context/UserContext';
 
 export default function DriverCommission() {
   const { orders } = useOrders();
-  const { governorates } = useSettings();
+  const { governorates, getDriverCommission } = useSettings();
   const { users } = useUsers();
 
   const drivers = users.filter(u => u.role === 'driver');
@@ -46,13 +46,7 @@ export default function DriverCommission() {
     return keep;
   });
 
-  const getDriverCommission = (order: any) => {
-    const gov = governorates.find(g => g.name === order.province);
-    const companyCommission = gov?.commission || 0;
-    return Math.max(0, (order.deliveryFee || 0) - companyCommission);
-  };
-
-  const totalCommission = filteredOrders.reduce((sum, order) => sum + getDriverCommission(order), 0);
+  const totalCommission = filteredOrders.reduce((sum, order) => sum + getDriverCommission(order.province), 0);
 
   const handlePrint = () => {
     if (!selectedDriverId && drivers.length > 0) {
@@ -158,7 +152,7 @@ export default function DriverCommission() {
                 </tr>
               ) : (
                 filteredOrders.map((order, index) => {
-                  const driverCommission = getDriverCommission(order);
+                  const driverCommission = getDriverCommission(order.province);
                   return (
                     <tr key={order.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4 font-en font-bold text-slate-600 print:border print:border-slate-300 print:text-slate-900">

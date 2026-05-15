@@ -495,7 +495,7 @@ export default function MerchantDashboard() {
                       <label className="block text-slate-600 font-bold text-xs text-right">محافظة التوصيل <span className="text-red-500">*</span></label>
                       <select value={newOrder.province} onChange={e => setNewOrder({...newOrder, province: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 focus:bg-white focus:border-[#0F3B73] transition-all outline-none appearance-none cursor-pointer">
                         <option value="">اختر المحافظة</option>
-                        {governorates.map(g => {
+                        {governorates.filter(g => g.active).map(g => {
                           const fee = getDeliveryFee(g.name, user?.id);
                           return (
                             <option key={g.id} value={g.name}>

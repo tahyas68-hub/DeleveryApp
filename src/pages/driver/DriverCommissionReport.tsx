@@ -5,7 +5,7 @@ import { useSettings } from '../../context/SettingsContext';
 
 export default function DriverCommissionReport() {
   const { orders } = useOrders();
-  const { governorates } = useSettings();
+  const { governorates, getDriverCommission } = useSettings();
 
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -40,13 +40,7 @@ export default function DriverCommissionReport() {
     return keep;
   });
 
-  const getDriverCommission = (order: any) => {
-    const gov = governorates.find(g => g.name === order.province);
-    const companyCommission = gov?.commission || 0;
-    return Math.max(0, (order.deliveryFee || 0) - companyCommission);
-  };
-
-  const totalCommission = filteredOrders.reduce((sum, order) => sum + getDriverCommission(order), 0);
+  const totalCommission = filteredOrders.reduce((sum, order) => sum + getDriverCommission(order.province), 0);
 
   const handlePrint = () => {
     window.print();
@@ -127,7 +121,7 @@ export default function DriverCommissionReport() {
                 </tr>
               ) : (
                 filteredOrders.map((order, index) => {
-                  const driverCommission = getDriverCommission(order);
+                  const driverCommission = getDriverCommission(order.province);
                   return (
                     <tr key={order.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4 font-en font-bold text-slate-600 print:border print:border-slate-300 print:text-slate-900">

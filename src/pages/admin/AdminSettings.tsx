@@ -78,7 +78,6 @@ export default function AdminSettings() {
                   <tr>
                     <th className="px-6 py-4">المحافظة</th>
                     <th className="px-6 py-4">تسعيرة التوصيل</th>
-                    <th className="px-6 py-4">عمولة المندوب</th>
                     <th className="px-6 py-4">زيادة وقت الذروة (%)</th>
                     <th className="px-6 py-4">أوقات الذروة</th>
                     <th className="px-6 py-4">حالة التوصيل</th>
@@ -105,17 +104,6 @@ export default function AdminSettings() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="relative w-24">
-                          <input 
-                            type="number" 
-                            value={gov.commission} 
-                            onChange={(e) => handleUpdateLocal(gov.id, { commission: Number(e.target.value) })}
-                            className="w-full border border-slate-200 rounded-md px-2 py-1 pr-8 font-en focus:outline-none focus:ring-1 focus:ring-emerald-500" 
-                          />
-                          <span className="absolute right-2 top-1.5 text-xs text-slate-400 font-bold">د.ع</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="relative w-20">
                           <input 
                             type="number" 
                             value={gov.peak} 
@@ -157,7 +145,7 @@ export default function AdminSettings() {
                   <input type="text" defaultValue="شركة الراصد للتوصيل السريع" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
                </div>
                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">عمولة المندوب (الافتراضية)</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">عمولة المندوب</label>
                   <div className="relative">
                     <input 
                       type="number" 

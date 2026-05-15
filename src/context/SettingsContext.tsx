@@ -41,14 +41,14 @@ const defaultGovernorates: GovernoratePrice[] = [
   { id: 10, name: 'ميسان', base: 6000, commission: 0, peak: 0, hours: '-', active: true },
   { id: 11, name: 'القادسية', base: 5500, commission: 0, peak: 0, hours: '-', active: true },
   { id: 12, name: 'المثنى', base: 6000, commission: 0, peak: 0, hours: '-', active: true },
-  { id: 13, name: 'الأنبار', base: 6500, commission: 0, peak: 0, hours: '-', active: false },
-  { id: 14, name: 'صلاح الدين', base: 6000, commission: 0, peak: 0, hours: '-', active: false },
-  { id: 15, name: 'ديالى', base: 5500, commission: 0, peak: 0, hours: '-', active: false },
-  { id: 16, name: 'كركوك', base: 6000, commission: 0, peak: 0, hours: '-', active: false },
-  { id: 17, name: 'السليمانية', base: 7000, commission: 0, peak: 0, hours: '-', active: false },
-  { id: 18, name: 'دهوك', base: 7000, commission: 0, peak: 0, hours: '-', active: false },
-  { id: 19, name: 'حلبجة', base: 7000, commission: 0, peak: 0, hours: '-', active: false },
-  { id: 20, name: 'أطراف بغداد', base: 6000, commission: 0, peak: 0, hours: '-', active: false },
+  { id: 13, name: 'الأنبار', base: 6500, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 14, name: 'صلاح الدين', base: 6000, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 15, name: 'ديالى', base: 5500, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 16, name: 'كركوك', base: 6000, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 17, name: 'السليمانية', base: 7000, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 18, name: 'دهوك', base: 7000, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 19, name: 'حلبجة', base: 7000, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 20, name: 'أطراف بغداد', base: 6000, commission: 0, peak: 0, hours: '-', active: true },
 ];
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -119,9 +119,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return gov?.base || 0;
   };
 
-  const getDriverCommission = (province: string) => {
-    const gov = governorates.find(g => g.name === province);
-    return gov?.commission || defaultDriverCommission;
+  const getDriverCommission = (_province?: string) => {
+    return defaultDriverCommission;
   };
 
   const bulkUpdateGovernorates = (newGovs: GovernoratePrice[]) => {
