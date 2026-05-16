@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Save, Plus, MapPin, Search } from 'lucide-react';
 import { useSettings } from '../../context/SettingsContext';
 import { Link } from 'react-router-dom';
@@ -9,6 +9,8 @@ export default function AdminSettings() {
   
   const [localGovs, setLocalGovs] = useState([...governorates]);
   const [defaultDriverCommissionLocal, setDefaultDriverCommissionLocal] = useState(defaultDriverCommission);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Sync if context updates externally (e.g. initial load)
   React.useEffect(() => {
@@ -27,6 +29,59 @@ export default function AdminSettings() {
     bulkUpdateGovernorates(localGovs);
     updateDefaultDriverCommission(defaultDriverCommissionLocal);
     alert('تم حفظ الإعدادات بنجاح!');
+  };
+
+  const handleExportDB = () => {
+    const data: Record<string, string> = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) {
+        data[key] = localStorage.getItem(key) || '';
+      }
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `database_backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportDB = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!window.confirm('هل أنت متأكد من استيراد قاعدة البيانات؟ سيتم استبدال البيانات الحالية.')) {
+      e.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target?.result as string);
+        for (const key in data) {
+          localStorage.setItem(key, data[key]);
+        }
+        alert('تم استيراد قاعدة البيانات بنجاح. سيتم إعادة تحميل الصفحة.');
+        window.location.reload();
+      } catch (error) {
+        alert('حدث خطأ أثناء استيراد الملف. تأكد من أن الملف بصيغة JSON صالحة.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const handleResetDB = () => {
+    if (window.prompt('تحذير: سيتم حذف جميع سجلات النظام بشكل نهائي ولن يمكن استعادتها. لتأكيد هذا الإجراء، اكتب "تصفير" أدناه:') === 'تصفير') {
+      localStorage.clear();
+      alert('تم تصفير النظام! سيتم إعادة تحميل الصفحة الأن.');
+      window.location.href = '/';
+    } else {
+      alert('تم إلغاء العملية.');
+    }
   };
 
   return (
@@ -186,14 +241,21 @@ export default function AdminSettings() {
             <div className="space-y-6">
                <h3 className="font-bold text-slate-800 border-b border-slate-100 pb-2">إدارة البيانات والنظام</h3>
                <div className="space-y-4">
-                  <button className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
+                  <button onClick={handleExportDB} className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     تصدير قاعدة البيانات (Backup)
                   </button>
                   
-                  <button className="w-full bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-bold py-3 px-4 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
+                  <input 
+                    type="file" 
+                    accept=".json" 
+                    className="hidden" 
+                    ref={fileInputRef} 
+                    onChange={handleImportDB} 
+                  />
+                  <button onClick={() => fileInputRef.current?.click()} className="w-full bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-bold py-3 px-4 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
@@ -204,7 +266,7 @@ export default function AdminSettings() {
                <div className="mt-8 pt-6 border-t border-red-100">
                   <h4 className="font-bold text-red-600 mb-2">منطقة الخطر</h4>
                   <p className="text-xs text-slate-500 mb-4 line-clamp-2">تحذير: سيقوم هذا الإجراء بحذف جميع بيانات النظام الحالية واستعادتها لحالة المصنع.</p>
-                  <button className="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2">
+                  <button onClick={handleResetDB} className="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
