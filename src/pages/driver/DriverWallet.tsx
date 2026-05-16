@@ -29,8 +29,8 @@ export default function DriverWallet() {
   return (
     <div className="space-y-6 pb-24 max-w-lg mx-auto px-4 sm:px-0 mt-4">
       {/* Page Header */}
-      <div className="flex items-center justify-between mt-8 mb-6">
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl flex items-center gap-2 font-bold shadow-md transition-colors">
+      <div className="flex items-center justify-between mt-8 mb-6 print:hidden">
+        <button onClick={() => window.print()} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl flex items-center gap-2 font-bold shadow-md transition-colors">
           <span className="hidden sm:inline">طباعة الكشف</span>
           <Printer className="w-5 h-5" />
         </button>

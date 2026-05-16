@@ -19,14 +19,17 @@ import WarehouseIncomingOrders from "./pages/warehouse/WarehouseIncomingOrders";
 import WarehouseDispatch from "./pages/warehouse/WarehouseDispatch";
 import WarehouseReturns from "./pages/warehouse/WarehouseReturns";
 import WarehouseDriverIncomes from "./pages/warehouse/WarehouseDriverIncomes";
-
-import DriverMap from "./pages/driver/DriverMap";
+import WarehouseOperations from "./pages/warehouse/WarehouseOperations";
+import WarehouseFinance from "./pages/warehouse/WarehouseFinance";
+import WarehouseReports from "./pages/warehouse/WarehouseReports";
+import WarehouseInventory from "./pages/warehouse/WarehouseInventory";
+import WarehouseReturnsTransfer from "./pages/warehouse/WarehouseReturnsTransfer";
+import AdminDrivers from "./pages/admin/AdminDrivers";
 import DriverWallet from "./pages/driver/DriverWallet";
 import DriverPerformance from "./pages/driver/DriverPerformance";
 import DriverSettings from "./pages/driver/DriverSettings";
 
 import AdminWarehouses from "./pages/admin/AdminWarehouses";
-import AdminDrivers from "./pages/admin/AdminDrivers";
 import AdminSettings from "./pages/admin/AdminSettings";
 
 import DriverProfile from "./pages/driver/DriverProfile";
@@ -143,7 +146,7 @@ export default function App() {
                     path="/warehouse"
                     element={<DashboardLayout role="warehouse" />}
                   >
-                    <Route index element={<WarehouseIncomingOrders />} />
+                    <Route index element={<WarehouseOperations />} />
                     <Route
                       path="incoming"
                       element={<WarehouseIncomingOrders />}
@@ -154,8 +157,28 @@ export default function App() {
                       element={<WarehouseReturns />}
                     />
                     <Route
+                      path="returns-transfer"
+                      element={<WarehouseReturnsTransfer />}
+                    />
+                    <Route
+                      path="all-orders"
+                      element={<WarehouseInventory />}
+                    />
+                    <Route
+                      path="finance"
+                      element={<WarehouseFinance />}
+                    />
+                    <Route
                       path="incomes"
                       element={<WarehouseDriverIncomes />}
+                    />
+                    <Route
+                      path="drivers"
+                      element={<AdminDrivers />}
+                    />
+                    <Route
+                      path="reports"
+                      element={<WarehouseReports />}
                     />
                   </Route>
 

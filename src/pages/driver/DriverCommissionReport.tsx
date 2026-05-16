@@ -17,6 +17,7 @@ export default function DriverCommissionReport() {
   const filteredOrders = relevantOrders.filter(order => {
     if (!dateFrom && !dateTo) return true;
     
+    if (!order.date) return true;
     const orderDateParts = order.date.split('/');
     let orderDate;
     if (orderDateParts.length === 3) {

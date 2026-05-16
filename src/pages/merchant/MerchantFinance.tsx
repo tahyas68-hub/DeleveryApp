@@ -37,7 +37,7 @@ export default function MerchantFinance() {
       if (o.status === 'returned') typeStr = 'مرتجع';
       return {
         id: o.id,
-        trxId: `TRX-${o.id.split('-')[1] || Math.floor(Math.random() * 10000)}`,
+        trxId: `TRX-${(o.id || "").split('-')[1] || Math.floor(Math.random() * 10000)}`,
         type: typeStr,
         details: o.trackingNumber,
         date: o.date,

@@ -178,7 +178,7 @@ export default function AdminMerchantDetails() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-1 text-slate-500">
                         <Calendar className="w-3 h-3" />
-                        <span className="font-en text-xs">{new Date(order.createdAt).toLocaleDateString('en-US')}</span>
+                        <span className="font-en text-xs">{order.date ? new Date(order.date).toLocaleDateString('en-US') : 'N/A'}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">

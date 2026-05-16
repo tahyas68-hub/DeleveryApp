@@ -4,9 +4,23 @@ import { useOrders } from '../../context/OrderContext';
 import { useFinance } from '../../context/FinanceContext';
 
 export default function AdminFinance() {
-  const { orders } = useOrders();
-  const { transactions } = useFinance();
+  const { orders, updateOrderStatus } = useOrders();
+  const { transactions, addTransaction } = useFinance();
   const [activeTab, setActiveTab] = useState<'overview' | 'merchants' | 'drivers' | 'branches' | 'transactions'>('overview');
+
+  interface MerchantStats {
+    name: string;
+    balance: number;
+    pending: number;
+    paid: number;
+  }
+
+  interface DriverStats {
+    name: string;
+    collected: number;
+    commission: number;
+    paid: number;
+  }
 
   // Overview Stats
   const totalInbound = transactions.filter(t => t.type === 'receipt').reduce((sum, t) => sum + t.amount, 0);
@@ -26,7 +40,7 @@ export default function AdminFinance() {
       acc[order.merchantId].pending += order.merchantDue || 0; // Not yet delivered
     }
     return acc;
-  }, {} as Record<string, { name: string, balance: number, pending: number, paid: number }>);
+  }, {} as Record<string, MerchantStats>);
 
   // Drivers Data
   const driverBalances = orders.reduce((acc, order) => {
@@ -36,11 +50,11 @@ export default function AdminFinance() {
     if (order.financialStatus === 'collected_from_driver' || order.financialStatus === 'merchant_paid' || order.financialStatus === 'branch_transferred') {
       acc[order.driverId].commission += order.driverCommission || 0;
     } else if (order.status === 'delivered' || order.status === 'delivered_partial') {
-      acc[order.driverId].collected += order.collectedAmount || 0;
-      acc[order.driverId].commission += order.driverCommission || 0;
+      acc[order.driverId].collected += (order.collectedAmount || 0);
+      acc[order.driverId].commission += (order.driverCommission || 0);
     }
     return acc;
-  }, {} as Record<string, { name: string, collected: number, commission: number, paid: number }>);
+  }, {} as Record<string, DriverStats>);
 
   const handlePayMerchant = (merchantId: string, merchantName: string, amount: number) => {
     if (amount <= 0) {
@@ -173,19 +187,22 @@ export default function AdminFinance() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {Object.entries(merchantBalances).map(([id, data]) => (
-                <tr key={id} className="hover:bg-slate-50">
-                  <td className="px-6 py-4 font-bold text-slate-800">{data.name}</td>
-                  <td className="px-6 py-4 font-en text-orange-600">{data.pending.toLocaleString()}</td>
-                  <td className="px-6 py-4 font-en font-black text-emerald-600">{data.balance.toLocaleString()}</td>
-                  <td className="px-6 py-4 font-en text-slate-500">{data.paid.toLocaleString()}</td>
-                  <td className="px-6 py-4 text-center">
-                     <button onClick={() => handlePayMerchant(id, data.name, data.balance)} className="bg-[#0F3B73] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
-                        سند صرف للتاجر
-                     </button>
-                  </td>
-                </tr>
-              ))}
+              {Object.entries(merchantBalances).map(([id, data]) => {
+                const merchantData = data as MerchantStats;
+                return (
+                  <tr key={id} className="hover:bg-slate-50">
+                    <td className="px-6 py-4 font-bold text-slate-800">{merchantData.name}</td>
+                    <td className="px-6 py-4 font-en text-orange-600">{merchantData.pending.toLocaleString()}</td>
+                    <td className="px-6 py-4 font-en font-black text-emerald-600">{merchantData.balance.toLocaleString()}</td>
+                    <td className="px-6 py-4 font-en text-slate-500">{merchantData.paid.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-center">
+                       <button onClick={() => handlePayMerchant(id, merchantData.name, merchantData.balance)} className="bg-[#0F3B73] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
+                          سند صرف للتاجر
+                       </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -204,22 +221,25 @@ export default function AdminFinance() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {Object.entries(driverBalances).map(([id, data]) => (
-                <tr key={id} className="hover:bg-slate-50">
-                  <td className="px-6 py-4 font-bold text-slate-800">{data.name}</td>
-                  <td className="px-6 py-4 font-en font-black text-emerald-600">{data.collected.toLocaleString()}</td>
-                  <td className="px-6 py-4 font-en text-blue-600">{data.commission.toLocaleString()}</td>
-                  <td className="px-6 py-4 font-en text-slate-500">{data.paid.toLocaleString()}</td>
-                  <td className="px-6 py-4 justify-center flex gap-2">
-                     <button onClick={() => handleReceiveFromDriver(id, data.name, data.collected)} className="bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
-                        سند قبض من المندوب
-                     </button>
-                     <button onClick={() => handlePayDriverCommission(id, data.name, data.commission)} className="bg-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
-                        سند صرف عمولة
-                     </button>
-                  </td>
-                </tr>
-              ))}
+              {Object.entries(driverBalances).map(([id, data]) => {
+                const driverData = data as DriverStats;
+                return (
+                  <tr key={id} className="hover:bg-slate-50">
+                    <td className="px-6 py-4 font-bold text-slate-800">{driverData.name}</td>
+                    <td className="px-6 py-4 font-en font-black text-emerald-600">{driverData.collected.toLocaleString()}</td>
+                    <td className="px-6 py-4 font-en text-blue-600">{driverData.commission.toLocaleString()}</td>
+                    <td className="px-6 py-4 font-en text-slate-500">{driverData.paid.toLocaleString()}</td>
+                    <td className="px-6 py-4 justify-center flex gap-2">
+                       <button onClick={() => handleReceiveFromDriver(id, driverData.name, driverData.collected)} className="bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
+                          سند قبض من المندوب
+                       </button>
+                       <button onClick={() => handlePayDriverCommission(id, driverData.name, driverData.commission)} className="bg-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
+                          سند صرف عمولة
+                       </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

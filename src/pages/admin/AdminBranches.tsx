@@ -1,34 +1,56 @@
 import React, { useState } from 'react';
 import { Building2, Search, Plus, MapPin, Phone, Users, Package, MoreVertical, Edit2, Trash2, Truck } from 'lucide-react';
-import { useBranches } from '../../context/BranchContext';
+import { useBranches, Branch } from '../../context/BranchContext';
 
 export default function AdminBranches() {
-  const { branches, addBranch, deleteBranch } = useBranches();
+  const { branches, addBranch, updateBranch, deleteBranch } = useBranches();
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
   const [newBranch, setNewBranch] = useState({
     name: '',
     city: '',
-    manager: '',
-    phone: '',
     status: 'active' as const
   });
 
   const handleAddBranch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newBranch.name || !newBranch.city || !newBranch.manager || !newBranch.phone) {
+    if (!newBranch.name || !newBranch.city) {
       alert('الرجاء إكمال جميع الحقول');
       return;
     }
     addBranch(newBranch);
     setIsAddModalOpen(false);
-    setNewBranch({ name: '', city: '', manager: '', phone: '', status: 'active' });
+    setNewBranch({ name: '', city: '', status: 'active' });
     alert('تم إضافة الفرع بنجاح');
+  };
+
+  const handleEditClick = (branch: Branch) => {
+    setEditingBranch(branch);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateBranch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBranch || !editingBranch.name || !editingBranch.city) {
+      alert('الرجاء إكمال جميع الحقول');
+      return;
+    }
+    updateBranch(editingBranch.id, {
+      name: editingBranch.name,
+      city: editingBranch.city,
+      status: editingBranch.status
+    });
+    setIsEditModalOpen(false);
+    setEditingBranch(null);
+    alert('تم تحديث بيانات الفرع بنجاح');
   };
 
   const handleDeleteBranch = (id: string, name: string) => {
     if (window.confirm(`هل أنت متأكد من حذف فرع ${name}؟`)) {
       deleteBranch(id);
+      alert('تم حذف الفرع بنجاح');
     }
   };
 
@@ -79,41 +101,50 @@ export default function AdminBranches() {
                   <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{branch.status === 'active' ? 'نشط' : 'غير نشط'}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                  <Edit2 className="w-4 h-4" />
+              <div className="flex items-center gap-1">
+                <button 
+                  onClick={() => handleEditClick(branch)}
+                  className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100 shadow-sm"
+                  title="تعديل"
+                >
+                  <Edit2 className="w-5 h-5" />
                 </button>
                 <button 
                   onClick={() => handleDeleteBranch(branch.id, branch.name)}
-                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100 shadow-sm"
+                  title="حذف"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2 text-slate-500">
-                  <Users className="w-4 h-4" />
-                  <span>المدير</span>
+              {branch.manager && (
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2 text-slate-500">
+                    <Users className="w-4 h-4" />
+                    <span>المدير</span>
+                  </div>
+                  <span className="font-bold text-slate-800">{branch.manager}</span>
                 </div>
-                <span className="font-bold text-slate-800">{branch.manager}</span>
-              </div>
+              )}
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2 text-slate-500">
                   <MapPin className="w-4 h-4" />
-                  <span>المدينة</span>
+                  <span>المحافظة / المدينة</span>
                 </div>
                 <span className="font-bold text-slate-800">{branch.city || '-'}</span>
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2 text-slate-500">
-                  <Phone className="w-4 h-4" />
-                  <span>الهاتف</span>
+              {branch.phone && (
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2 text-slate-500">
+                    <Phone className="w-4 h-4" />
+                    <span>الهاتف</span>
+                  </div>
+                  <span className="font-en font-bold text-slate-800">{branch.phone}</span>
                 </div>
-                <span className="font-en font-bold text-slate-800">{branch.phone}</span>
-              </div>
+              )}
               
               <div className="pt-4 mt-4 border-t border-slate-100 grid grid-cols-2 gap-4">
                 <div className="bg-slate-50 rounded-xl p-3 text-center">
@@ -178,27 +209,6 @@ export default function AdminBranches() {
                   placeholder="مثال: بغداد"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="block text-slate-700 font-bold text-sm">مدير الفرع</label>
-                <input 
-                  type="text" 
-                  value={newBranch.manager}
-                  onChange={e => setNewBranch({...newBranch, manager: e.target.value})}
-                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" 
-                  placeholder="اسم مدير الفرع"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="block text-slate-700 font-bold text-sm">رقم الهاتف</label>
-                <input 
-                  type="text" 
-                  value={newBranch.phone}
-                  onChange={e => setNewBranch({...newBranch, phone: e.target.value})}
-                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-left font-en" 
-                  placeholder="07XX XXX XXXX"
-                  dir="ltr"
-                />
-              </div>
 
               <div className="pt-4 flex gap-3">
                 <button 
@@ -213,6 +223,70 @@ export default function AdminBranches() {
                   className="flex-1 py-3 px-4 font-bold text-white bg-[#0F3B73] hover:bg-[#0F3B73]/90 rounded-xl transition-colors shrink-0"
                 >
                   حفظ الفرع
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isEditModalOpen && editingBranch && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <h2 className="text-xl font-bold text-slate-800">تعديل بيانات الفرع</h2>
+              <button 
+                onClick={() => setIsEditModalOpen(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 text-slate-500 transition-colors"
+              >
+                X
+              </button>
+            </div>
+            
+            <form onSubmit={handleUpdateBranch} className="p-6 space-y-5">
+              <div className="space-y-2">
+                <label className="block text-slate-700 font-bold text-sm">اسم الفرع</label>
+                <input 
+                  type="text" 
+                  value={editingBranch.name}
+                  onChange={e => setEditingBranch({...editingBranch, name: e.target.value})}
+                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" 
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-slate-700 font-bold text-sm">المحافظة / المدينة</label>
+                <input 
+                  type="text" 
+                  value={editingBranch.city}
+                  onChange={e => setEditingBranch({...editingBranch, city: e.target.value})}
+                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" 
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-slate-700 font-bold text-sm">الحالة</label>
+                <select 
+                  value={editingBranch.status}
+                  onChange={e => setEditingBranch({...editingBranch, status: e.target.value as 'active' | 'inactive'})}
+                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                >
+                  <option value="active">نشط</option>
+                  <option value="inactive">غير نشط</option>
+                </select>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button 
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="flex-1 py-3 px-4 font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+                >
+                  إلغاء
+                </button>
+                <button 
+                  type="submit"
+                  className="flex-1 py-3 px-4 font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors shrink-0"
+                >
+                  تحديث
                 </button>
               </div>
             </form>

@@ -94,11 +94,28 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
         ];
       case 'warehouse':
         return [
-          { label: 'الرئيسية', icon: LayoutDashboard, to: '/warehouse' },
-          { label: 'الطلبات الواردة', icon: Inbox, to: '/warehouse/incoming' },
-          { label: 'توزيع المندوبين', icon: Truck, to: '/warehouse/dispatch' },
-          { label: 'إدارة المراجعات', icon: Star, to: '/warehouse/returns' },
-          { label: 'الواردات من المندوبين', icon: DollarSign, to: '/warehouse/incomes' },
+          { label: 'قائمة العمليات', icon: ClipboardList, to: '/warehouse' },
+          { 
+            label: 'المخزن', 
+            icon: Warehouse, 
+            subItems: [
+              { label: 'استلام من المركز الرئيسي', icon: ArrowDown, to: '/warehouse/incoming' },
+              { label: 'تحويل إلى مندوب', icon: Truck, to: '/warehouse/dispatch' },
+              { label: 'سحب الراجع من مندوب', icon: History, to: '/warehouse/returns' },
+              { label: 'تحويل الطلبات الراجعة', icon: ArrowRightLeft, to: '/warehouse/returns-transfer' },
+              { label: 'كل الطلبات', icon: Package, to: '/warehouse/all-orders' },
+            ]
+          },
+          { 
+            label: 'الحسابات', 
+            icon: Calculator, 
+            subItems: [
+              { label: 'حسابات الفرع', icon: DollarSign, to: '/warehouse/finance' },
+              { label: 'حسابات المندوبين', icon: Users, to: '/warehouse/incomes' },
+            ]
+          },
+          { label: 'المندوبين', icon: Bike, to: '/warehouse/drivers' },
+          { label: 'التقارير', icon: FileText, to: '/warehouse/reports' },
         ];
       case 'driver':
         return [
@@ -232,7 +249,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed lg:sticky top-0 right-0 h-screen w-72 bg-[#0F3B73] text-white flex flex-col transition-transform duration-300 z-50",
+        "fixed lg:sticky top-0 right-0 h-screen w-72 bg-[#0F3B73] text-white flex flex-col transition-transform duration-300 z-50 print:hidden",
         isMobileMenuOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
       )}>
         <div className="p-6 border-b border-white/10 flex items-start justify-between lg:justify-start">
@@ -276,9 +293,9 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-[#F3F4F6]">
+      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-[#F3F4F6] print:h-auto print:overflow-visible">
         {/* Header */}
-        <header className="h-20 bg-white border-b border-slate-200 flex flex-shrink-0 items-center justify-between px-4 lg:px-8 z-30">
+        <header className="h-20 bg-white border-b border-slate-200 flex flex-shrink-0 items-center justify-between px-4 lg:px-8 z-30 print:hidden">
           <div className="flex items-center gap-4">
             <button 
               className="lg:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg"

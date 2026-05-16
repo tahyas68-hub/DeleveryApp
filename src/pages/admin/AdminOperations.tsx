@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Activity, Search, Package, Check, Clock, AlertTriangle, RotateCcw, Copy } from 'lucide-react';
+import { Activity, Search, Package, Check, Clock, AlertTriangle, RotateCcw, Copy, Trash2 } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { OrderStatus } from '../../context/OrderContext';
 import { OrderStatusBadge } from '../../components/OrderStatusBadge';
@@ -7,10 +7,17 @@ import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 type TabView = 'all' | 'driver_assigned' | 'returned_partial' | 'returned' | 'postponed';
 
 export default function AdminOperations() {
-  const { orders, updateOrderStatus } = useOrders();
+  const { orders, updateOrderStatus, deleteOrder } = useOrders();
   const [activeTab, setActiveTab] = useState<TabView>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [actionQuery, setActionQuery] = useState('');
+
+  const handleDeleteOrder = (id: string, tracking: string) => {
+    if (window.confirm(`هل أنت متأكد من حذف الطلب رقم ${tracking}؟`)) {
+      deleteOrder(id);
+      alert('تم حذف الطلب بنجاح');
+    }
+  };
 
   const filteredOrders = orders.filter(o => {
     if (activeTab !== 'all' && o.status !== activeTab) return false;
@@ -183,7 +190,7 @@ export default function AdminOperations() {
                  <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
                  <th className="px-6 py-4 font-bold text-slate-600">المندوب</th>
                  <th className="px-6 py-4 font-bold text-slate-600">الحالة</th>
-                 <th className="px-6 py-4 font-bold text-slate-600 text-center">نسخ</th>
+                 <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراءات</th>
                </tr>
              </thead>
              <tbody className="divide-y divide-slate-100">
@@ -203,16 +210,25 @@ export default function AdminOperations() {
                      <td className="px-6 py-4 font-bold text-slate-600">{order.driverName || '-'}</td>
                      <td className="px-6 py-4"><OrderStatusBadge status={order.status} /></td>
                      <td className="px-6 py-4 text-center">
-                        <button 
-                          onClick={() => {
-                             navigator.clipboard.writeText(order.trackingNumber);
-                             setActionQuery(order.trackingNumber);
-                          }}
-                          className="p-2 hover:bg-slate-200 rounded-lg text-slate-500 hover:text-[#0F3B73] transition-colors inline-block"
-                          title="نسخ رقم التتبع"
-                        >
-                          <Copy className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center justify-center gap-1">
+                          <button 
+                            onClick={() => {
+                               navigator.clipboard.writeText(order.trackingNumber);
+                               setActionQuery(order.trackingNumber);
+                            }}
+                            className="p-2 hover:bg-blue-50 rounded-lg text-slate-500 hover:text-[#0F3B73] transition-colors"
+                            title="نسخ ومعالجة"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteOrder(order.id, order.trackingNumber)}
+                            className="p-2 hover:bg-red-50 rounded-lg text-slate-500 hover:text-red-600 transition-colors"
+                            title="حذف الطلب"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                      </td>
                    </tr>
                  ))

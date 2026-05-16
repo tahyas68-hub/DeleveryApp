@@ -98,3 +98,9 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+@media print {
+  @page {
+    margin: 1cm;
+  }
+}

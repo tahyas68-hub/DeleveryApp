@@ -1,34 +1,64 @@
 import React, { useState } from 'react';
 import { 
-  Package, 
   Search, 
   ArrowLeft, 
-  RotateCcw, 
+  Truck, 
   Barcode,
-  History
+  ArrowRightLeft,
+  ChevronDown,
+  RotateCcw,
+  Send
 } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
+import { useUsers } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 
-export default function WarehouseReturns() {
+export default function WarehouseReturnsTransfer() {
   const navigate = useNavigate();
   const { orders, updateOrderStatus } = useOrders();
+  const { users } = useUsers();
   
-  const returnedOrders = orders.filter(o => o.status === 'returned' || o.status === 'returned_partial');
+  const drivers = users.filter(u => u.role === 'driver');
+  // Filters out orders that have been returned (e.g. status === 'returned' or 'returned_partial')
+  const returnableOrders = orders.filter(o => o.status === 'returned' || o.status === 'returned_partial');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [targetDriverId, setTargetDriverId] = useState('');
 
-  const handlePullSelected = () => {
-    selectedIds.forEach(id => {
-      updateOrderStatus(id, 'returned'); // Or a specific 'branch_returned' status if needed
-    });
-    setSelectedIds([]);
-    alert('تم سحب الطلبات المحددة للمخزن بنجاح');
+  const handleTransferToMainWarehouse = () => {
+    if (selectedIds.length === 0) return;
+    
+    if (window.confirm('هل أنت متأكد من إرجاع الطلبات المحددة للمركز الرئيسي؟')) {
+      selectedIds.forEach(id => {
+        // Change status back to main_warehouse or appropriate return status
+        updateOrderStatus(id, 'main_warehouse');
+      });
+      setSelectedIds([]);
+      alert('تم تحويل الطلبات للمركز الرئيسي بنجاح');
+    }
   };
 
-  const filteredOrders = returnedOrders.filter(o => {
-    return o.trackingNumber.includes(searchQuery) || o.merchantName.includes(searchQuery) || o.driverName?.includes(searchQuery);
+  const handleDispatchToDriver = () => {
+    if (selectedIds.length === 0) return;
+    if (!targetDriverId) {
+       alert('الرجاء اختيار المندوب للتحويل');
+       return;
+    }
+    const driver = drivers.find(d => d.id === targetDriverId);
+    if (!driver) return;
+
+    selectedIds.forEach(id => {
+      // It becomes driver assigned, maybe keeping a note that it was returned, but for now just assign.
+      updateOrderStatus(id, 'driver_assigned', { driverId: driver.id, driverName: driver.name });
+    });
+    setSelectedIds([]);
+    setTargetDriverId('');
+    alert(`تم تحويل الطلبات بنجاح للمندوب ${driver.name}`);
+  };
+
+  const filteredOrders = returnableOrders.filter(o => {
+    return o.trackingNumber.includes(searchQuery) || o.merchantName.includes(searchQuery);
   });
 
   return (
@@ -37,10 +67,10 @@ export default function WarehouseReturns() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-[#0F3B73]">
-             <History className="w-5 h-5" />
+             <ArrowRightLeft className="w-5 h-5" />
              <span className="font-bold text-sm uppercase tracking-wider">العمليات اللوجستية للفرع</span>
           </div>
-          <h1 className="text-3xl font-black text-[#0F3B73]">سحب الراجع من مندوب</h1>
+          <h1 className="text-3xl font-black text-[#0F3B73]">تحويل الطلبات الراجعة</h1>
         </div>
         
         <button 
@@ -54,23 +84,48 @@ export default function WarehouseReturns() {
 
       {/* Actions Box */}
       <div className="bg-white p-6 rounded-[32px] border border-slate-200 shadow-sm flex flex-col lg:flex-row items-center gap-6">
-        <div className="flex items-center gap-4 flex-1 w-full lg:w-auto">
+        <div className="flex flex-wrap items-center gap-4 flex-1 w-full lg:w-auto">
           <span className="font-black text-slate-700 whitespace-nowrap">الإجراءات المتوفرة:</span>
           
           <button 
             disabled={selectedIds.length === 0}
-            onClick={handlePullSelected}
-            className="flex items-center gap-2 bg-blue-600 disabled:bg-slate-100 disabled:text-slate-400 text-white px-8 py-3.5 rounded-2xl font-black transition-all hover:bg-blue-700 shadow-lg shadow-blue-50"
+            onClick={handleTransferToMainWarehouse}
+            className="flex items-center gap-2 bg-red-500 disabled:bg-slate-100 disabled:text-slate-400 text-white px-6 py-3.5 rounded-2xl font-black transition-all hover:bg-red-600 shadow-lg shadow-red-50"
           >
-            <RotateCcw className="w-5 h-5" />
-            سحب المحدد للمخزن
+            <Send className="w-5 h-5" />
+            تحويل للمركز الرئيسي
           </button>
+
+          <div className="flex items-center gap-2">
+            <div className="relative lg:w-48">
+              <select 
+                value={targetDriverId}
+                onChange={(e) => setTargetDriverId(e.target.value)}
+                className="w-full bg-blue-600 text-white pl-4 pr-10 py-3.5 rounded-2xl font-black appearance-none focus:outline-none hover:bg-blue-700 transition-colors cursor-pointer"
+              >
+                <option value="" disabled className="text-slate-900 bg-white">اختر مندوب...</option>
+                {drivers.map(d => (
+                  <option key={d.id} value={d.id} className="text-slate-900 bg-white">{d.name}</option>
+                ))}
+              </select>
+              <Truck className="w-5 h-5 text-white/70 absolute right-3 top-4 pointer-events-none" />
+              <ChevronDown className="w-5 h-5 text-white/70 absolute left-3 top-4 pointer-events-none" />
+            </div>
+
+            <button 
+              disabled={selectedIds.length === 0 || !targetDriverId}
+              onClick={handleDispatchToDriver}
+              className="flex items-center gap-2 bg-blue-600 disabled:bg-slate-100 disabled:text-slate-400 text-white px-6 py-3.5 rounded-2xl font-black transition-all hover:bg-blue-700 shadow-lg shadow-blue-50"
+            >
+              تحويل لمندوب
+            </button>
+          </div>
         </div>
 
         <div className="relative flex-1 w-full max-w-md">
           <input 
             type="text" 
-            placeholder="مسح الباركود لسحب الراجع..." 
+            placeholder="مسح الباركود للتحويل..." 
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl pl-4 pr-12 py-3.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-[#0F3B73]/10 focus:border-[#0F3B73] transition-all"
@@ -99,7 +154,6 @@ export default function WarehouseReturns() {
                 </th>
                 <th className="px-6 py-5 font-black text-slate-700">رقم الطلب</th>
                 <th className="px-6 py-5 font-black text-slate-700">رقم الشحنة</th>
-                <th className="px-6 py-5 font-black text-slate-700">المندوب</th>
                 <th className="px-6 py-5 font-black text-slate-700">التاجر / المتجر</th>
                 <th className="px-6 py-5 font-black text-slate-700">العميل</th>
                 <th className="px-6 py-5 font-black text-slate-700">العنوان</th>
@@ -110,8 +164,8 @@ export default function WarehouseReturns() {
             <tbody className="divide-y divide-slate-100 italic">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-32 text-center text-slate-400 font-bold text-lg">
-                    لا توجد طلبات راجعة في المخزن حالياً (جاهزة للتحويل).
+                  <td colSpan={8} className="px-6 py-32 text-center text-slate-400 font-bold text-lg">
+                    لا يوجد طلبات راجعة في المخزن حالياً (جاهزة للتحويل).
                   </td>
                 </tr>
               ) : (
@@ -130,7 +184,6 @@ export default function WarehouseReturns() {
                     </td>
                     <td className="px-6 py-5 font-en font-bold text-[#0F3B73]">{order.trackingNumber}</td>
                     <td className="px-6 py-5 font-en font-bold text-slate-600">{order.id.slice(0, 8)}</td>
-                    <td className="px-6 py-5 font-bold text-slate-800">{order.driverName || 'علي'}</td>
                     <td className="px-6 py-5 font-bold text-slate-900">{order.merchantName}</td>
                     <td className="px-6 py-5">
                        <div className="flex flex-col">
@@ -140,12 +193,8 @@ export default function WarehouseReturns() {
                     </td>
                     <td className="px-6 py-5 font-bold text-slate-500 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">{order.province} - {order.address}</td>
                     <td className="px-6 py-5 text-center">
-                       <span className={`px-4 py-1.5 rounded-full text-xs font-bold ${
-                         order.status === 'returned' 
-                           ? 'bg-red-50 text-red-600' 
-                           : 'bg-orange-50 text-orange-600'
-                       }`}>
-                         {order.status === 'returned' ? 'راجع من مندوب (بانتظار سحب)' : 'قيد التسليم'}
+                       <span className={`px-4 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600`}>
+                         جاهز للتحويل (مسترجع)
                        </span>
                     </td>
                     <td className="px-6 py-5 font-en font-black text-slate-900 text-left whitespace-nowrap">{order.totalAmount.toLocaleString()} د.ع</td>

@@ -4,8 +4,8 @@ export interface Branch {
   id: string;
   name: string;
   city: string;
-  manager: string;
-  phone: string;
+  manager?: string;
+  phone?: string;
   status: 'active' | 'inactive';
   drivers?: number;
   orders?: number;

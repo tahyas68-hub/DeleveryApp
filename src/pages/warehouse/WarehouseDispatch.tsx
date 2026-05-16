@@ -1,119 +1,169 @@
 import React, { useState } from 'react';
-import { Package, Search, Truck, Check } from 'lucide-react';
+import { 
+  Package, 
+  Search, 
+  ArrowLeft, 
+  Truck, 
+  Barcode,
+  ChevronDown
+} from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useUsers } from '../../context/UserContext';
-import { useBranches } from '../../context/BranchContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function WarehouseDispatch() {
+  const navigate = useNavigate();
   const { orders, updateOrderStatus } = useOrders();
   const { users } = useUsers();
   
   const drivers = users.filter(u => u.role === 'driver');
-  
-  const branchOrders = orders.filter(o => o.status === 'branch_warehouse');
+  const dispatchableOrders = orders.filter(o => o.status === 'branch_transfering' || o.status === 'processing');
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedDrivers, setSelectedDrivers] = useState<Record<string, string>>({});
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [targetDriverId, setTargetDriverId] = useState('');
 
-  const handleAssignToDriver = (id: string) => {
-    const driverId = selectedDrivers[id];
-    if (!driverId) {
-      alert("الرجاء اختيار مندوب");
-      return;
+  const handleDispatchSelected = () => {
+    if (!targetDriverId) {
+       alert('الرجاء اختيار المندوب للإرسال');
+       return;
     }
-    const driver = drivers.find(d => d.id === driverId);
-    if(driver) {
-       updateOrderStatus(id, 'driver_assigned', { driverId: driver.id, driverName: driver.name });
-       alert(`تم تحويل الطلب إلى المندوب ${driver.name}`);
-    }
+    const driver = drivers.find(d => d.id === targetDriverId);
+    if (!driver) return;
+
+    selectedIds.forEach(id => {
+      updateOrderStatus(id, 'driver_assigned', { driverId: driver.id, driverName: driver.name });
+    });
+    setSelectedIds([]);
+    setTargetDriverId('');
+    alert(`تم تحويل الطلبات بنجاح للمندوب ${driver.name}`);
   };
 
-  const filteredOrders = branchOrders.filter(o => {
-    return o.id.includes(searchQuery) || o.merchantName.includes(searchQuery);
+  const filteredOrders = dispatchableOrders.filter(o => {
+    return o.trackingNumber.includes(searchQuery) || o.merchantName.includes(searchQuery);
   });
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto" dir="rtl">
+    <div className="max-w-7xl mx-auto space-y-8" dir="rtl">
       {/* Header */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">توزيع المناديب</h1>
-          <p className="text-slate-500 mt-1">توزيع الطلبات الموجودة في الفرع على المناديب المتوفرين</p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-[#0F3B73]">
+             <Truck className="w-5 h-5" />
+             <span className="font-bold text-sm uppercase tracking-wider">العمليات اللوجستية للفرع</span>
+          </div>
+          <h1 className="text-3xl font-black text-[#0F3B73]">تحويل إلى مندوب</h1>
         </div>
-        <div className="flex items-center gap-4 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100">
-           <Truck className="w-5 h-5 text-emerald-600" />
-           <div>
-             <p className="text-xs font-bold text-emerald-600/80">طلبات بانتظار التوزيع</p>
-             <p className="text-lg font-black text-emerald-700">{branchOrders.length}</p>
-           </div>
+        
+        <button 
+          onClick={() => navigate('/warehouse')}
+          className="flex items-center gap-2 bg-white text-[#0F3B73] border-2 border-[#0F3B73]/20 px-6 py-2.5 rounded-xl font-black hover:bg-slate-50 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          العودة لقائمة العمليات
+        </button>
+      </div>
+
+      {/* Actions Box */}
+      <div className="bg-white p-6 rounded-[32px] border border-slate-200 shadow-sm flex flex-col lg:flex-row items-center gap-6">
+        <div className="flex items-center gap-4 flex-1 w-full lg:w-auto">
+          <span className="font-black text-slate-700 whitespace-nowrap">الإجراءات السريعة:</span>
+          
+          <div className="relative flex-1 lg:max-w-[240px]">
+            <select 
+              value={targetDriverId}
+              onChange={(e) => setTargetDriverId(e.target.value)}
+              className="w-full bg-blue-600 text-white px-10 py-3.5 rounded-2xl font-black appearance-none focus:outline-none hover:bg-blue-700 transition-colors cursor-pointer"
+            >
+              <option value="" disabled className="text-slate-900 bg-white">تحويل لمندوب...</option>
+              {drivers.map(d => (
+                <option key={d.id} value={d.id} className="text-slate-900 bg-white">{d.name}</option>
+              ))}
+            </select>
+            <Truck className="w-5 h-5 text-white/70 absolute right-4 top-4 pointer-events-none" />
+            <ChevronDown className="w-5 h-5 text-white/70 absolute left-4 top-4 pointer-events-none" />
+          </div>
+
+          <button 
+            disabled={selectedIds.length === 0 || !targetDriverId}
+            onClick={handleDispatchSelected}
+            className="flex items-center gap-2 bg-emerald-500 disabled:bg-slate-100 disabled:text-slate-400 text-white px-8 py-3.5 rounded-2xl font-black transition-all hover:bg-emerald-600 shadow-lg shadow-emerald-50"
+          >
+            تجهيز الإرسال
+          </button>
+        </div>
+
+        <div className="relative flex-1 w-full max-w-md">
+          <input 
+            type="text" 
+            placeholder="مسح الباركود..." 
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl pl-4 pr-12 py-3.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-[#0F3B73]/10 focus:border-[#0F3B73] transition-all"
+          />
+          <Search className="w-6 h-6 text-slate-400 absolute right-4 top-3.5" />
+          <Barcode className="w-5 h-5 text-slate-300 absolute left-4 top-4" />
         </div>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/50">
-          <div className="relative w-full sm:w-72">
-            <Search className="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
-            <input 
-              type="text" 
-              placeholder="بحث برقم الطلب او اسم التاجر..." 
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-sm"
-            />
-          </div>
-        </div>
-
+      {/* Table */}
+      <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden min-h-[400px]">
         <div className="overflow-x-auto">
-          <table className="w-full text-right text-sm">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600">
-              <tr>
-                <th className="px-6 py-4 font-bold">رقم الطلب</th>
-                <th className="px-6 py-4 font-bold">التاجر</th>
-                <th className="px-6 py-4 font-bold">محافظة التسليم</th>
-                <th className="px-6 py-4 font-bold text-center">إجراءات التوزيع</th>
+          <table className="w-full text-right whitespace-nowrap min-w-[1000px]">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-100 text-sm">
+                <th className="px-6 py-5 w-12 text-center">
+                   <input 
+                      type="checkbox" 
+                      className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      onChange={(e) => {
+                        if (e.target.checked) setSelectedIds(filteredOrders.map(o => o.id));
+                        else setSelectedIds([]);
+                      }}
+                      checked={selectedIds.length === filteredOrders.length && filteredOrders.length > 0}
+                   />
+                </th>
+                <th className="px-6 py-5 font-black text-slate-700">رقم الطلب</th>
+                <th className="px-6 py-5 font-black text-slate-700">رقم الشحنة</th>
+                <th className="px-6 py-5 font-black text-slate-700">التاجر / المتجر</th>
+                <th className="px-6 py-5 font-black text-slate-700">العميل</th>
+                <th className="px-6 py-5 font-black text-slate-700">العنوان</th>
+                <th className="px-6 py-5 font-black text-slate-700">الحالة</th>
+                <th className="px-6 py-5 font-black text-slate-700">التاريخ</th>
+                <th className="px-6 py-5 font-black text-slate-700">المبلغ الاجمالي</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 italic">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
-                    <div className="flex flex-col items-center justify-center">
-                      <Truck className="w-12 h-12 text-slate-300 mb-3" />
-                      <p className="font-bold">لا توجد طلبات بانتظار التوزيع</p>
-                    </div>
+                  <td colSpan={9} className="px-6 py-32 text-center text-slate-400 font-bold text-lg">
+                    لا توجد طلبات في المخزن حالياً (جاهزة للتحويل للمندوب).
                   </td>
                 </tr>
               ) : (
                 filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-en font-bold text-slate-800">{order.id}</td>
-                    <td className="px-6 py-4 font-bold text-slate-800">{order.merchantName}</td>
-                    <td className="px-6 py-4 font-bold text-slate-600">{order.province}</td>
-                    <td className="px-6 py-4">
-                         <div className="flex items-center gap-2 max-w-[250px] mx-auto">
-                           <select 
-                             className="border border-slate-200 rounded-lg px-3 py-2 focus:border-blue-500 outline-none w-full text-xs font-bold text-slate-900 bg-white"
-                             onChange={(e) => setSelectedDrivers(prev => ({...prev, [order.id]: e.target.value}))}
-                             value={selectedDrivers[order.id] || ""}
-                           >
-                             <option value="" disabled>اختر المندوب...</option>
-                             {Array.from(new Set(drivers.map(d => d.branch || 'غير محدد'))).map(branch => (
-                               <optgroup key={branch} label={branch}>
-                                 {drivers.filter(d => (d.branch || 'غير محدد') === branch).map(d => (
-                                   <option key={d.id} value={d.id}>{d.name}</option>
-                                 ))}
-                               </optgroup>
-                             ))}
-                           </select>
-                           <button 
-                             onClick={() => handleAssignToDriver(order.id)}
-                             className="text-white bg-[#0F3B73] hover:bg-[#0F3B73]/90 px-3 py-2 rounded-lg font-bold text-xs transition-colors flex items-center justify-center shrink-0"
-                             title="توزيع"
-                           >
-                             <Truck className="w-4 h-4" />
-                           </button>
-                         </div>
+                  <tr key={order.id} className={`hover:bg-slate-50 transition-colors ${selectedIds.includes(order.id) ? 'bg-blue-50/50' : ''}`}>
+                    <td className="px-6 py-5 text-center">
+                      <input 
+                        type="checkbox" 
+                        className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        checked={selectedIds.includes(order.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) setSelectedIds([...selectedIds, order.id]);
+                          else setSelectedIds(selectedIds.filter(id => id !== order.id));
+                        }}
+                      />
                     </td>
+                    <td className="px-6 py-5 font-en font-bold text-[#0F3B73]">{order.trackingNumber}</td>
+                    <td className="px-6 py-5 font-en font-bold text-slate-600">{order.id.slice(0, 8)}</td>
+                    <td className="px-6 py-5 font-bold text-slate-800">{order.merchantName}</td>
+                    <td className="px-6 py-5 font-bold text-slate-600">{order.customerName}</td>
+                    <td className="px-6 py-5 font-bold text-slate-500">{order.province}</td>
+                    <td className="px-6 py-5">
+                       <span className="text-orange-500 font-bold">جاهز للتحويل</span>
+                    </td>
+                    <td className="px-6 py-5 font-en font-bold text-slate-400">{order.date ? order.date.split('T')[0] : 'N/A'}</td>
+                    <td className="px-6 py-5 font-en font-black text-slate-800">{order.totalAmount.toLocaleString()} د.ع</td>
                   </tr>
                 ))
               )}
