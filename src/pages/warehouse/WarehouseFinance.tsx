@@ -7,7 +7,8 @@ import {
   Printer, 
   FileSpreadsheet,
   ArrowUpRight,
-  ArrowDownLeft
+  ArrowDownLeft,
+  Package
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -48,7 +49,7 @@ export default function WarehouseFinance() {
   return (
     <div className="max-w-7xl mx-auto space-y-8" dir="rtl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden">
         <div className="space-y-1">
           <p className="text-slate-500 font-bold flex items-center gap-2">
             نظرة عامة
@@ -70,7 +71,7 @@ export default function WarehouseFinance() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 print:hidden">
         {stats.map((stat, index) => (
           <motion.div
             key={index}
@@ -100,7 +101,7 @@ export default function WarehouseFinance() {
       </div>
 
       {/* Transactions Table */}
-      <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden print:hidden">
         <div className="bg-[#8CB33E] p-5">
            <h2 className="text-white text-xl font-black text-center">سجل العمليات المالية</h2>
         </div>
@@ -138,6 +139,80 @@ export default function WarehouseFinance() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Printable Financial Report */}
+      <div id="printable-financial-report" className="hidden print:block w-full bg-white text-black pt-4 z-50" dir="rtl">
+         {/* Report Header */}
+         <div className="text-center mb-8">
+            <div className="flex justify-center mb-2">
+               {/* Logo */}
+               <div className="w-16 h-16 bg-[#0F3B73] rounded-2xl flex items-center justify-center">
+                  <Package className="w-8 h-8 text-white" />
+               </div>
+            </div>
+            <h1 className="text-2xl font-black text-[#0F3B73]">شركة العراب للشحن والتوصيل السريع</h1>
+         </div>
+
+         <div className="flex justify-between items-start mb-8 border-b-2 border-slate-200 pb-6">
+            <div className="space-y-2 text-right">
+               <p className="font-bold text-slate-800">الشركة: <span className="font-black text-[#0F3B73]">شركة العراب للشحن</span></p>
+               <p className="font-bold text-slate-800">رقم التقرير: <span className="font-black">RPT-{Math.floor(Math.random() * 100000)}</span></p>
+            </div>
+            <div className="space-y-2 text-right">
+               <p className="font-bold text-slate-800">العدد: <span className="font-black border border-slate-300 px-2 py-0.5 rounded">{transactions.length} عمليات</span></p>
+               <p className="font-bold text-slate-800">التقرير: <span className="font-black">سجل العمليات المالية للمخزن</span></p>
+               <p className="font-bold text-slate-800">التاريخ: <span className="font-black whitespace-nowrap">{new Date().toLocaleDateString('ar-IQ')}</span></p>
+            </div>
+         </div>
+
+         {/* Report Table */}
+         <table className="w-full text-right border-collapse mb-12 border-2 border-slate-500">
+            <thead>
+               <tr className="border-b-2 border-black bg-slate-100">
+                  <th className="p-3 font-black text-black border-l border-slate-300">التسلسل</th>
+                  <th className="p-3 font-black text-black border-l border-slate-300">رقم العملية</th>
+                  <th className="p-3 font-black text-black border-l border-slate-300">النوع</th>
+                  <th className="p-3 font-black text-black border-l border-slate-300">التفاصيل</th>
+                  <th className="p-3 font-black text-black border-l border-slate-300">التاريخ</th>
+                  <th className="p-3 font-black text-black">المبلغ</th>
+               </tr>
+            </thead>
+            <tbody>
+               {transactions.map(t => (
+                  <tr key={t.id} className="border-b border-slate-300">
+                      <td className="p-3 font-bold border-l border-slate-300">{t.sn}</td>
+                      <td className="p-3 font-bold border-l border-slate-300">{t.opNum}</td>
+                      <td className="p-3 font-bold border-l border-slate-300">{t.type}</td>
+                      <td className="p-3 font-bold border-l border-slate-300">{t.details}</td>
+                      <td className="p-3 font-bold border-l border-slate-300 font-en text-slate-700">{t.date}</td>
+                      <td className={`p-3 font-black font-en text-left dir-ltr ${t.amount < 0 ? 'text-red-700' : 'text-emerald-700'}`}>
+                        {t.amount > 0 ? '(+) ' : '(-) '}
+                        {Math.abs(t.amount).toLocaleString()} د.ع
+                      </td>
+                  </tr>
+               ))}
+               {/* Totals */}
+               <tr className="border-t-[3px] border-black bg-slate-100">
+                  <td colSpan={5} className="p-3 font-black text-center border-l border-slate-300">صافي العمليات:</td>
+                  <td className="p-3 font-black text-slate-800 text-lg font-en text-left dir-ltr">
+                     {transactions.reduce((sum, t) => sum + t.amount, 0).toLocaleString()} د.ع
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+
+         {/* Signatures */}
+         <div className="flex justify-between px-16 mt-20 pt-10">
+            <div className="text-center">
+               <p className="font-black text-lg mb-12">اسم مدير الفرع والتوقيع</p>
+               <p className="text-black font-black">________________________</p>
+            </div>
+            <div className="text-center">
+               <p className="font-black text-lg mb-12">اسم المحاسب المالي والتوقيع</p>
+               <p className="text-black font-black">________________________</p>
+            </div>
+         </div>
       </div>
     </div>
   );
