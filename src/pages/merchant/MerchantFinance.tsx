@@ -114,44 +114,44 @@ export default function MerchantFinance() {
         </div>
 
         {/* Financial Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
            {/* Current Balance Card (Green) */}
-           <div className="bg-[#10b981] p-6 md:p-8 rounded-3xl flex flex-col items-center text-center shadow-lg relative group overflow-hidden print:border print:border-gray-300 print:text-black print:bg-white print:shadow-none">
-              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4 print:bg-gray-100">
-                <Wallet className="w-8 h-8 text-white print:text-gray-800" />
+           <div className="bg-[#10b981] p-4 sm:p-6 md:p-8 rounded-3xl flex flex-col items-center text-center shadow-lg relative group overflow-hidden print:border print:border-gray-300 print:text-black print:bg-white print:shadow-none">
+              <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-3 sm:mb-4 print:bg-gray-100">
+                <Wallet className="w-6 h-6 sm:w-8 sm:h-8 text-white print:text-gray-800" />
               </div>
-              <h3 className="text-white font-black text-xl mb-2 print:text-gray-800">الرصيد الحالي</h3>
-              <div className="flex items-baseline gap-2 mb-2">
-                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900">{currentBalance.toLocaleString()}</span>
-                 <span className="text-xl font-black text-white/90 print:text-gray-600">د.ع</span>
+              <h3 className="text-white font-black text-sm sm:text-xl mb-1 sm:mb-2 print:text-gray-800">الرصيد الحالي</h3>
+              <div className="flex items-baseline gap-1 sm:gap-2 mb-1 sm:mb-2">
+                 <span className="text-2xl sm:text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900">{currentBalance.toLocaleString()}</span>
+                 <span className="text-sm sm:text-xl font-black text-white/90 print:text-gray-600">د.ع</span>
               </div>
-              <p className="text-white/80 font-bold text-sm md:text-base print:text-gray-500">جاهز للسحب</p>
+              <p className="text-white/80 font-bold text-xs sm:text-sm md:text-base print:text-gray-500">جاهز للسحب</p>
            </div>
 
            {/* Withdrawals Card (Blue) */}
-           <div className="bg-[#3b82f6] p-6 md:p-8 rounded-3xl flex flex-col items-center text-center shadow-lg relative group overflow-hidden print:border print:border-gray-300 print:text-black print:bg-white print:shadow-none">
-              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4 print:bg-gray-100">
-                <Landmark className="w-8 h-8 text-white print:text-gray-800" />
+           <div className="bg-[#3b82f6] p-4 sm:p-6 md:p-8 rounded-3xl flex flex-col items-center text-center shadow-lg relative group overflow-hidden print:border print:border-gray-300 print:text-black print:bg-white print:shadow-none">
+              <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-3 sm:mb-4 print:bg-gray-100">
+                <Landmark className="w-6 h-6 sm:w-8 sm:h-8 text-white print:text-gray-800" />
               </div>
-              <h3 className="text-white font-black text-xl mb-2 print:text-gray-800">المسحوبات</h3>
-              <div className="flex items-baseline gap-2 mb-2">
-                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900">{withdrawals.toLocaleString()}</span>
-                 <span className="text-xl font-black text-white/90 print:text-gray-600">د.ع</span>
+              <h3 className="text-white font-black text-sm sm:text-xl mb-1 sm:mb-2 print:text-gray-800">المسحوبات</h3>
+              <div className="flex items-baseline gap-1 sm:gap-2 mb-1 sm:mb-2">
+                 <span className="text-2xl sm:text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900">{withdrawals.toLocaleString()}</span>
+                 <span className="text-sm sm:text-xl font-black text-white/90 print:text-gray-600">د.ع</span>
               </div>
-              <p className="text-white/80 font-bold text-sm md:text-base print:text-gray-500">تم تسليمها للتاجر</p>
+              <p className="text-white/80 font-bold text-xs sm:text-sm md:text-base print:text-gray-500">تم تسليمها للتاجر</p>
            </div>
 
-           {/* Pending Amounts Card (Orange) - Full Width */}
-           <div className="md:col-span-2 bg-[#f59e0b] p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-lg relative group overflow-hidden print:border print:border-gray-300 print:text-black print:bg-white print:shadow-none">
-              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4 print:bg-gray-100">
-                <Clock className="w-8 h-8 text-white print:text-gray-800" />
+           {/* Pending Amounts Card (Orange) */}
+           <div className="bg-[#f59e0b] p-4 sm:p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-lg relative group overflow-hidden print:border print:border-gray-300 print:text-black print:bg-white print:shadow-none">
+              <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-3 sm:mb-4 print:bg-gray-100">
+                <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-white print:text-gray-800" />
               </div>
-              <h3 className="text-white font-black text-xl mb-2 print:text-gray-800">مبالغ معلقة (قيد التوصيل)</h3>
-              <div className="flex items-baseline gap-2 mb-2">
-                 <span className="text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900">{pendingAmount.toLocaleString()}</span>
-                 <span className="text-xl font-black text-white/90 print:text-gray-600">د.ع</span>
+              <h3 className="text-white font-black text-sm sm:text-xl mb-1 sm:mb-2 print:text-gray-800">مبالغ معلقة</h3>
+              <div className="flex items-baseline gap-1 sm:gap-2 mb-1 sm:mb-2">
+                 <span className="text-2xl sm:text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900">{pendingAmount.toLocaleString()}</span>
+                 <span className="text-sm sm:text-xl font-black text-white/90 print:text-gray-600">د.ع</span>
               </div>
-              <p className="text-white/80 font-bold text-sm md:text-base print:text-gray-500">انتظار إتمام عمليات التوصيل</p>
+              <p className="text-white/80 font-bold text-xs sm:text-sm md:text-base print:text-gray-500">مبالغ قيد التوصيل</p>
            </div>
         </div>
 

@@ -16,9 +16,9 @@ export default function IncomingMerchant() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-800">الوارد من التاجر</h1>
+          <h1 className="text-3xl font-black text-slate-800">الشحنات الواردة من التاجر</h1>
           <p className="text-slate-500 font-medium mt-1">
-            إدارة الشحنات الواردة من التجار للمخزن الرئيسي
+            مراجعة واستلام الشحنات الواردة من التاجر إلى المخزن الرئيسي
           </p>
         </div>
       </div>
@@ -89,7 +89,7 @@ export default function IncomingMerchant() {
                           onClick={() => handleReceive(o.id)}
                           className="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
                         >
-                          استلام الطلب
+                          استلام إلى المخزن الرئيسي
                         </button>
                       </div>
                     </td>

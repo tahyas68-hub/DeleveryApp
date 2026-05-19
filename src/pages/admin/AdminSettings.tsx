@@ -1,33 +1,26 @@
 import React, { useState, useRef } from 'react';
-import { Save, Plus, MapPin, Search } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { useSettings } from '../../context/SettingsContext';
-import { Link } from 'react-router-dom';
 
 export default function AdminSettings() {
-  const [activeTab, setActiveTab] = useState<'delivery' | 'app'>('delivery');
-  const { governorates, bulkUpdateGovernorates, defaultDriverCommission, updateDefaultDriverCommission } = useSettings();
+  const { defaultDriverCommission, updateDefaultDriverCommission, requireMerchantApproval, updateRequireMerchantApproval } = useSettings();
   
-  const [localGovs, setLocalGovs] = useState([...governorates]);
   const [defaultDriverCommissionLocal, setDefaultDriverCommissionLocal] = useState(defaultDriverCommission);
+  const [requireMerchantApprovalLocal, setRequireMerchantApprovalLocal] = useState(requireMerchantApproval);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Sync if context updates externally (e.g. initial load)
-  React.useEffect(() => {
-    setLocalGovs(governorates);
-  }, [governorates]);
 
   React.useEffect(() => {
     setDefaultDriverCommissionLocal(defaultDriverCommission);
   }, [defaultDriverCommission]);
 
-  const handleUpdateLocal = (id: number, data: any) => {
-    setLocalGovs(prev => prev.map(g => g.id === id ? { ...g, ...data } : g));
-  };
+  React.useEffect(() => {
+    setRequireMerchantApprovalLocal(requireMerchantApproval);
+  }, [requireMerchantApproval]);
 
   const handleSaveChanges = () => {
-    bulkUpdateGovernorates(localGovs);
     updateDefaultDriverCommission(defaultDriverCommissionLocal);
+    updateRequireMerchantApproval(requireMerchantApprovalLocal);
     alert('تم حفظ الإعدادات بنجاح!');
   };
 
@@ -88,8 +81,8 @@ export default function AdminSettings() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">إعدادات النظام والتسعير</h1>
-          <p className="text-slate-500">إدارة تسعيرة التوصيل، أوقات الذروة، والمحافظات.</p>
+          <h1 className="text-2xl font-bold text-slate-800">إعدادات النظام</h1>
+          <p className="text-slate-500">إدارة إعدادات النظام والتطبيق.</p>
         </div>
         <div className="flex gap-2">
           <button onClick={handleSaveChanges} className="bg-primary hover:bg-primary-600 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg shadow-blue-500/20 active:scale-95 transition-transform flex items-center gap-2 whitespace-nowrap">
@@ -100,98 +93,6 @@ export default function AdminSettings() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="flex border-b border-slate-200">
-          <button 
-            className={`flex-1 py-4 text-center font-bold uppercase tracking-wider text-sm transition-colors ${activeTab === 'delivery' ? 'text-primary border-b-2 border-primary bg-primary-50/50' : 'text-slate-500 hover:bg-slate-50'}`}
-            onClick={() => setActiveTab('delivery')}
-          >
-            تسعيرة التوصيل (المحافظات)
-          </button>
-          <button 
-            className={`flex-1 py-4 text-center font-bold uppercase tracking-wider text-sm transition-colors ${activeTab === 'app' ? 'text-primary border-b-2 border-primary bg-primary-50/50' : 'text-slate-500 hover:bg-slate-50'}`}
-            onClick={() => setActiveTab('app')}
-          >
-            إعدادات التطبيق
-          </button>
-        </div>
-
-        {activeTab === 'delivery' && (
-          <div>
-            <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row gap-4 justify-between items-center">
-                <div className="relative w-full sm:w-96">
-                  <input type="text" placeholder="البحث عن منطقة أو محافظة..." className="w-full bg-white border border-slate-200 rounded-lg pl-4 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
-                  <Search className="w-4 h-4 text-slate-400 absolute right-3 top-3.5" />
-                </div>
-                <button className="flex items-center gap-2 border-2 border-primary text-primary px-4 py-2 rounded-lg font-bold hover:bg-primary hover:text-white transition-colors">
-                  <Plus className="w-4 h-4" /> إضافة تسعيرة محافظة
-                </button>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-right">
-                <thead className="bg-slate-50 text-slate-500 uppercase tracking-widest text-[10px] font-bold border-b border-slate-200">
-                  <tr>
-                    <th className="px-6 py-4">المحافظة</th>
-                    <th className="px-6 py-4">تسعيرة التوصيل</th>
-                    <th className="px-6 py-4">زيادة وقت الذروة (%)</th>
-                    <th className="px-6 py-4">أوقات الذروة</th>
-                    <th className="px-6 py-4">حالة التوصيل</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {localGovs.map((gov) => (
-                    <tr key={gov.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 font-bold text-slate-800">
-                          <MapPin className="w-4 h-4 text-primary" /> {gov.name}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="relative w-24">
-                          <input 
-                            type="number" 
-                            value={gov.base} 
-                            onChange={(e) => handleUpdateLocal(gov.id, { base: Number(e.target.value) })}
-                            className="w-full border border-slate-200 rounded-md px-2 py-1 pr-8 font-en focus:outline-none focus:ring-1 focus:ring-blue-500" 
-                          />
-                          <span className="absolute right-2 top-1.5 text-xs text-slate-400 font-bold">د.ع</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="relative w-24">
-                          <input 
-                            type="number" 
-                            value={gov.peak} 
-                            onChange={(e) => handleUpdateLocal(gov.id, { peak: Number(e.target.value) })}
-                            className="w-full border border-slate-200 rounded-md px-2 py-1 pr-6 font-en focus:outline-none focus:ring-1 focus:ring-primary" 
-                          />
-                          <span className="absolute right-2 top-1.5 text-xs text-slate-400 font-bold">%</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 font-en text-slate-600 text-xs font-bold">{gov.hours}</td>
-                      <td className="px-6 py-4">
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input 
-                            type="checkbox" 
-                            checked={gov.active} 
-                            onChange={(e) => handleUpdateLocal(gov.id, { active: e.target.checked })}
-                            className="sr-only peer" 
-                          />
-                          <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
-                        </label>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="p-4 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 font-medium">
-              * يمكن تحديد أسعار خاصة لكل تاجر من خلال <Link to="/admin/merchant-pricing" className="text-primary hover:underline font-bold">تسعيرة التجار</Link>. الأسعار أعلاه هي الأسعار الافتراضية.
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'app' && (
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-6">
                <h3 className="font-bold text-slate-800 border-b border-slate-100 pb-2">تفاصيل الشركة</h3>
@@ -211,6 +112,23 @@ export default function AdminSettings() {
                     <span className="absolute left-4 top-3.5 text-slate-400 font-bold">د.ع</span>
                   </div>
                </div>
+               
+               <div className="pt-4 border-t border-slate-100">
+                  <h4 className="font-bold text-slate-800 mb-3 text-sm">إعدادات الطلبات الواردة</h4>
+                  <label className="flex items-center gap-3 cursor-pointer p-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
+                    <input 
+                      type="checkbox" 
+                      checked={requireMerchantApprovalLocal} 
+                      onChange={(e) => setRequireMerchantApprovalLocal(e.target.checked)}
+                      className="w-5 h-5 text-primary border-slate-300 rounded focus:ring-primary"
+                    />
+                    <div>
+                      <div className="font-bold text-slate-800">تفعيل موافقة الإدارة على الشحنات الواردة من التاجر</div>
+                      <div className="text-xs text-slate-500 mt-1">إذا تم التعطيل، ستذهب الطلبات المضافة من قبل التجار مباشرة إلى "المخزن الرئيسي" دون الحاجة لموافقة الإدارة.</div>
+                    </div>
+                  </label>
+               </div>
+
                <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">شعار الشركة</label>
                   <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer">
@@ -275,8 +193,8 @@ export default function AdminSettings() {
                </div>
             </div>
           </div>
-        )}
       </div>
     </div>
   );
 }
+

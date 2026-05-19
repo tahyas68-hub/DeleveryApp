@@ -8,6 +8,8 @@ import DriverLayout from "./layouts/DriverLayout";
 // Pages
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminOrders from "./pages/admin/AdminOrders";
+import MainWarehouse from "./pages/admin/MainWarehouse";
 import MerchantDashboard from "./pages/merchant/MerchantDashboard";
 import MerchantOverview from "./pages/merchant/MerchantOverview";
 import MerchantFinance from "./pages/merchant/MerchantFinance";
@@ -104,6 +106,8 @@ export default function App() {
                     element={<DashboardLayout role="admin" />}
                   >
                     <Route index element={<AdminDashboard />} />
+                    <Route path="orders" element={<AdminOrders />} />
+                    <Route path="main-warehouse" element={<MainWarehouse />} />
                     <Route
                       path="incoming-merchant"
                       element={<IncomingMerchant />}

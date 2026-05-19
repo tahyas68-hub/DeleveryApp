@@ -37,8 +37,8 @@ export default function AdminReturns() {
       {/* Header */}
       <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">إدارة الرواجع</h1>
-          <p className="text-slate-500 mt-1">عرض الطلبات الراجعة وتوجيهها للرواجع إلى التجار أو الفروع</p>
+          <h1 className="text-3xl font-black text-slate-800">رواجع الفروع</h1>
+          <p className="text-slate-500 font-medium mt-1">عرض الطلبات الراجعة من الفروع لإرجاعها للتاجر أو تحويلها لفرع آخر</p>
         </div>
         <div className="flex items-center gap-4 bg-red-50 px-4 py-2 rounded-xl border border-red-100">
            <Package className="w-5 h-5 text-red-600" />

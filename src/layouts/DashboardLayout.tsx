@@ -5,7 +5,7 @@ import {
   Bell, Search, Menu, X, LogOut, FileText, Inbox, Star,
   Warehouse, Building2, ClipboardList, Calculator, Wallet,
   Briefcase, UserCircle, ArrowDown, History, Store,
-  Bike, Percent, DollarSign, Shield, Tags, ChevronLeft, ChevronDown, Activity, ArrowRightLeft
+  Bike, Percent, DollarSign, Shield, Tags, ChevronLeft, ChevronDown, Activity, ArrowRightLeft, PlusCircle
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
@@ -51,12 +51,11 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
           { 
             label: 'الطلبات', 
             icon: Package, 
-            subItems: [
-              { label: 'الوارد من التاجر', icon: ArrowDown, to: '/admin/incoming-merchant' },
-              { label: 'المخزن الرئيسي', icon: Warehouse, to: '/admin/warehouses' },
-              { label: 'الرواجع', icon: ArrowRightLeft, to: '/admin/returns' },
-            ]
+            to: '/admin/orders',
           },
+          { label: 'الشحنات الواردة', icon: ArrowDown, to: '/admin/incoming-merchant' },
+          { label: 'المخزن الرئيسي', icon: Warehouse, to: '/admin/main-warehouse' },
+          { label: 'رواجع الفروع', icon: ArrowRightLeft, to: '/admin/returns' },
           { label: 'الفروع', icon: Building2, to: '/admin/branches' },
           { label: 'المستخدمين', icon: Users, to: '/admin/users' },
           { 

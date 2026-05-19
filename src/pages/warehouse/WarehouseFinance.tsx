@@ -71,33 +71,42 @@ export default function WarehouseFinance() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 print:hidden">
-        {stats.map((stat, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className={`bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm relative overflow-hidden group`}
-          >
-            <div className={`absolute top-0 right-0 w-2 h-full bg-${stat.color}-500`} />
-            
-            <div className="flex justify-between items-start mb-6">
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-${stat.color}-50 text-${stat.color}-600 group-hover:scale-110 transition-transform`}>
-                <stat.icon className="w-7 h-7" />
-              </div>
-              <p className={`text-sm font-black text-${stat.color}-600`}>{stat.label}</p>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6 print:hidden">
+         {/* Card 1: Balance (Green) */}
+         <div className="bg-[#10b981] p-3 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center text-center shadow-lg relative group overflow-hidden print:border print:border-gray-300 print:text-black print:bg-white print:shadow-none">
+            <div className="w-8 h-8 sm:w-14 sm:h-14 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-2 sm:mb-4 print:bg-gray-100">
+              <DollarSign className="w-5 h-5 sm:w-8 sm:h-8 text-white print:text-gray-800" />
             </div>
-            
-            <div className="text-right">
-              <div className="flex items-baseline justify-end gap-2">
-                <span className="text-4xl font-black text-slate-900">{stat.value}</span>
-                <span className="text-lg font-bold text-slate-500">{stat.unit}</span>
-              </div>
-              <p className="text-slate-400 font-bold mt-2 text-sm">{stat.subtext}</p>
+            <h3 className="text-white font-black text-[10px] sm:text-lg mb-1 print:text-gray-800 leading-tight">الرصيد الحالي</h3>
+            <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-0 sm:gap-2 mb-1">
+               <span className="text-lg sm:text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900 leading-none">210K</span>
             </div>
-          </motion.div>
-        ))}
+            <p className="text-white/80 font-bold text-[8px] sm:text-sm md:text-base print:text-gray-500 truncate w-full">ذمة المندوبين</p>
+         </div>
+
+         {/* Card 2: Withdrawals (Blue) */}
+         <div className="bg-[#3b82f6] p-3 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center text-center shadow-lg relative group overflow-hidden print:border print:border-gray-300 print:text-black print:bg-white print:shadow-none">
+            <div className="w-8 h-8 sm:w-14 sm:h-14 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-2 sm:mb-4 print:bg-gray-100">
+              <Wallet className="w-5 h-5 sm:w-8 sm:h-8 text-white print:text-gray-800" />
+            </div>
+            <h3 className="text-white font-black text-[10px] sm:text-lg mb-1 print:text-gray-800 leading-tight">الصندوق المالي</h3>
+            <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-0 sm:gap-2 mb-1">
+               <span className="text-lg sm:text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900 leading-none">0</span>
+            </div>
+            <p className="text-white/80 font-bold text-[8px] sm:text-sm md:text-base print:text-gray-500 truncate w-full">تم سحبها</p>
+         </div>
+
+         {/* Card 3: Pending (Orange) */}
+         <div className="bg-[#f59e0b] p-3 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center text-center shadow-lg relative group overflow-hidden print:border print:border-gray-300 print:text-black print:bg-white print:shadow-none">
+            <div className="w-8 h-8 sm:w-14 sm:h-14 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-2 sm:mb-4 print:bg-gray-100">
+              <Clock className="w-5 h-5 sm:w-8 sm:h-8 text-white print:text-gray-800" />
+            </div>
+            <h3 className="text-white font-black text-[10px] sm:text-lg mb-1 print:text-gray-800 leading-tight">مبالغ معلقة</h3>
+            <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-0 sm:gap-2 mb-1">
+               <span className="text-lg sm:text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900 leading-none">290K</span>
+            </div>
+            <p className="text-white/80 font-bold text-[8px] sm:text-sm md:text-base print:text-gray-500 truncate w-full">عند المندوبين</p>
+         </div>
       </div>
 
       {/* Transactions Table */}

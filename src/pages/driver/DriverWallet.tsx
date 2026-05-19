@@ -41,41 +41,41 @@ export default function DriverWallet() {
       </div>
 
       {/* The 4 large statistic cards */}
-      <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-2 gap-4">
         
         {/* Card 1: Liability (Blue) */}
-        <div className="bg-white border-r-[6px] border-r-blue-600 rounded-3xl p-6 shadow-sm relative overflow-hidden">
-          <h3 className="text-lg font-bold text-slate-600 mb-2 text-right">الذمة المالية (عليه)</h3>
-          <div className="flex items-center gap-2 justify-end">
-            <span className="text-xl font-bold text-blue-600 mt-1">د.ع</span>
-            <span className="text-4xl sm:text-5xl font-black font-en text-slate-800 tracking-tight">{displayLiability.toLocaleString()}</span>
+        <div className="bg-white border-r-[4px] border-r-blue-600 rounded-[20px] p-4 shadow-sm relative overflow-hidden flex flex-col justify-center">
+          <h3 className="text-[13px] font-bold text-slate-500 mb-1 text-right">الذمة المالية (عليه)</h3>
+          <div className="flex items-baseline gap-1 justify-end">
+            <span className="text-xl sm:text-2xl font-black font-en text-slate-800 tracking-tight">{displayLiability.toLocaleString()}</span>
+            <span className="text-xs font-bold text-blue-600">د.ع</span>
           </div>
         </div>
 
         {/* Card 2: Delivered to company (Purple) */}
-        <div className="bg-white border-r-[6px] border-r-[#9333ea] rounded-3xl p-6 shadow-sm relative overflow-hidden text-right">
-          <h3 className="text-lg font-bold text-slate-600 mb-2">تم تسليمه (للشركة)</h3>
-          <div className="flex items-center gap-2 justify-end">
-            <span className="text-xl font-bold text-[#9333ea] mt-1">د.ع</span>
-            <span className="text-4xl sm:text-5xl font-black font-en text-slate-800 tracking-tight">{(600000).toLocaleString()}</span>
+        <div className="bg-white border-r-[4px] border-r-[#9333ea] rounded-[20px] p-4 shadow-sm relative overflow-hidden text-right flex flex-col justify-center">
+          <h3 className="text-[13px] font-bold text-slate-500 mb-1">تم تسليمه (للشركة)</h3>
+          <div className="flex items-baseline gap-1 justify-end">
+            <span className="text-xl sm:text-2xl font-black font-en text-slate-800 tracking-tight">{(600000).toLocaleString()}</span>
+            <span className="text-xs font-bold text-[#9333ea]">د.ع</span>
           </div>
         </div>
 
         {/* Card 3: Net Commission (Green) */}
-        <div className="bg-white border-r-[6px] border-r-emerald-500 rounded-3xl text-right p-6 shadow-sm relative overflow-hidden">
-          <h3 className="text-lg font-bold text-slate-600 mb-2">صافي العمولة المستحقة</h3>
-          <div className="flex items-center gap-2 justify-end">
-            <span className="text-xl font-bold text-emerald-500 mt-1">د.ع</span>
-            <span className="text-4xl sm:text-5xl font-black font-en text-slate-800 tracking-tight">{displayCommission.toLocaleString()}</span>
+        <div className="bg-white border-r-[4px] border-r-emerald-500 rounded-[20px] text-right p-4 shadow-sm relative overflow-hidden flex flex-col justify-center">
+          <h3 className="text-[13px] font-bold text-slate-500 mb-1">صافي العمولة المستحقة</h3>
+          <div className="flex items-baseline gap-1 justify-end">
+            <span className="text-xl sm:text-2xl font-black font-en text-slate-800 tracking-tight">{displayCommission.toLocaleString()}</span>
+            <span className="text-xs font-bold text-emerald-500">د.ع</span>
           </div>
         </div>
 
         {/* Card 4: Received Commissions (Orange) */}
-        <div className="bg-white border-r-[6px] border-r-orange-500 rounded-3xl text-right p-6 shadow-sm relative overflow-hidden">
-          <h3 className="text-lg font-bold text-slate-600 mb-2">عمولات مقبوضة</h3>
-          <div className="flex items-center gap-2 justify-end">
-            <span className="text-xl font-bold text-orange-500 mt-1">د.ع</span>
-            <span className="text-4xl sm:text-5xl font-black font-en text-slate-800 tracking-tight">{(34000).toLocaleString()}</span>
+        <div className="bg-white border-r-[4px] border-r-orange-500 rounded-[20px] text-right p-4 shadow-sm relative overflow-hidden flex flex-col justify-center">
+          <h3 className="text-[13px] font-bold text-slate-500 mb-1">عمولات مقبوضة</h3>
+          <div className="flex items-baseline gap-1 justify-end">
+            <span className="text-xl sm:text-2xl font-black font-en text-slate-800 tracking-tight">{(34000).toLocaleString()}</span>
+            <span className="text-xs font-bold text-orange-500">د.ع</span>
           </div>
         </div>
 

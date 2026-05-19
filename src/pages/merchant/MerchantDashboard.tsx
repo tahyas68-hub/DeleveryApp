@@ -15,7 +15,7 @@ export default function MerchantDashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { orders, addOrder, deleteOrder } = useOrders();
-  const { getDeliveryFee, governorates } = useSettings();
+  const { getDeliveryFee, governorates, requireMerchantApproval } = useSettings();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'all');
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
@@ -201,24 +201,25 @@ export default function MerchantDashboard() {
        alert("الرجاء ملء كافة الحقول المطلوبة (الاسم، الهاتف، المحافظة، المبلغ)");
        return;
     }
-    const deliveryFee = getDeliveryFee(newOrder.province, user?.id || 'm-1');
-    const enteredAmount = parseFloat(newOrder.amount) || 0;
+    const deliveryFee = getDeliveryFee(newOrder.province, user?.id || 'merch-1');
+    const totalAmount = parseFloat(newOrder.amount) || 0;
+    const amountForMerchant = totalAmount - deliveryFee;
     
-    // المبلغ المدخل هو المبلغ الإجمالي (مع التوصيل)
-    const amountForMerchant = enteredAmount - deliveryFee;
+    // Check if admin approval is required
+    const initialStatus = requireMerchantApproval ? 'merchant_pending' : 'main_warehouse';
 
     const order: MainOrder = {
        id: `ORD-${1000 + orders.length + 1}`,
        trackingNumber: newOrder.trackingNumber || `SHP-${Math.floor(Math.random() * 100000)}`,
-       merchantId: user?.id || 'm-1',
+       merchantId: user?.id || 'merch-1',
        merchantName: user?.name || 'التاجر الحالي',
        customerName: newOrder.customerName,
        customerPhone: newOrder.customerPhone,
        address: newOrder.address,
        province: newOrder.province,
        
-       amount: amountForMerchant, // Legacy
-       totalAmount: enteredAmount,
+       amount: amountForMerchant, 
+       totalAmount: totalAmount,
        deliveryFee: deliveryFee,
        orderAmount: amountForMerchant,
        collectedAmount: 0,
@@ -229,10 +230,15 @@ export default function MerchantDashboard() {
 
        date: new Date().toISOString().split('T')[0],
        pieces: newOrder.pieces,
-       status: 'merchant_pending'
+       status: initialStatus
     };
     addOrder(order);
     setIsAddModalOpen(false);
+    if (requireMerchantApproval) {
+      alert('تم إضافة الطلب بنجاح. هو الآن بانتظار استلام المخزن الرئيسي.');
+    } else {
+      alert('تم إضافة الطلب بنجاح وهو الآن في المخزن الرئيسي.');
+    }
     setNewOrder({ pieces: 1, trackingNumber: '', customerPhone: '', customerName: '', address: '', province: '', amount: '' });
   };
 
@@ -298,32 +304,34 @@ export default function MerchantDashboard() {
         {/* Search and Filters Card / Cards View */}
         {viewMode === 'cards' && (
           <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-6 shadow-sm">
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {/* The "All" Tab which is not in stats */}
               <div 
                 onClick={() => { setActiveTab('all'); setViewMode('table'); }}
-                className={`bg-slate-100 text-slate-800 p-6 rounded-xl flex flex-col items-center justify-center text-center shadow-md transform transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer relative overflow-hidden`}
+                className={`bg-slate-100 text-slate-800 p-5 rounded-2xl flex items-center shadow-sm hover:shadow-md transform transition-all hover:-translate-y-1 cursor-pointer relative overflow-hidden`}
               >
-                <div className="mb-3 relative z-10 w-full flex justify-center">
-                  <div><Package className="w-8 h-8 text-black/50" /></div>
+                <div className="flex flex-col gap-1 w-full z-10">
+                   <div className="flex justify-between items-start mb-2">
+                     <p className="font-bold text-base opacity-90 tracking-wide mt-1">الكل</p>
+                     <div><Package className="w-8 h-8 opacity-50" /></div>
+                   </div>
+                   <h2 className="text-4xl font-black text-right">{orders.length}</h2>
                 </div>
-                <h2 className="text-4xl font-black mb-1 z-10">{orders.length}</h2>
-                <p className="font-bold text-base z-10 opacity-90">الكل</p>
               </div>
               
               {stats.map((stat, idx) => (
                 <div 
                   key={idx}
                   onClick={() => { setActiveTab(stat.statusId); setViewMode('table'); }}
-                  className={`${stat.bg} ${stat.textColor} p-6 rounded-xl flex flex-col items-center justify-center text-center shadow-md transform transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer relative overflow-hidden`}
+                  className={`${stat.bg} ${stat.textColor} p-5 rounded-2xl flex items-center shadow-sm hover:shadow-md transform transition-all hover:-translate-y-1 cursor-pointer relative overflow-hidden`}
                 >
-                  <div className="mb-3 relative z-10 w-full flex justify-center">
-                    <div>
-                      {stat.icon}
-                    </div>
+                  <div className="flex flex-col gap-1 w-full z-10">
+                     <div className="flex justify-between items-start mb-2">
+                       <p className="font-bold text-base opacity-90 tracking-wide mt-1">{stat.title}</p>
+                       <div>{stat.icon}</div>
+                     </div>
+                     <h2 className="text-4xl font-black font-en text-right">{stat.count}</h2>
                   </div>
-                  <h2 className="text-4xl font-black mb-1 z-10">{stat.count}</h2>
-                  <p className="font-bold text-base z-10 opacity-90">{stat.title}</p>
                 </div>
               ))}
             </div>
@@ -456,8 +464,8 @@ export default function MerchantDashboard() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-slate-600 font-bold text-xs text-right">المبلغ المطلوب (مع التوصيل) <span className="text-red-500">*</span></label>
-                    <input type="number" min="0" value={newOrder.amount} onChange={e => setNewOrder({...newOrder, amount: e.target.value})} placeholder="أدخل المبلغ بالدينار العراقي" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-center text-slate-800 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
+                    <label className="block text-slate-600 font-bold text-xs text-right">المبلغ الكلي للطلب (مع التوصيل) <span className="text-red-500">*</span></label>
+                    <input type="number" min="0" value={newOrder.amount} onChange={e => setNewOrder({...newOrder, amount: e.target.value})} placeholder="المبلغ المطلوب من العميل" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-center text-slate-800 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
                   </div>
                   <div className="space-y-2">
                     <label className="block text-slate-600 font-bold text-xs text-right">عدد القطع <span className="text-red-500">*</span></label>
@@ -469,7 +477,7 @@ export default function MerchantDashboard() {
                   </div>
                   <div className="space-y-2">
                     <label className="block text-slate-600 font-bold text-xs text-right">رقم الطلب (تلقائي)</label>
-                    <input type="text" value="10018" disabled className="w-full bg-slate-100 border border-slate-200 rounded-xl p-4 font-en font-black text-center text-emerald-600 cursor-not-allowed" />
+                    <input type="text" value="جديد" disabled className="w-full bg-slate-100 border border-slate-200 rounded-xl p-4 font-en font-black text-center text-emerald-600 cursor-not-allowed" />
                   </div>
                 </div>
               </div>
@@ -501,30 +509,45 @@ export default function MerchantDashboard() {
                 </div>
                 
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="block text-slate-600 font-bold text-xs text-right">اقرب نقطة دالة <span className="text-red-500">*</span></label>
-                    <input type="text" value={newOrder.address} onChange={e => setNewOrder({...newOrder, address: e.target.value})} placeholder="أقرب نقطة دالة أو معلم معروف" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 placeholder-slate-300 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
-                  </div>
-                  
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                       <label className="block text-slate-600 font-bold text-xs text-right">المنطقة / الحي <span className="text-red-500">*</span></label>
-                       <input type="text" placeholder="المنصور، الكرادة، إلخ" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 placeholder-slate-300 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
+                       <label className="block text-slate-600 font-bold text-xs text-right">المنطقة / الحي \ أقرب نقطة دالة <span className="text-red-500">*</span></label>
+                       <input type="text" value={newOrder.address} onChange={e => setNewOrder({...newOrder, address: e.target.value})} placeholder="المنصور، الكرادة، إلخ" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 placeholder-slate-300 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
                     </div>
                     <div className="space-y-2">
                       <label className="block text-slate-600 font-bold text-xs text-right">محافظة التوصيل <span className="text-red-500">*</span></label>
                       <select value={newOrder.province} onChange={e => setNewOrder({...newOrder, province: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 focus:bg-white focus:border-[#0F3B73] transition-all outline-none appearance-none cursor-pointer">
                         <option value="">اختر المحافظة</option>
-                        {governorates.filter(g => g.active).map(g => {
+                        {governorates.filter(g => g.active !== false).map(g => {
                           const fee = getDeliveryFee(g.name, user?.id);
                           return (
-                            <option key={g.id} value={g.name}>
-                              {g.name} (توصيل: {fee.toLocaleString()} د.ع)
-                            </option>
+                          <option key={g.id} value={g.name} label={`${g.name} (توصيل: ${fee.toLocaleString()} د.ع)`}>
+                            {g.name} (توصيل: {fee.toLocaleString()} د.ع)
+                          </option>
                           );
                         })}
                       </select>
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                     <label className="text-sm font-bold text-slate-700">تفاصيل السعر</label>
+                     <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-bold flex flex-col gap-2 shadow-sm">
+                        <div className="flex justify-between text-slate-500">
+                          <span>المبلغ الكلي :</span>
+                          <span className="font-en">{newOrder.amount ? Number(newOrder.amount).toLocaleString() : 0} د.ع</span>
+                        </div>
+                        <div className="flex justify-between text-slate-500 border-b border-slate-200 pb-2">
+                          <span>أجرة التوصيل ({newOrder.province || 'لم تحدد'}):</span>
+                          <span className="font-en">{newOrder.province ? getDeliveryFee(newOrder.province, user?.id || 'merch-1').toLocaleString() : 0} د.ع</span>
+                        </div>
+                        <div className="flex justify-between text-[#0F3B73] pt-2">
+                          <span>سعر المنتجات الصافي للتاجر:</span>
+                          <span className="font-en text-lg block">{
+                            Math.max(0, ((parseFloat(newOrder.amount) || 0) - (newOrder.province ? getDeliveryFee(newOrder.province, user?.id || 'merch-1') : 0))).toLocaleString()
+                          } د.ع</span>
+                        </div>
+                     </div>
                   </div>
                 </div>
               </div>

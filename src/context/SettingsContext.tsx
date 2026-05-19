@@ -26,6 +26,8 @@ interface SettingsContextType {
   getDriverCommission: (province: string) => number;
   defaultDriverCommission: number;
   updateDefaultDriverCommission: (val: number) => void;
+  requireMerchantApproval: boolean;
+  updateRequireMerchantApproval: (val: boolean) => void;
 }
 
 const defaultGovernorates: GovernoratePrice[] = [
@@ -47,8 +49,7 @@ const defaultGovernorates: GovernoratePrice[] = [
   { id: 16, name: 'كركوك', base: 6000, commission: 0, peak: 0, hours: '-', active: true },
   { id: 17, name: 'السليمانية', base: 7000, commission: 0, peak: 0, hours: '-', active: true },
   { id: 18, name: 'دهوك', base: 7000, commission: 0, peak: 0, hours: '-', active: true },
-  { id: 19, name: 'حلبجة', base: 7000, commission: 0, peak: 0, hours: '-', active: true },
-  { id: 20, name: 'أطراف بغداد', base: 6000, commission: 0, peak: 0, hours: '-', active: true },
+  { id: 19, name: 'حلبجة', base: 7000, commission: 0, peak: 0, hours: '-', active: true }
 ];
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -63,7 +64,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem('app_governorates');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (parsed && Array.isArray(parsed)) {
+           return defaultGovernorates.map(defaultGov => {
+             const savedGov = parsed.find((g: any) => g.name === defaultGov.name);
+             return savedGov ? { ...defaultGov, ...savedGov, active: true } : defaultGov;
+           });
+        }
       } catch (e) {}
     }
     return defaultGovernorates;
@@ -91,6 +98,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('app_default_driver_commission', String(defaultDriverCommission));
   }, [defaultDriverCommission]);
 
+  const [requireMerchantApproval, setRequireMerchantApproval] = useState<boolean>(() => {
+    const saved = localStorage.getItem('app_require_merchant_approval');
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem('app_require_merchant_approval', String(requireMerchantApproval));
+  }, [requireMerchantApproval]);
+
   const updateGovernorate = (id: number, data: Partial<GovernoratePrice>) => {
     setGovernorates(prev => prev.map(g => g.id === id ? { ...g, ...data } : g));
   };
@@ -109,7 +125,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const getDeliveryFee = (province: string, merchantId?: string) => {
     // 1) First check merchant specific price for this province
     if (merchantId) {
-       const m = merchants.find(m => m.id === merchantId);
+       // Support both old localized 'm-1' and new 'merch-1' ID formats
+       const normalizedId = merchantId === 'm-1' ? 'merch-1' : merchantId;
+       const m = merchants.find(m => m.id === normalizedId);
        if (m && m.provincePrices && m.provincePrices[province] !== undefined && m.provincePrices[province] >= 0) {
          return m.provincePrices[province]; // overwrite the governorate price
        }
@@ -130,7 +148,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   return (
     <SettingsContext.Provider value={{
       governorates, updateGovernorate, bulkUpdateGovernorates, merchants, updateMerchant,
-      getDeliveryFee, getDriverCommission, defaultDriverCommission, updateDefaultDriverCommission: setDefaultDriverCommission
+      getDeliveryFee, getDriverCommission, defaultDriverCommission, updateDefaultDriverCommission: setDefaultDriverCommission,
+      requireMerchantApproval, updateRequireMerchantApproval: setRequireMerchantApproval
     }}>
       {children}
     </SettingsContext.Provider>
