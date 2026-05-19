@@ -43,16 +43,6 @@ const initialUsers: AppUser[] = [
     role: 'admin',
     phone: '0700000000',
     status: 'active'
-  },
-  {
-    id: 'merch-1',
-    name: 'بوتيك نايا',
-    username: 'merchant',
-    password: '123',
-    role: 'merchant',
-    phone: '0711111111',
-    status: 'active',
-    balance: 0
   }
 ];
 

@@ -75,53 +75,35 @@ export default function AdminSettings() {
       if (usersRaw) {
         try {
           const parsed = JSON.parse(usersRaw);
-          const allowed = parsed.map((u: any) => ({
-            ...u,
-            balance: 0,
-            currentLoad: 0
-          }));
-          modifiedUsers = JSON.stringify(allowed);
+          // Only preserve users with the 'admin' role
+          const admins = parsed.filter((u: any) => u.role === 'admin');
+          modifiedUsers = JSON.stringify(admins);
         } catch (e) {
           console.error(e);
         }
       }
       
-      const branchesRaw = localStorage.getItem('app_branches');
-      let modifiedBranches = null;
-      if (branchesRaw) {
-        try {
-          const parsedB = JSON.parse(branchesRaw);
-          const newB = parsedB.map((b: any) => ({
-            ...b,
-            orders: 0
-          }));
-          modifiedBranches = JSON.stringify(newB);
-        } catch (e) {}
-      }
-      
       const auth = localStorage.getItem('auth_user');
       const govs = localStorage.getItem('app_governorates');
-      const merchants = localStorage.getItem('app_merchants_pricing');
       const defaultCommission = localStorage.getItem('app_default_driver_commission');
       const requireApproval = localStorage.getItem('app_require_merchant_approval');
       
-      // Stop all background tasks and listeners by immediately reloading after setting
+      // Clear EVERYTHING in localStorage
       localStorage.clear();
       
+      // Restore ONLY essential system configs and the admin user
       if (auth) localStorage.setItem('auth_user', auth);
       if (modifiedUsers) localStorage.setItem('app_users', modifiedUsers);
-      if (modifiedBranches) localStorage.setItem('app_branches', modifiedBranches);
-      
-      // Preserve settings so system is not naked
       if (govs) localStorage.setItem('app_governorates', govs);
-      if (merchants) localStorage.setItem('app_merchants_pricing', merchants);
       if (defaultCommission) localStorage.setItem('app_default_driver_commission', defaultCommission);
       if (requireApproval) localStorage.setItem('app_require_merchant_approval', requireApproval);
       
-      // Force empty arrays for all user-generated data
+      // Explicitly set collections to empty arrays so the system doesn't error out
       localStorage.setItem('app_orders', '[]');
       localStorage.setItem('app_logs', '[]');
       localStorage.setItem('app_transactions', '[]');
+      localStorage.setItem('app_branches', '[]');
+      localStorage.setItem('app_merchants_pricing', '{}');
       
       alert('تم تصفير البيانات للتو. الصفحة سيتم تحديثها.');
       window.location.replace('/');

@@ -26,7 +26,7 @@ export default function MerchantFinance() {
     .filter(o => pendingStatuses.includes(o.status))
     .reduce((sum, o) => sum + (o.amount || 0), 0);
 
-  const withdrawals = 0; // Mock
+  const withdrawals = 0; // Usually calculated from transactions where merchant receives payment
 
   // Generate transactions from Delivered & Returned_Partial orders
   const transactions = orders

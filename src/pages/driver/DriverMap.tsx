@@ -1,9 +1,18 @@
 import React from 'react';
 import { Navigation, MapPin } from 'lucide-react';
-import { dummyOrders } from '../../lib/dummy';
+import { useOrders } from '../../context/OrderContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function DriverMap() {
-  const currentTask = dummyOrders.find(o => o.status === 'shipped') || dummyOrders[0];
+  const { orders } = useOrders();
+  const { user } = useAuth();
+  
+  const myOrders = orders.filter(o => o.driverId === user?.id && o.status === 'driver_assigned');
+  const currentTask = myOrders[0] || {
+    address: 'لم يتم تحديد وجهة',
+    province: 'غير معروف',
+    customerName: 'لا يوجد'
+  };
 
   return (
     <div className="h-full flex flex-col relative overflow-hidden bg-slate-100">
@@ -15,7 +24,7 @@ export default function DriverMap() {
             </div>
             <div>
                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">الوجهة الحالية</p>
-               <p className="font-bold text-slate-800 leading-tight">{currentTask.address}, {currentTask.city}</p>
+               <p className="font-bold text-slate-800 leading-tight">{currentTask.address}, {currentTask.province}</p>
             </div>
          </div>
       </div>

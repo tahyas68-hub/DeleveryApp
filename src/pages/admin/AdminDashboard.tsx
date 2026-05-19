@@ -1,7 +1,6 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Users, Package, AlertCircle, Truck, Star, Warehouse, Building2, CheckSquare, PackageCheck, XSquare, RefreshCcw, PackageMinus, Clock } from 'lucide-react';
-import { formatCurrency } from '../../lib/dummy';
 import { useOrders } from '../../context/OrderContext';
 import { Link } from 'react-router-dom';
 

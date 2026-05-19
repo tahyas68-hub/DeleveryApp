@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Package, Truck, Search, Plus, MapPin, Search as SearchIcon, ArrowLeftRight } from 'lucide-react';
-import { dummyWarehouses } from '../../lib/extended-dummy';
 import { useOrders } from '../../context/OrderContext';
 import { useBranches } from '../../context/BranchContext';
 
@@ -8,7 +7,7 @@ export default function AdminWarehouses() {
   const { orders, updateOrderStatus } = useOrders();
   const { branches } = useBranches();
   
-  const mainWarehouses = dummyWarehouses.filter(w => w.type === 'main');
+  const mainWarehouses = [{ id: 'w1', name: 'المخزن الرئيسي (بغداد)', location: 'بغداد' }];
   const mainOrders = orders.filter(o => o.status === 'main_warehouse');
   
   const [selectedBranches, setSelectedBranches] = useState<Record<string, string>>({});

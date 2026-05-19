@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Package, Truck, MapPin, CheckCircle2, Clock } from 'lucide-react';
-import { dummyOrders } from '../lib/dummy';
+import { useOrders } from '../context/OrderContext';
 
 export default function CustomerTracking() {
   const { id } = useParams();
-  const order = dummyOrders.find(o => o.trackingNumber === id) || dummyOrders[0];
+  const { orders } = useOrders();
+  const order = orders.find(o => o.trackingNumber === id) || {
+    trackingNumber: id || '000000',
+    status: 'merchant_pending',
+  };
   const [rating, setRating] = useState(0);
 
   const steps = [

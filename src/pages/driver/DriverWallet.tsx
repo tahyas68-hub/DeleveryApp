@@ -23,8 +23,14 @@ export default function DriverWallet() {
     return sum + driverCommission;
   }, 0);
 
-  const displayLiability = totalLiability > 0 ? totalLiability : 25000;
-  const displayCommission = totalCommission > 0 ? totalCommission : 2000;
+  const displayLiability = totalLiability;
+  const displayCommission = totalCommission;
+
+  // For demonstration, let's assume received commissions and delivered to company are 0 for now
+  // since DriverWallet doesn't yet track payment transactions.
+  // We remove the hardcoded 600,000 and 34,000
+  const deliveredToCompany = 0;
+  const receivedCommissions = 0;
 
   return (
     <div className="space-y-6 pb-24 max-w-lg mx-auto px-4 sm:px-0 mt-4">
@@ -56,7 +62,7 @@ export default function DriverWallet() {
         <div className="bg-white border-r-[4px] border-r-[#9333ea] rounded-[20px] p-4 shadow-sm relative overflow-hidden text-right flex flex-col justify-center">
           <h3 className="text-[13px] font-bold text-slate-500 mb-1">تم تسليمه (للشركة)</h3>
           <div className="flex items-baseline gap-1 justify-end">
-            <span className="text-xl sm:text-2xl font-black font-en text-slate-800 tracking-tight">{(600000).toLocaleString()}</span>
+            <span className="text-xl sm:text-2xl font-black font-en text-slate-800 tracking-tight">{deliveredToCompany.toLocaleString()}</span>
             <span className="text-xs font-bold text-[#9333ea]">د.ع</span>
           </div>
         </div>
@@ -74,7 +80,7 @@ export default function DriverWallet() {
         <div className="bg-white border-r-[4px] border-r-orange-500 rounded-[20px] text-right p-4 shadow-sm relative overflow-hidden flex flex-col justify-center">
           <h3 className="text-[13px] font-bold text-slate-500 mb-1">عمولات مقبوضة</h3>
           <div className="flex items-baseline gap-1 justify-end">
-            <span className="text-xl sm:text-2xl font-black font-en text-slate-800 tracking-tight">{(34000).toLocaleString()}</span>
+            <span className="text-xl sm:text-2xl font-black font-en text-slate-800 tracking-tight">{receivedCommissions.toLocaleString()}</span>
             <span className="text-xs font-bold text-orange-500">د.ع</span>
           </div>
         </div>
