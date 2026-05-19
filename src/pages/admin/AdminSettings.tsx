@@ -69,7 +69,11 @@ export default function AdminSettings() {
 
   const handleResetDB = () => {
     if (window.prompt('تحذير: سيتم حذف جميع سجلات النظام بشكل نهائي ولن يمكن استعادتها. لتأكيد هذا الإجراء، اكتب "تصفير" أدناه:') === 'تصفير') {
+      const users = localStorage.getItem('app_users');
+      const auth = localStorage.getItem('auth_user');
       localStorage.clear();
+      if (users) localStorage.setItem('app_users', users);
+      if (auth) localStorage.setItem('auth_user', auth);
       alert('تم تصفير النظام! سيتم إعادة تحميل الصفحة الأن.');
       window.location.href = '/';
     } else {
