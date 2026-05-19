@@ -68,7 +68,8 @@ export default function AdminSettings() {
   };
 
   const handleResetDB = () => {
-    if (window.prompt('تحذير: سيتم حذف جميع سجلات النظام بشكل نهائي ولن يمكن استعادتها. لتأكيد هذا الإجراء، اكتب "تصفير" أدناه:') === 'تصفير') {
+    const input = window.prompt('تحذير: سيتم حذف جميع سجلات النظام بشكل نهائي ولن يمكن استعادتها. لتأكيد هذا الإجراء، اكتب "تصفير" أدناه:');
+    if (input && input.trim() === 'تصفير') {
       const usersRaw = localStorage.getItem('app_users');
       let filteredUsers = null;
       if (usersRaw) {
@@ -82,33 +83,35 @@ export default function AdminSettings() {
       }
       
       const auth = localStorage.getItem('auth_user');
+      const govs = localStorage.getItem('app_governorates');
+      const merchants = localStorage.getItem('app_merchants_pricing');
+      const defaultCommission = localStorage.getItem('app_default_driver_commission');
+      const requireApproval = localStorage.getItem('app_require_merchant_approval');
       
-      // Clear all keys
+      // Stop all background tasks and listeners by immediately reloading after setting
       localStorage.clear();
       
-      // Restore auth
       if (auth) localStorage.setItem('auth_user', auth);
+      if (filteredUsers) localStorage.setItem('app_users', filteredUsers);
       
-      // Restore users but with only admin and merchant
-      if (filteredUsers) {
-        localStorage.setItem('app_users', filteredUsers);
-      } else {
-        // Fallback to ensuring users are not empty to avoid loading default users if any
-        // But context handles `null` by loading initials.
-      }
+      // Preserve settings so system is not naked
+      if (govs) localStorage.setItem('app_governorates', govs);
+      if (merchants) localStorage.setItem('app_merchants_pricing', merchants);
+      if (defaultCommission) localStorage.setItem('app_default_driver_commission', defaultCommission);
+      if (requireApproval) localStorage.setItem('app_require_merchant_approval', requireApproval);
       
-      // Explicitly set collections to '[]' so contexts don't load their mock 'default' data
+      // Force empty arrays for all user-generated data
       localStorage.setItem('app_orders', '[]');
       localStorage.setItem('app_logs', '[]');
       localStorage.setItem('app_transactions', '[]');
       localStorage.setItem('app_branches', '[]');
       
-      alert('تم تصفير النظام! سيتم إعادة تحميل الصفحة الأن.');
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
+      alert('تم تصفير البيانات للتو. الصفحة سيتم تحديثها.');
+      window.location.replace('/');
     } else {
-      alert('تم إلغاء العملية.');
+      if (input !== null) {
+        alert('تم إلغاء العملية، الكلمة التي ادخلتها غير مطابقة.');
+      }
     }
   };
 
