@@ -69,13 +69,44 @@ export default function AdminSettings() {
 
   const handleResetDB = () => {
     if (window.prompt('تحذير: سيتم حذف جميع سجلات النظام بشكل نهائي ولن يمكن استعادتها. لتأكيد هذا الإجراء، اكتب "تصفير" أدناه:') === 'تصفير') {
-      const users = localStorage.getItem('app_users');
+      const usersRaw = localStorage.getItem('app_users');
+      let filteredUsers = null;
+      if (usersRaw) {
+        try {
+          const parsed = JSON.parse(usersRaw);
+          const allowed = parsed.filter((u: any) => u.role === 'admin' || u.role === 'merchant');
+          filteredUsers = JSON.stringify(allowed);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      
       const auth = localStorage.getItem('auth_user');
+      
+      // Clear all keys
       localStorage.clear();
-      if (users) localStorage.setItem('app_users', users);
+      
+      // Restore auth
       if (auth) localStorage.setItem('auth_user', auth);
+      
+      // Restore users but with only admin and merchant
+      if (filteredUsers) {
+        localStorage.setItem('app_users', filteredUsers);
+      } else {
+        // Fallback to ensuring users are not empty to avoid loading default users if any
+        // But context handles `null` by loading initials.
+      }
+      
+      // Explicitly set collections to '[]' so contexts don't load their mock 'default' data
+      localStorage.setItem('app_orders', '[]');
+      localStorage.setItem('app_logs', '[]');
+      localStorage.setItem('app_transactions', '[]');
+      localStorage.setItem('app_branches', '[]');
+      
       alert('تم تصفير النظام! سيتم إعادة تحميل الصفحة الأن.');
-      window.location.href = '/';
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } else {
       alert('تم إلغاء العملية.');
     }
