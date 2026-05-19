@@ -71,15 +71,32 @@ export default function AdminSettings() {
     const input = window.prompt('تحذير: سيتم حذف جميع سجلات النظام بشكل نهائي ولن يمكن استعادتها. لتأكيد هذا الإجراء، اكتب "تصفير" أدناه:');
     if (input && input.trim() === 'تصفير') {
       const usersRaw = localStorage.getItem('app_users');
-      let filteredUsers = null;
+      let modifiedUsers = null;
       if (usersRaw) {
         try {
           const parsed = JSON.parse(usersRaw);
-          const allowed = parsed.filter((u: any) => u.role === 'admin' || u.role === 'merchant');
-          filteredUsers = JSON.stringify(allowed);
+          const allowed = parsed.map((u: any) => ({
+            ...u,
+            balance: 0,
+            currentLoad: 0
+          }));
+          modifiedUsers = JSON.stringify(allowed);
         } catch (e) {
           console.error(e);
         }
+      }
+      
+      const branchesRaw = localStorage.getItem('app_branches');
+      let modifiedBranches = null;
+      if (branchesRaw) {
+        try {
+          const parsedB = JSON.parse(branchesRaw);
+          const newB = parsedB.map((b: any) => ({
+            ...b,
+            orders: 0
+          }));
+          modifiedBranches = JSON.stringify(newB);
+        } catch (e) {}
       }
       
       const auth = localStorage.getItem('auth_user');
@@ -92,7 +109,8 @@ export default function AdminSettings() {
       localStorage.clear();
       
       if (auth) localStorage.setItem('auth_user', auth);
-      if (filteredUsers) localStorage.setItem('app_users', filteredUsers);
+      if (modifiedUsers) localStorage.setItem('app_users', modifiedUsers);
+      if (modifiedBranches) localStorage.setItem('app_branches', modifiedBranches);
       
       // Preserve settings so system is not naked
       if (govs) localStorage.setItem('app_governorates', govs);
@@ -104,7 +122,6 @@ export default function AdminSettings() {
       localStorage.setItem('app_orders', '[]');
       localStorage.setItem('app_logs', '[]');
       localStorage.setItem('app_transactions', '[]');
-      localStorage.setItem('app_branches', '[]');
       
       alert('تم تصفير البيانات للتو. الصفحة سيتم تحديثها.');
       window.location.replace('/');
