@@ -5,10 +5,12 @@ interface User {
   name: string;
   role: "admin" | "merchant" | "warehouse" | "driver";
   email?: string;
+  phone?: string;
   storeName?: string;
   storeAddress?: string;
   storeLogoUrl?: string;
   username?: string;
+  password?: string;
 }
 
 interface AuthContextType {

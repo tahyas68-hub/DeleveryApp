@@ -21,6 +21,9 @@ export interface AppUser {
   // Merchant specific
   balance?: number;
   lastClearance?: string;
+  storeName?: string;
+  storeAddress?: string;
+  storeLogoUrl?: string;
   // Warehouse specific
   city?: string;
 }

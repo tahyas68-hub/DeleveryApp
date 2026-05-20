@@ -16,9 +16,9 @@ export default function MerchantSettings() {
   
   // Form states
   const [merchantName, setMerchantName] = useState(user?.name || 'بوتيك نايا');
-  const [phoneNumber, setPhoneNumber] = useState('07706375157');
-  const [username, setUsername] = useState('omr');
-  const [password, setPassword] = useState('••••••');
+  const [phoneNumber, setPhoneNumber] = useState(user?.phone || '07706375157');
+  const [username, setUsername] = useState(user?.username || 'omr');
+  const [password, setPassword] = useState(user?.password || '••••••');
   
   // Store info states
   const [storeName, setStoreName] = useState(user?.storeName || '');
@@ -33,9 +33,15 @@ export default function MerchantSettings() {
   const handleSavePersonalInfo = () => {
     setIsSaving(true);
     setTimeout(() => {
-      updateAuthUser({ name: merchantName });
+      const updates = { 
+        name: merchantName,
+        phone: phoneNumber,
+        username,
+        password
+      };
+      updateAuthUser(updates);
       if (user?.id) {
-        updateGlobalUser(user.id, { name: merchantName });
+        updateGlobalUser(user.id, updates);
       }
       setIsSaving(false);
       alert('تم حفظ البيانات الشخصية بنجاح!');

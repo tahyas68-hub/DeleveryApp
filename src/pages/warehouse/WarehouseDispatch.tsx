@@ -17,7 +17,7 @@ export default function WarehouseDispatch() {
   const { users } = useUsers();
   
   const drivers = users.filter(u => u.role === 'driver');
-  const dispatchableOrders = orders.filter(o => o.status === 'branch_transfering' || o.status === 'processing' || o.status === 'branch_warehouse');
+  const dispatchableOrders = orders.filter(o => o.status === 'branch_warehouse');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);

@@ -15,13 +15,13 @@ export default function WarehouseIncomingOrders() {
   const navigate = useNavigate();
   const { orders, updateOrderStatus } = useOrders();
   
-  const incomingOrders = orders.filter(o => o.status === 'processing' || o.status === 'shipped');
+  const incomingOrders = orders.filter(o => o.status === 'branch_transfering');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const handleReceiveSelected = () => {
-    selectedIds.forEach(id => updateOrderStatus(id, 'branch_transfering'));
+    selectedIds.forEach(id => updateOrderStatus(id, 'branch_warehouse'));
     setSelectedIds([]);
     alert('تم تأكيد استلام الطلبات المحددة');
   };
