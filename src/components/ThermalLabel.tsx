@@ -122,14 +122,14 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
           {/* Financial Section */}
           <div className="mt-2 text-white p-3 flex justify-between items-center shrink-0 w-[105%] -mx-[2.5%] relative overflow-hidden h-[18mm]">
             <div className="absolute inset-0 bg-black"></div>
-            <span className="text-lg font-bold relative z-10 mr-4 whitespace-nowrap">
+            <span className="text-[12px] font-bold relative z-10 mr-4 whitespace-nowrap">
               المبلغ الإجمالي:
             </span>
             <span
-              className="text-2xl font-en font-black relative z-10 ml-4 tracking-tight flex items-baseline gap-1"
+              className="text-[12px] font-en font-black relative z-10 ml-4 tracking-tight flex items-baseline gap-1"
               dir="rtl"
             >
-              <span className="text-base">د.ع</span>{" "}
+              <span className="text-[12px]">د.ع</span>{" "}
               {totalAmount.toLocaleString()}
             </span>
           </div>
