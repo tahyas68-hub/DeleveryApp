@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { 
-  Plus, FileDown, Printer, Trash2, Search, 
+  Plus, FileDown, Trash2, Search, 
   Star, Warehouse, Truck, Building2, 
   ChevronLeft, MessageCircle, X, CheckSquare, Square,
   ArrowRight, Package, Clock, RotateCcw
@@ -177,14 +177,6 @@ export default function MerchantDashboard() {
     }
   };
 
-  const handlePrint = () => {
-    if (selectedIds.length === 0) {
-      alert("يرجى تحديد طلبات للطباعة أولاً");
-      return;
-    }
-    window.print();
-  };
-
   const handleExcelImport = () => {
     fileInputRef.current?.click();
   };
@@ -280,14 +272,6 @@ export default function MerchantDashboard() {
           >
             <FileDown className="w-5 h-5" />
             <span>إدراج إكسل</span>
-          </button>
-
-          <button 
-            onClick={handlePrint}
-            className="bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-50 active:scale-95 transition-all"
-          >
-            <Printer className="w-5 h-5" />
-            <span>طباعة الملصقات</span>
           </button>
 
           {selectedIds.length > 0 && (
