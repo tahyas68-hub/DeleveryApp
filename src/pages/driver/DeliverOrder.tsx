@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Package, Search, Calendar, MapPin, CheckCircle2, DollarSign } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useSettings } from '../../context/SettingsContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function DeliverOrder() {
+  const { user } = useAuth();
   const { orders, updateOrderStatus } = useOrders();
   const { getDriverCommission } = useSettings();
-  const driverOrders = orders.filter(o => o.status === 'driver_assigned');
+  const driverOrders = orders.filter(o => o.status === 'driver_assigned' && o.driverId === user?.id);
 
   const [selectedOrderId, setSelectedOrderId] = useState<string>('');
   const [receivedAmount, setReceivedAmount] = useState<string>('');

@@ -3,10 +3,13 @@ import { Package, Search, Calendar, MapPin, Check, X, Clock, SplitSquareHorizont
 import { useOrders } from '../../context/OrderContext';
 import { useSettings } from '../../context/SettingsContext';
 
+import { useAuth } from '../../context/AuthContext';
+
 export default function DeliveryOrders() {
+  const { user } = useAuth();
   const { orders, updateOrderStatus, addOrder } = useOrders();
   const { getDriverCommission } = useSettings();
-  const driverOrders = orders.filter(o => o.status === 'driver_assigned');
+  const driverOrders = orders.filter(o => o.status === 'driver_assigned' && o.driverId === user?.id);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [partialModalOpen, setPartialModalOpen] = useState(false);

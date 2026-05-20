@@ -27,6 +27,14 @@ export default function Login() {
     }
   };
 
+  const handleClearDB = () => {
+    if (window.confirm("هل أنت متأكد من مسح جميع محتويات قاعدة البيانات (الإعدادات ستتم إعادتها للمصنع)؟")) {
+      localStorage.clear();
+      alert("تم مسح محتويات قاعدة البيانات وإعادتها للوضع الافتراضي بنجاح!");
+      window.location.reload();
+    }
+  };
+
   return (
     <div
       className="min-h-screen bg-[#F8F9FA] flex flex-col items-center justify-center p-4 font-sans"
@@ -92,6 +100,14 @@ export default function Login() {
             className="w-full bg-[#0F3B73] text-white font-bold py-4 rounded-xl hover:bg-opacity-90 transition-all shadow-lg shadow-[#0F3B73]/20"
           >
             تسجيل الدخول
+          </button>
+          
+          <button
+            type="button"
+            onClick={handleClearDB}
+            className="w-full mt-4 bg-red-50 text-red-600 font-bold py-3 rounded-xl hover:bg-red-100 transition-all border border-red-100"
+          >
+            مسح محتويات قاعدة البيانات وإعادة التعيين
           </button>
         </form>
       </div>

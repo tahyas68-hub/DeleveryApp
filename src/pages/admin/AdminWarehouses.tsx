@@ -43,7 +43,7 @@ export default function AdminWarehouses() {
                   <div>
                     <h3 className="font-bold text-slate-800 text-lg leading-tight">{warehouse.name}</h3>
                     <div className="flex items-center gap-1 text-slate-500 text-xs mt-1 font-medium">
-                      <MapPin className="w-3.5 h-3.5" /> {warehouse.city}
+                      <MapPin className="w-3.5 h-3.5" /> {warehouse.location}
                     </div>
                   </div>
                 </div>

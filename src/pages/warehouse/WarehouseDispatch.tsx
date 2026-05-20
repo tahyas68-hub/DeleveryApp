@@ -17,7 +17,7 @@ export default function WarehouseDispatch() {
   const { users } = useUsers();
   
   const drivers = users.filter(u => u.role === 'driver');
-  const dispatchableOrders = orders.filter(o => o.status === 'branch_transfering' || o.status === 'processing');
+  const dispatchableOrders = orders.filter(o => o.status === 'branch_transfering' || o.status === 'processing' || o.status === 'branch_warehouse');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -40,7 +40,7 @@ export default function WarehouseDispatch() {
   };
 
   const filteredOrders = dispatchableOrders.filter(o => {
-    return o.trackingNumber.includes(searchQuery) || o.merchantName.includes(searchQuery);
+    return (o.trackingNumber || '').includes(searchQuery) || (o.merchantName || '').includes(searchQuery);
   });
 
   return (
@@ -154,16 +154,16 @@ export default function WarehouseDispatch() {
                         }}
                       />
                     </td>
-                    <td className="px-6 py-5 font-en font-bold text-[#0F3B73]">{order.trackingNumber}</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-600">{order.id.slice(0, 8)}</td>
-                    <td className="px-6 py-5 font-bold text-slate-800">{order.merchantName}</td>
-                    <td className="px-6 py-5 font-bold text-slate-600">{order.customerName}</td>
-                    <td className="px-6 py-5 font-bold text-slate-500">{order.province}</td>
+                    <td className="px-6 py-5 font-en font-bold text-[#0F3B73]">{order.trackingNumber || '-'}</td>
+                    <td className="px-6 py-5 font-en font-bold text-slate-600">{(order.id || '').slice(0, 8)}</td>
+                    <td className="px-6 py-5 font-bold text-slate-800">{order.merchantName || '-'}</td>
+                    <td className="px-6 py-5 font-bold text-slate-600">{order.customerName || '-'}</td>
+                    <td className="px-6 py-5 font-bold text-slate-500">{order.province || '-'}</td>
                     <td className="px-6 py-5">
                        <span className="text-orange-500 font-bold">جاهز للتحويل</span>
                     </td>
                     <td className="px-6 py-5 font-en font-bold text-slate-400">{order.date ? order.date.split('T')[0] : 'N/A'}</td>
-                    <td className="px-6 py-5 font-en font-black text-slate-800">{order.totalAmount.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-5 font-en font-black text-slate-800">{(order.totalAmount || 0).toLocaleString()} د.ع</td>
                   </tr>
                 ))
               )}

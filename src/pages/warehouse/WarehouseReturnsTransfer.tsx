@@ -58,7 +58,7 @@ export default function WarehouseReturnsTransfer() {
   };
 
   const filteredOrders = returnableOrders.filter(o => {
-    return o.trackingNumber.includes(searchQuery) || o.merchantName.includes(searchQuery);
+    return (o.trackingNumber || '').includes(searchQuery) || (o.merchantName || '').includes(searchQuery);
   });
 
   return (

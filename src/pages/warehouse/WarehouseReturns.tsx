@@ -28,7 +28,7 @@ export default function WarehouseReturns() {
   };
 
   const filteredOrders = returnedOrders.filter(o => {
-    return o.trackingNumber.includes(searchQuery) || o.merchantName.includes(searchQuery) || o.driverName?.includes(searchQuery);
+    return (o.trackingNumber || '').includes(searchQuery) || (o.merchantName || '').includes(searchQuery) || (o.driverName || '').includes(searchQuery);
   });
 
   return (

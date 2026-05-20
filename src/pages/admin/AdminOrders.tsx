@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Package, ArrowDown, Building2, Bike, Search, TableProperties } from 'lucide-react';
+import { Package, ArrowDown, Building2, Bike, Search, TableProperties, Trash2 } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 import { OrderStatus } from '../../context/OrderContext';
 
 export default function AdminOrders() {
-  const { orders, updateOrderStatus } = useOrders();
+  const { orders, updateOrderStatus, deleteOrder } = useOrders();
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -152,20 +152,31 @@ export default function AdminOrders() {
                     </td>
                     <td className="px-6 py-4">
                       {o.status === 'merchant_pending' && (
-                        <button onClick={() => handleAction(o.id, 'main_warehouse')} className="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                        <button onClick={() => handleAction(o.id, 'main_warehouse')} className="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ml-2">
                           تأكيد للمخزن الرئيسي
                         </button>
                       )}
                       {(o.status === 'main_warehouse' || o.status === 'branch_transfering') && (
-                        <button onClick={() => handleAction(o.id, 'branch_warehouse')} className="bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                        <button onClick={() => handleAction(o.id, 'branch_warehouse')} className="bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ml-2">
                           تأكيد للفرع
                         </button>
                       )}
                       {o.status === 'branch_warehouse' && (
-                        <button onClick={() => handleAction(o.id, 'driver_assigned')} className="bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                        <button onClick={() => handleAction(o.id, 'driver_assigned')} className="bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ml-2">
                           تأكيد للمندوب
                         </button>
                       )}
+                      <button 
+                        onClick={() => {
+                          if (window.confirm('هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذه العملية.')) {
+                            deleteOrder(o.id);
+                          }
+                        }}
+                        className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white p-1.5 rounded-lg transition-colors inline-flex items-center justify-center cursor-pointer shadow-sm border border-red-100 align-middle"
+                        title="حذف الطلب"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
                 ))

@@ -27,7 +27,7 @@ export default function WarehouseIncomingOrders() {
   };
 
   const filteredOrders = incomingOrders.filter(o => {
-    return o.trackingNumber.includes(searchQuery) || o.merchantName.includes(searchQuery);
+    return (o.trackingNumber || '').includes(searchQuery) || (o.merchantName || '').includes(searchQuery);
   });
 
   return (

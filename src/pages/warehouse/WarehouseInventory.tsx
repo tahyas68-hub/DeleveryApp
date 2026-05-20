@@ -18,9 +18,9 @@ export default function WarehouseInventory() {
   const [statusFilter, setStatusFilter] = useState('all');
 
   const filteredOrders = orders.filter(o => {
-    const matchesSearch = o.trackingNumber.includes(searchTerm) || 
-                         o.customerName.includes(searchTerm) || 
-                         o.customerPhone.includes(searchTerm);
+    const matchesSearch = (o.trackingNumber || '').includes(searchTerm) || 
+                         (o.customerName || '').includes(searchTerm) || 
+                         (o.customerPhone || '').includes(searchTerm);
     const matchesStatus = statusFilter === 'all' || o.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -106,20 +106,20 @@ export default function WarehouseInventory() {
               ) : (
                 filteredOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-5 font-en font-bold text-slate-900">{order.trackingNumber}</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-600">{order.id.slice(0, 8)}</td>
-                    <td className="px-6 py-5 font-bold text-slate-900">{order.merchantName}</td>
+                    <td className="px-6 py-5 font-en font-bold text-slate-900">{order.trackingNumber || '-'}</td>
+                    <td className="px-6 py-5 font-en font-bold text-slate-600">{(order.id || '').slice(0, 8)}</td>
+                    <td className="px-6 py-5 font-bold text-slate-900">{order.merchantName || '-'}</td>
                     <td className="px-6 py-5">
                       <div className="flex flex-col">
-                        <span className="font-bold text-slate-900">{order.customerName}</span>
-                        <span className="text-xs font-en font-bold text-slate-400 tracking-wider">{order.customerPhone}</span>
+                        <span className="font-bold text-slate-900">{order.customerName || '-'}</span>
+                        <span className="text-xs font-en font-bold text-slate-400 tracking-wider">{order.customerPhone || '-'}</span>
                       </div>
                     </td>
                     <td className="px-6 py-5 font-bold text-slate-600">{order.driverName || '-'}</td>
                     <td className="px-6 py-5"><OrderStatusBadge status={order.status} /></td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-900">{(order.totalAmount - order.deliveryFee).toLocaleString()} د.ع</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-600">{order.deliveryFee.toLocaleString()} د.ع</td>
-                    <td className="px-6 py-5 font-en font-black text-[#0F3B73]">{order.totalAmount.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-5 font-en font-bold text-slate-900">{((order.totalAmount || 0) - (order.deliveryFee || 0)).toLocaleString()} د.ع</td>
+                    <td className="px-6 py-5 font-en font-bold text-slate-600">{(order.deliveryFee || 0).toLocaleString()} د.ع</td>
+                    <td className="px-6 py-5 font-en font-black text-[#0F3B73]">{(order.totalAmount || 0).toLocaleString()} د.ع</td>
                     <td className="px-6 py-5 font-en font-bold text-slate-400 text-sm">{order.date ? order.date.split('T')[0] : 'N/A'}</td>
                   </tr>
                 ))

@@ -45,7 +45,7 @@ export default function WarehouseDriverIncomes() {
   });
 
   const filteredDrivers = driverAccounts.filter((d) => 
-    d.name.includes(searchTerm) || d.phone?.includes(searchTerm)
+    (d.name || '').includes(searchTerm) || (d.phone || '').includes(searchTerm)
   );
 
   return (

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useOrders } from '../../context/OrderContext';
 import { useAuth } from '../../context/AuthContext';
-import { MapPin, Phone, MessageCircle, MoreVertical, Navigation, CheckCircle2, AlertTriangle, Clock } from 'lucide-react';
+import { MapPin, Phone, MessageCircle, MoreVertical, Navigation, CheckCircle2, AlertTriangle, Clock, Wallet, Package, RefreshCcw, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 
@@ -49,6 +49,40 @@ export default function DriverApp() {
              <p className="text-primary-100 text-xs">مرتجع</p>
              <p className="text-2xl font-bold font-en">{returnedOrders.length}</p>
            </div>
+        </div>
+      </div>
+
+      {/* Quick Access */}
+      <div>
+        <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-3">الوصول السريع</h3>
+        <div className="grid grid-cols-4 gap-3">
+          <button onClick={() => navigate('/driver/wallet')} className="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm border border-slate-100 gap-2 hover:bg-slate-50 transition-colors">
+            <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Wallet className="w-5 h-5" />
+            </div>
+            <span className="text-xs font-bold text-slate-700">المحفظة</span>
+          </button>
+          
+          <button onClick={() => navigate('/driver/delivery-orders')} className="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm border border-slate-100 gap-2 hover:bg-slate-50 transition-colors">
+            <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <Package className="w-5 h-5" />
+            </div>
+            <span className="text-xs font-bold text-slate-700">العهد</span>
+          </button>
+          
+          <button onClick={() => navigate('/driver/postponed-returned-orders')} className="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm border border-slate-100 gap-2 hover:bg-slate-50 transition-colors">
+            <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
+              <RefreshCcw className="w-5 h-5" />
+            </div>
+            <span className="text-xs font-bold text-slate-700">الرواجع</span>
+          </button>
+
+          <button onClick={() => navigate('/driver/commission-report')} className="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm border border-slate-100 gap-2 hover:bg-slate-50 transition-colors">
+            <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
+              <FileText className="w-5 h-5" />
+            </div>
+            <span className="text-xs font-bold text-slate-700">العمولات</span>
+          </button>
         </div>
       </div>
 
