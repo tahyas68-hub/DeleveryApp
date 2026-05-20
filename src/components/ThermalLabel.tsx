@@ -73,7 +73,7 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
           <div className="shrink-0 pt-1 space-y-2 relative">
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold whitespace-nowrap">المحافظة:</span>
-              <span className="text-xl font-bold">{order.province}</span>
+              <span className="text-lg font-bold">{order.province}</span>
             </div>
 
             <div className="flex items-baseline gap-2">
@@ -83,7 +83,7 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
                 نقطة دالة:
               </span>
               <span
-                className="text-base font-bold pt-1 leading-tight flex-1"
+                className="text-sm font-bold pt-1 leading-tight flex-1"
                 style={{
                   wordBreak: "break-word",
                   overflow: "hidden",
@@ -104,7 +104,7 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
               <span className="text-sm font-bold whitespace-nowrap">
                 رقم الهاتف:
               </span>
-              <span className="text-2xl font-en font-black tracking-wide">
+              <span className="text-xl font-en font-black tracking-wide">
                 {order.customerPhone}
               </span>
             </div>
@@ -113,7 +113,7 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
               <span className="text-sm font-bold whitespace-nowrap">
                 عدد القطع:
               </span>
-              <span className="text-xl font-en font-bold">
+              <span className="text-lg font-en font-bold">
                 {order.pieces || 1}
               </span>
             </div>
@@ -126,10 +126,10 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
               المبلغ الإجمالي:
             </span>
             <span
-              className="text-3xl font-en font-black relative z-10 ml-4 tracking-tight flex items-baseline gap-1"
+              className="text-2xl font-en font-black relative z-10 ml-4 tracking-tight flex items-baseline gap-1"
               dir="rtl"
             >
-              <span className="text-lg">د.ع</span>{" "}
+              <span className="text-base">د.ع</span>{" "}
               {totalAmount.toLocaleString()}
             </span>
           </div>
@@ -155,16 +155,16 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
                 <span className="font-bold text-xs whitespace-nowrap ml-1 pr-1 shrink-0">
                   اسم المتجر:{" "}
                 </span>
-                <span className="text-base font-bold leading-none truncate">
+                <span className="text-sm font-bold leading-none truncate mt-0.5">
                   {order.merchantName}
                 </span>
               </div>
               {merchant?.phone && (
-                <div className="flex items-center w-full mt-1">
-                  <span className="font-bold text-xs whitespace-nowrap ml-1 pr-1 text-slate-500 shrink-0">
+                <div className="flex items-center w-full mt-1.5">
+                  <span className="font-bold text-[11px] whitespace-nowrap ml-1 pr-1 text-slate-500 shrink-0">
                     هاتف المتجر:
                   </span>
-                  <span className="text-base font-bold font-en tracking-wide leading-none dir-ltr truncate">
+                  <span className="text-sm font-bold font-en tracking-wide leading-none dir-ltr truncate">
                     {merchant.phone}
                   </span>
                 </div>
