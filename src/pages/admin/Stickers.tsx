@@ -234,20 +234,33 @@ export default function Stickers() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
           <div className="bg-slate-100 rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 bg-white border-b border-slate-200">
-              <button
-                onClick={() => setIsPrintPreview(false)}
-                className="text-slate-500 hover:text-slate-800 font-bold px-4 py-2"
-              >
-                إلغاء الأمر
-              </button>
-              <h2 className="text-xl font-black text-slate-800">
-                معاينة الاستيكرات الحرارية
-              </h2>
-              <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-white border-b border-slate-200 gap-4">
+              <div className="flex items-center justify-between w-full sm:w-auto order-2 sm:order-1">
+                <button
+                  onClick={() => setIsPrintPreview(false)}
+                  className="text-slate-500 hover:text-slate-800 font-bold px-2 sm:px-4 py-2 text-sm sm:text-base"
+                >
+                  إلغاء الأمر
+                </button>
+                
+                {/* On mobile, show the print button here as well, right aligned */}
                 <button
                   onClick={() => handlePrint()}
-                  className="bg-brand text-white px-6 py-2.5 rounded-xl flex items-center gap-2 font-bold shadow-md hover:bg-brand/90 transition-colors"
+                  className="sm:hidden bg-brand text-white px-4 py-2 rounded-xl flex items-center gap-2 font-bold shadow-md hover:bg-brand/90 transition-colors text-sm shrink-0"
+                >
+                  <Printer className="w-4 h-4" />
+                  طباعة ({selectedOrders.length})
+                </button>
+              </div>
+              
+              <h2 className="text-lg sm:text-xl font-black text-slate-800 order-1 sm:order-2 w-full sm:w-auto text-center">
+                معاينة الاستيكرات الحرارية
+              </h2>
+              
+              <div className="hidden sm:flex gap-2 order-3">
+                <button
+                  onClick={() => handlePrint()}
+                  className="bg-brand text-white px-6 py-2.5 rounded-xl flex items-center gap-2 font-bold shadow-md hover:bg-brand/90 transition-colors whitespace-nowrap"
                 >
                   <Printer className="w-5 h-5" />
                   طباعة الآن ({selectedOrders.length} ملصقات)

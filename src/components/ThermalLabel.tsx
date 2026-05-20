@@ -71,19 +71,19 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
 
           {/* Customer Information Grid */}
           <div className="shrink-0 pt-1 space-y-2 relative">
-            <div className="flex items-center">
-              <span className="text-sm font-bold w-16 shrink-0">المحافظة:</span>
-              <span className="text-xl font-bold px-2">{order.province}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold whitespace-nowrap">المحافظة:</span>
+              <span className="text-xl font-bold">{order.province}</span>
             </div>
 
-            <div className="flex items-baseline">
-              <span className="text-[10px] font-bold w-12 shrink-0">
+            <div className="flex items-baseline gap-2">
+              <span className="text-[10px] font-bold whitespace-nowrap">
                 منطقة
                 <br />
                 نقطة دالة:
               </span>
               <span
-                className="text-base font-bold pr-1 pt-1 leading-tight flex-1"
+                className="text-base font-bold pt-1 leading-tight flex-1"
                 style={{
                   wordBreak: "break-word",
                   overflow: "hidden",
@@ -100,20 +100,20 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
             {/* Divider between address and phone */}
             <div className="w-full h-[3px] bg-black my-1"></div>
 
-            <div className="flex items-center">
-              <span className="text-sm font-bold w-16 shrink-0">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold whitespace-nowrap">
                 رقم الهاتف:
               </span>
-              <span className="text-2xl font-en font-black px-2 tracking-wide">
+              <span className="text-2xl font-en font-black tracking-wide">
                 {order.customerPhone}
               </span>
             </div>
 
-            <div className="flex items-center">
-              <span className="text-sm font-bold w-16 shrink-0">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold whitespace-nowrap">
                 عدد القطع:
               </span>
-              <span className="text-xl font-en font-bold px-2">
+              <span className="text-xl font-en font-bold">
                 {order.pieces || 1}
               </span>
             </div>
@@ -122,7 +122,7 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
           {/* Financial Section */}
           <div className="mt-2 text-white p-3 flex justify-between items-center shrink-0 w-[105%] -mx-[2.5%] relative overflow-hidden h-[18mm]">
             <div className="absolute inset-0 bg-black"></div>
-            <span className="text-lg font-bold relative z-10 mr-4">
+            <span className="text-lg font-bold relative z-10 mr-4 whitespace-nowrap">
               المبلغ الإجمالي:
             </span>
             <span
