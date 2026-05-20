@@ -150,26 +150,28 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
               <div className="w-full border-b-[2px] border-dotted border-black mt-1"></div>
             </div>
 
-            <div className="flex z-10 w-full mt-2 relative items-center">
-              <span className="font-bold text-xs whitespace-nowrap ml-2 bg-white pr-1">
-                اسم المتجر:{" "}
-              </span>
-              <span className="text-lg font-bold leading-none -mt-0.5">
-                {order.merchantName}
-              </span>
+            <div className="flex flex-col z-10 w-full mt-1 relative bg-white">
+              <div className="flex items-center w-full overflow-hidden">
+                <span className="font-bold text-xs whitespace-nowrap ml-1 pr-1 shrink-0">
+                  اسم المتجر:{" "}
+                </span>
+                <span className="text-base font-bold leading-none truncate">
+                  {order.merchantName}
+                </span>
+              </div>
               {merchant?.phone && (
-                <>
-                  <span className="font-bold text-xs whitespace-nowrap mx-2 bg-white pr-1 text-slate-500">
+                <div className="flex items-center w-full mt-1">
+                  <span className="font-bold text-xs whitespace-nowrap ml-1 pr-1 text-slate-500 shrink-0">
                     هاتف المتجر:
                   </span>
-                  <span className="text-base font-bold font-en tracking-wide leading-none dir-ltr mr-auto">
+                  <span className="text-base font-bold font-en tracking-wide leading-none dir-ltr truncate">
                     {merchant.phone}
                   </span>
-                </>
+                </div>
               )}
             </div>
             {/* Dots */}
-            <div className="w-full border-b-[2px] border-dotted border-black mt-[14px]"></div>
+            <div className="w-full border-b-[2px] border-dotted border-black mt-2"></div>
           </div>
 
           {/* Barcode & QR Footer */}
