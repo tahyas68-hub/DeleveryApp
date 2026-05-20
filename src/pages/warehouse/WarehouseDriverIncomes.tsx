@@ -6,7 +6,10 @@ import {
   Wallet, 
   DollarSign, 
   ClipboardList,
-  ChevronDown
+  ChevronDown,
+  FileText,
+  Printer,
+  X
 } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useUsers } from '../../context/UserContext';
@@ -21,6 +24,9 @@ export default function WarehouseDriverIncomes() {
   const { getDriverCommission } = useSettings();
   const { addTransaction } = useFinance();
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Modal state
+  const [selectedDriver, setSelectedDriver] = useState<any>(null);
 
   // Get drivers
   const driversList = users.filter((u) => u.role === 'driver');
@@ -45,6 +51,7 @@ export default function WarehouseDriverIncomes() {
       orderCount: driverOrders.length,
       debt: totalCollected,
       commission: totalCommission,
+      net: totalCollected - totalCommission
     };
   });
 
@@ -52,51 +59,51 @@ export default function WarehouseDriverIncomes() {
     (d.name || '').includes(searchTerm) || (d.phone || '').includes(searchTerm)
   );
 
-  const handleSettlement = (driver: typeof driverAccounts[0]) => {
-    if (driver.orderCount === 0) {
-      alert('لا توجد طلبات معلقة لتسويتها');
-      return;
-    }
+  const handleConfirmSettlement = () => {
+    if (!selectedDriver) return;
+    
+    const driver = selectedDriver;
 
-    if (window.confirm(`هل أنت متأكد من تسوية مبلغ ${driver.debt.toLocaleString()} د.ع وصرف عمولة ${driver.commission.toLocaleString()} د.ع للمندوب ${driver.name}؟`)) {
-      // 1. Add receipt transaction for debt
-      addTransaction({
-        type: 'receipt',
-        amount: driver.debt,
-        fromEntity: driver.name,
-        toEntity: 'warehouse',
-        referenceId: `settlement-${Date.now()}`,
-        description: `قبض مبالغ من المندوب: ${driver.name} عن ${driver.orderCount} طلب/طلبات`,
-        userId: 'session-user'
-      });
+    // 1. Add receipt transaction for debt
+    addTransaction({
+      type: 'receipt',
+      amount: driver.debt,
+      fromEntity: driver.name,
+      toEntity: 'warehouse',
+      referenceId: `settlement-${Date.now()}`,
+      description: `قبض مبالغ من المندوب: ${driver.name} عن ${driver.orderCount} طلب/طلبات`,
+      userId: 'session-user'
+    });
 
-      // 2. Add payment transaction for commission
-      addTransaction({
-        type: 'payment',
-        amount: driver.commission,
-        fromEntity: 'warehouse',
-        toEntity: driver.name,
-        referenceId: `commission-${Date.now()}`,
-        description: `صرف عمولة للمندوب: ${driver.name} عن ${driver.orderCount} طلب/طلبات`,
-        userId: 'session-user'
-      });
+    // 2. Add payment transaction for commission
+    addTransaction({
+      type: 'payment',
+      amount: driver.commission,
+      fromEntity: 'warehouse',
+      toEntity: driver.name,
+      referenceId: `commission-${Date.now()}`,
+      description: `صرف عمولة للمندوب: ${driver.name} عن ${driver.orderCount} طلب/طلبات`,
+      userId: 'session-user'
+    });
 
-      // 3. Mark orders as collected
-      driver.driverOrders.forEach(order => {
-        updateOrderStatus(order.id, order.status, { financialStatus: 'collected_from_driver' });
-      });
+    // 3. Mark orders as collected
+    driver.driverOrders.forEach((order: any) => {
+      updateOrderStatus(order.id, order.status, { financialStatus: 'collected_from_driver' });
+    });
 
-      alert('تم التسوية بنجاح');
-    }
+    // Optional: Print before closing
+    window.print();
+
+    setSelectedDriver(null);
   };
 
   return (
     <div className="max-w-7xl mx-auto space-y-8" dir="rtl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden">
         <div className="space-y-1">
-          <h1 className="text-3xl font-black text-[#0F3B73]">حسابات المندوبين</h1>
-          <p className="text-slate-500 font-bold">إدارة الذمم المالية والعمولات للمناديب</p>
+          <h1 className="text-3xl font-black text-[#0F3B73]">ذمة المندوب</h1>
+          <p className="text-slate-500 font-bold">إدارة ومتابعة الذمم المالية المستحقة على المناديب</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -111,7 +118,7 @@ export default function WarehouseDriverIncomes() {
       </div>
 
       {/* Table Box */}
-      <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden print:hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-right whitespace-nowrap min-w-[700px]">
             <thead>
@@ -125,7 +132,7 @@ export default function WarehouseDriverIncomes() {
             <tbody className="divide-y divide-slate-50 text-sm p-4">
               {filteredDrivers.length === 0 ? (
                 <tr>
-                   <td colSpan={4} className="px-4 py-12 text-center text-slate-400 font-bold">لا يوجد مناديب حالياً متاحين</td>
+                   <td colSpan={4} className="px-4 py-12 text-center text-slate-400 font-bold">لا يوجد مناديب متاحين</td>
                 </tr>
               ) : (
                 filteredDrivers.map((driver) => (
@@ -139,7 +146,7 @@ export default function WarehouseDriverIncomes() {
                     <td className="px-4 py-4">
                        <div className="flex flex-col">
                           <span className="text-xl md:text-2xl font-black text-orange-500 font-en">{driver.debt.toLocaleString()} د.ع</span>
-                          <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">ذمة المندوبين</span>
+                          <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">ذمة المندوب</span>
                        </div>
                     </td>
                     <td className="px-4 py-4">
@@ -155,12 +162,12 @@ export default function WarehouseDriverIncomes() {
                               سجل
                            </button>
                            <button 
-                             onClick={() => handleSettlement(driver)}
+                             onClick={() => setSelectedDriver(driver)}
                              disabled={driver.orderCount === 0}
                              className="flex items-center gap-1.5 bg-blue-500 text-white px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-black text-xs md:text-sm hover:bg-blue-600 transition-all flex-1 whitespace-nowrap justify-center disabled:opacity-50"
                            >
-                              <Wallet className="w-4 h-4" />
-                              تسوية الذمة والعمولة
+                              <FileText className="w-4 h-4" />
+                              مستند قبض / تسوية
                            </button>
                         </div>
                     </td>
@@ -171,6 +178,88 @@ export default function WarehouseDriverIncomes() {
           </table>
         </div>
       </div>
+
+      {/* Receipt Modal (Also acts as Print View) */}
+      {selectedDriver && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 print:p-0 print:bg-white print:block">
+          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden print:shadow-none print:w-full print:max-w-none">
+            
+            {/* Header / Actions - Hidden in Print */}
+            <div className="flex items-center justify-between p-4 border-b border-slate-100 print:hidden bg-slate-50">
+              <h2 className="text-xl font-black text-[#0F3B73]">استخراج مستند قبض</h2>
+              <button 
+                onClick={() => setSelectedDriver(null)}
+                className="p-2 hover:bg-slate-200 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+
+            {/* Printable Area */}
+            <div className="p-8 space-y-6">
+              {/* Receipt Header */}
+              <div className="text-center space-y-2 border-b-2 border-dashed border-slate-300 pb-6">
+                <div className="w-16 h-16 bg-[#0F3B73] text-white rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Wallet className="w-8 h-8" />
+                </div>
+                <h1 className="text-3xl font-black text-slate-800 tracking-tight">مستند قبض</h1>
+                <p className="text-slate-500 font-bold font-en">{new Date().toLocaleString('ar-IQ')}</p>
+                <div className="pt-2 text-sm font-bold text-slate-400">
+                  رقم المستند: <span className="font-en">REC-{Date.now().toString().slice(-6)}</span>
+                </div>
+              </div>
+
+              {/* Driver Details */}
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-slate-500 font-bold">اسم المندوب</span>
+                  <span className="text-lg font-black text-slate-800">{selectedDriver.name}</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-slate-500 font-bold">عدد الطلبات المسلمة والراجعة جزئياً</span>
+                  <span className="text-lg font-black font-en text-slate-800">{selectedDriver.orderCount}</span>
+                </div>
+              </div>
+
+              {/* Financial Summary */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 rounded-xl bg-orange-50 border border-orange-100">
+                  <span className="font-bold text-orange-800">إجمالي المبالغ المستلمة (الذمة)</span>
+                  <span className="text-xl font-black font-en text-orange-600">{selectedDriver.debt.toLocaleString()} د.ع</span>
+                </div>
+                <div className="flex justify-between items-center p-3 rounded-xl bg-emerald-50 border border-emerald-100">
+                  <span className="font-bold text-emerald-800">إجمالي العمولات المستحقة</span>
+                  <span className="text-xl font-black font-en text-emerald-600">{selectedDriver.commission.toLocaleString()} د.ع</span>
+                </div>
+                
+                <div className="border-t-2 border-slate-800 my-4"></div>
+
+                <div className="flex justify-between items-center p-4 rounded-2xl bg-slate-900 text-white">
+                  <span className="text-lg font-black">الصافي لقبضه بالصندوق</span>
+                  <span className="text-3xl font-black font-en tracking-tight">{selectedDriver.net.toLocaleString()} د.ع</span>
+                </div>
+              </div>
+
+              {/* Signatures */}
+              <div className="flex justify-between mt-12 pt-8 text-center text-slate-600 font-bold">
+                <div className="w-32 border-t-2 border-slate-300 pt-2">توقيع المستلم (المخزن)</div>
+                <div className="w-32 border-t-2 border-slate-300 pt-2">توقيع المندوب</div>
+              </div>
+            </div>
+
+            {/* Footer Actions - Hidden in Print */}
+            <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3 print:hidden">
+              <button 
+                onClick={handleConfirmSettlement}
+                className="flex-1 bg-[#0F3B73] hover:bg-[#0F3B73]/90 text-white py-3 rounded-xl font-black flex items-center justify-center gap-2 transition-colors"
+              >
+                <Printer className="w-5 h-5" />
+                تأكيد وتسوية وتصدير السند
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -20,7 +20,10 @@ export default function WarehouseReturnsTransfer() {
   
   const drivers = users.filter(u => u.role === 'driver');
   // Filters out orders that have been returned (e.g. status === 'returned' or 'returned_partial')
-  const returnableOrders = orders.filter(o => o.status === 'returned' || o.status === 'returned_partial');
+  const returnableOrders = orders.filter(o => 
+    (o.status === 'returned' || o.status === 'returned_partial') &&
+    o.branchName !== 'المركز الرئيسي'
+  );
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -29,10 +32,13 @@ export default function WarehouseReturnsTransfer() {
   const handleTransferToMainWarehouse = () => {
     if (selectedIds.length === 0) return;
     
-    if (window.confirm('هل أنت متأكد من إرجاع الطلبات المحددة للمركز الرئيسي؟')) {
+    if (window.confirm('هل أنت متأكد من تحويل الطلبات المحددة للمركز الرئيسي؟')) {
       selectedIds.forEach(id => {
-        // Change status back to main_warehouse or appropriate return status
-        updateOrderStatus(id, 'main_warehouse');
+        const order = orders.find(o => o.id === id);
+        if (order) {
+          // Keep the return status, but mark location as Main Warehouse
+          updateOrderStatus(id, order.status, { branchName: 'المركز الرئيسي' });
+        }
       });
       setSelectedIds([]);
       alert('تم تحويل الطلبات للمركز الرئيسي بنجاح');
