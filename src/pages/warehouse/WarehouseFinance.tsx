@@ -3,49 +3,48 @@ import {
   DollarSign, 
   Wallet, 
   Clock, 
-  ChevronLeft, 
   Printer, 
   FileSpreadsheet,
-  ArrowUpRight,
-  ArrowDownLeft,
   Package
 } from 'lucide-react';
-import { motion } from 'motion/react';
-
-const stats = [
-  {
-    label: 'الرصيد الحالي (المحفظة)',
-    value: '210,000',
-    unit: 'د.ع',
-    subtext: 'ذمة المندوبين',
-    icon: DollarSign,
-    color: 'emerald'
-  },
-  {
-    label: 'الصندوق المالي (المسحوبات)',
-    value: '0',
-    unit: 'د.ع',
-    subtext: 'تم سحبها من المندوبين',
-    icon: Wallet,
-    color: 'blue'
-  },
-  {
-    label: 'مبالغ معلقة',
-    value: '290,000',
-    unit: 'د.ع',
-    subtext: 'طلبات عند المندوب أو المخزن',
-    icon: Clock,
-    color: 'orange'
-  }
-];
-
-const transactions = [
-  { id: 1, sn: 1, opNum: 7, type: 'صرف (عمولة)', details: 'استلام مبالغ من صندوق الفرع للمركز الرئيسي', date: '2026-05-11 09:26:15', amount: -77000 },
-  { id: 2, sn: 2, opNum: 6, type: 'صرف (عمولة)', details: 'صرف عمولة للمندوب: علي (عن 4 طلب)', date: '2026-05-11 09:25:39', amount: -8000 },
-  { id: 3, sn: 3, opNum: 5, type: 'إيداع (قبض)', details: 'قبض مبالغ من المندوب: علي', date: '2026-05-11 09:25:31', amount: 85000 },
-];
+import { useFinance } from '../../context/FinanceContext';
+import { useOrders } from '../../context/OrderContext';
 
 export default function WarehouseFinance() {
+  const { transactions, addTransaction } = useFinance();
+  const { orders } = useOrders();
+
+  // 1. Calculate pending amounts with drivers
+  const pendingAmount = orders.reduce((sum, o) => {
+    if ((o.status === 'delivered' || o.status === 'returned_partial') && o.financialStatus === 'pending') {
+      return sum + (o.amount || 0);
+    }
+    return sum;
+  }, 0);
+
+  // Filter transactions related to warehouse
+  const warehouseTransactions = transactions.filter(
+    t => t.fromEntity === 'warehouse' || t.toEntity === 'warehouse'
+  );
+
+  // 2. Calculate current wallet balance (what is actually inside the branch box)
+  let currentBalance = 0;
+  let adminWithdrawals = 0;
+
+  warehouseTransactions.forEach(t => {
+    if (t.toEntity === 'warehouse' && t.type === 'receipt') {
+      // Received money from drivers
+      currentBalance += t.amount;
+    } else if (t.fromEntity === 'warehouse' && t.type === 'payment') {
+      // Paid commissions to drivers
+      currentBalance -= t.amount;
+    } else if (t.fromEntity === 'warehouse' && t.type === 'transfer') {
+      // Transferred to Admin
+      currentBalance -= t.amount;
+      adminWithdrawals += t.amount;
+    }
+  });
+
   return (
     <div className="max-w-7xl mx-auto space-y-8" dir="rtl">
       {/* Header */}
@@ -59,6 +58,27 @@ export default function WarehouseFinance() {
         </div>
         
         <div className="flex items-center gap-3 print:hidden">
+          {currentBalance > 0 && (
+            <button 
+              onClick={() => {
+                if (window.confirm(`هل أنت متأكد من تسليم مبلغ ${currentBalance.toLocaleString()} د.ع للإدارة الرئيسية؟`)) {
+                  addTransaction({
+                    type: 'transfer',
+                    amount: currentBalance,
+                    fromEntity: 'warehouse',
+                    toEntity: 'admin',
+                    referenceId: `transfer-admin-${Date.now()}`,
+                    description: 'تسليم الرصيد المتاح من فرع المخزن إلى المركز الرئيسي',
+                    userId: 'session-user'
+                  });
+                }
+              }}
+              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-lg shadow-emerald-200 transition-colors"
+            >
+              <DollarSign className="w-5 h-5" />
+              تسليم الصندوق للإدارة
+            </button>
+          )}
           <button className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2.5 rounded-xl font-bold transition-colors">
             <FileSpreadsheet className="w-5 h-5" />
             تصدير Excel
@@ -79,9 +99,9 @@ export default function WarehouseFinance() {
             </div>
             <h3 className="text-white font-black text-[10px] sm:text-lg mb-1 print:text-gray-800 leading-tight">الرصيد الحالي</h3>
             <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-0 sm:gap-2 mb-1">
-               <span className="text-lg sm:text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900 leading-none">210K</span>
+               <span className="text-lg sm:text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900 leading-none">{currentBalance.toLocaleString()}</span>
             </div>
-            <p className="text-white/80 font-bold text-[8px] sm:text-sm md:text-base print:text-gray-500 truncate w-full">ذمة المندوبين</p>
+            <p className="text-white/80 font-bold text-[8px] sm:text-sm md:text-base print:text-gray-500 truncate w-full">صندوق الفرع المتاح</p>
          </div>
 
          {/* Card 2: Withdrawals (Blue) */}
@@ -89,11 +109,11 @@ export default function WarehouseFinance() {
             <div className="w-8 h-8 sm:w-14 sm:h-14 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-2 sm:mb-4 print:bg-gray-100">
               <Wallet className="w-5 h-5 sm:w-8 sm:h-8 text-white print:text-gray-800" />
             </div>
-            <h3 className="text-white font-black text-[10px] sm:text-lg mb-1 print:text-gray-800 leading-tight">الصندوق المالي</h3>
+            <h3 className="text-white font-black text-[10px] sm:text-lg mb-1 print:text-gray-800 leading-tight">مسحوبات الإدارة</h3>
             <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-0 sm:gap-2 mb-1">
-               <span className="text-lg sm:text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900 leading-none">0</span>
+               <span className="text-lg sm:text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900 leading-none">{adminWithdrawals.toLocaleString()}</span>
             </div>
-            <p className="text-white/80 font-bold text-[8px] sm:text-sm md:text-base print:text-gray-500 truncate w-full">تم سحبها</p>
+            <p className="text-white/80 font-bold text-[8px] sm:text-sm md:text-base print:text-gray-500 truncate w-full">تم تحويلها للمركز</p>
          </div>
 
          {/* Card 3: Pending (Orange) */}
@@ -103,7 +123,7 @@ export default function WarehouseFinance() {
             </div>
             <h3 className="text-white font-black text-[10px] sm:text-lg mb-1 print:text-gray-800 leading-tight">مبالغ معلقة</h3>
             <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-0 sm:gap-2 mb-1">
-               <span className="text-lg sm:text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900 leading-none">290K</span>
+               <span className="text-lg sm:text-4xl md:text-5xl font-black text-white font-en tracking-tighter print:text-gray-900 leading-none">{pendingAmount.toLocaleString()}</span>
             </div>
             <p className="text-white/80 font-bold text-[8px] sm:text-sm md:text-base print:text-gray-500 truncate w-full">عند المندوبين</p>
          </div>
@@ -111,8 +131,8 @@ export default function WarehouseFinance() {
 
       {/* Transactions Table */}
       <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden print:hidden">
-        <div className="bg-[#8CB33E] p-5">
-           <h2 className="text-white text-xl font-black text-center">سجل العمليات المالية</h2>
+        <div className="bg-[#8CB33E] p-5 flex justify-between items-center">
+           <h2 className="text-white text-xl font-black text-center w-full">سجل العمليات المالية</h2>
         </div>
         
         <div className="overflow-x-auto">
@@ -122,29 +142,39 @@ export default function WarehouseFinance() {
                 <th className="px-4 py-3 font-black text-slate-700">التسلسل</th>
                 <th className="px-4 py-3 font-black text-slate-700">رقم العملية</th>
                 <th className="px-4 py-3 font-black text-slate-700">النوع</th>
-                <th className="px-4 py-3 font-black text-slate-700">التفاصيل (رقم الطلب)</th>
+                <th className="px-4 py-3 font-black text-slate-700">التفاصيل</th>
                 <th className="px-4 py-3 font-black text-slate-700">تاريخ</th>
                 <th className="px-4 py-3 font-black text-slate-700">المبلغ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm">
-              {transactions.map((t) => (
-                <tr key={t.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3 font-bold text-slate-600">{t.sn}</td>
-                  <td className="px-4 py-3 font-en font-bold text-slate-800">{t.opNum}</td>
-                  <td className={`px-4 py-3 font-bold ${t.amount < 0 ? 'text-red-500' : 'text-emerald-500'}`}>
-                    {t.type}
-                  </td>
-                  <td className="px-4 py-3 font-bold text-slate-800 whitespace-normal min-w-[200px]">{t.details}</td>
-                  <td className="px-4 py-3 font-en font-bold text-slate-600">{t.date}</td>
-                  <td className={`px-4 py-3 font-en font-black text-base lg:text-lg ${t.amount < 0 ? 'text-red-500' : 'text-emerald-500'}`}>
-                    <div className="flex items-center gap-1">
-                      <span>{t.amount > 0 ? '(+)' : '(-)'}</span>
-                      <span dir="ltr">{Math.abs(t.amount).toLocaleString()} د.ع</span>
-                    </div>
-                  </td>
+              {warehouseTransactions.length === 0 ? (
+                <tr>
+                   <td colSpan={6} className="px-4 py-8 text-center text-slate-400 font-bold">لا توجد عمليات مالية حالياً</td>
                 </tr>
-              ))}
+              ) : (
+                warehouseTransactions.map((t, index) => {
+                  const isNegative = t.fromEntity === 'warehouse';
+
+                  return (
+                    <tr key={t.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-4 py-3 font-bold text-slate-600">{warehouseTransactions.length - index}</td>
+                      <td className="px-4 py-3 font-en font-bold text-slate-800">{t.id}</td>
+                      <td className={`px-4 py-3 font-bold ${isNegative ? 'text-red-500' : 'text-emerald-500'}`}>
+                        {t.type === 'receipt' ? 'قبض' : t.type === 'payment' ? 'صرف' : 'تحويل'}
+                      </td>
+                      <td className="px-4 py-3 font-bold text-slate-800 whitespace-normal min-w-[200px]">{t.description}</td>
+                      <td className="px-4 py-3 font-en font-bold text-slate-600">{new Date(t.timestamp).toLocaleString('ar-IQ')}</td>
+                      <td className={`px-4 py-3 font-en font-black text-base lg:text-lg ${isNegative ? 'text-red-500' : 'text-emerald-500'}`}>
+                        <div className="flex items-center gap-1">
+                          <span>{isNegative ? '(-)' : '(+)'}</span>
+                          <span dir="ltr">{t.amount.toLocaleString()} د.ع</span>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
             </tbody>
           </table>
         </div>
@@ -169,7 +199,7 @@ export default function WarehouseFinance() {
                <p className="font-bold text-slate-800">رقم التقرير: <span className="font-black">RPT-{Math.floor(Math.random() * 100000)}</span></p>
             </div>
             <div className="space-y-2 text-right">
-               <p className="font-bold text-slate-800">العدد: <span className="font-black border border-slate-300 px-2 py-0.5 rounded">{transactions.length} عمليات</span></p>
+               <p className="font-bold text-slate-800">العدد: <span className="font-black border border-slate-300 px-2 py-0.5 rounded">{warehouseTransactions.length} عمليات</span></p>
                <p className="font-bold text-slate-800">التقرير: <span className="font-black">سجل العمليات المالية للمخزن</span></p>
                <p className="font-bold text-slate-800">التاريخ: <span className="font-black whitespace-nowrap">{new Date().toLocaleDateString('ar-IQ')}</span></p>
             </div>
@@ -188,24 +218,27 @@ export default function WarehouseFinance() {
                </tr>
             </thead>
             <tbody>
-               {transactions.map(t => (
-                  <tr key={t.id} className="border-b border-slate-300">
-                      <td className="p-3 font-bold border-l border-slate-300">{t.sn}</td>
-                      <td className="p-3 font-bold border-l border-slate-300">{t.opNum}</td>
-                      <td className="p-3 font-bold border-l border-slate-300">{t.type}</td>
-                      <td className="p-3 font-bold border-l border-slate-300">{t.details}</td>
-                      <td className="p-3 font-bold border-l border-slate-300 font-en text-slate-700">{t.date}</td>
-                      <td className={`p-3 font-black font-en text-left dir-ltr ${t.amount < 0 ? 'text-red-700' : 'text-emerald-700'}`}>
-                        {t.amount > 0 ? '(+) ' : '(-) '}
-                        {Math.abs(t.amount).toLocaleString()} د.ع
-                      </td>
-                  </tr>
-               ))}
+               {warehouseTransactions.map((t, index) => {
+                  const isNegative = t.fromEntity === 'warehouse';
+                  return (
+                    <tr key={t.id} className="border-b border-slate-300">
+                        <td className="p-3 font-bold border-l border-slate-300">{warehouseTransactions.length - index}</td>
+                        <td className="p-3 font-bold border-l border-slate-300">{t.id}</td>
+                        <td className="p-3 font-bold border-l border-slate-300">{t.type === 'receipt' ? 'قبض' : t.type === 'payment' ? 'صرف' : 'تحويل'}</td>
+                        <td className="p-3 font-bold border-l border-slate-300">{t.description}</td>
+                        <td className="p-3 font-bold border-l border-slate-300 font-en text-slate-700">{new Date(t.timestamp).toLocaleDateString('ar-IQ')}</td>
+                        <td className={`p-3 font-black font-en text-left dir-ltr ${isNegative ? 'text-red-700' : 'text-emerald-700'}`}>
+                          {isNegative ? '(-) ' : '(+) '}
+                          {t.amount.toLocaleString()} د.ع
+                        </td>
+                    </tr>
+                 );
+               })}
                {/* Totals */}
                <tr className="border-t-[3px] border-black bg-slate-100">
-                  <td colSpan={5} className="p-3 font-black text-center border-l border-slate-300">صافي العمليات:</td>
+                  <td colSpan={5} className="p-3 font-black text-center border-l border-slate-300">صافي رصيد المخزن المتاح:</td>
                   <td className="p-3 font-black text-slate-800 text-lg font-en text-left dir-ltr">
-                     {transactions.reduce((sum, t) => sum + t.amount, 0).toLocaleString()} د.ع
+                     {currentBalance.toLocaleString()} د.ع
                   </td>
                </tr>
             </tbody>

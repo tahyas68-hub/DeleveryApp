@@ -11,13 +11,15 @@ import {
 import { useOrders } from '../../context/OrderContext';
 import { useUsers } from '../../context/UserContext';
 import { useSettings } from '../../context/SettingsContext';
+import { useFinance } from '../../context/FinanceContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function WarehouseDriverIncomes() {
   const navigate = useNavigate();
-  const { orders } = useOrders();
+  const { orders, updateOrderStatus } = useOrders();
   const { users } = useUsers();
   const { getDriverCommission } = useSettings();
+  const { addTransaction } = useFinance();
   const [searchTerm, setSearchTerm] = useState('');
 
   // Get drivers
@@ -27,7 +29,8 @@ export default function WarehouseDriverIncomes() {
   const driverAccounts = driversList.map((driver) => {
     const driverOrders = orders.filter(o => 
       o.driverId === driver.id && 
-      (o.status === 'delivered' || o.status === 'returned_partial')
+      (o.status === 'delivered' || o.status === 'returned_partial') &&
+      o.financialStatus === 'pending'
     );
     
     // Amount collected from customers (Debt)
@@ -38,6 +41,7 @@ export default function WarehouseDriverIncomes() {
 
     return {
       ...driver,
+      driverOrders,
       orderCount: driverOrders.length,
       debt: totalCollected,
       commission: totalCommission,
@@ -47,6 +51,44 @@ export default function WarehouseDriverIncomes() {
   const filteredDrivers = driverAccounts.filter((d) => 
     (d.name || '').includes(searchTerm) || (d.phone || '').includes(searchTerm)
   );
+
+  const handleSettlement = (driver: typeof driverAccounts[0]) => {
+    if (driver.orderCount === 0) {
+      alert('لا توجد طلبات معلقة لتسويتها');
+      return;
+    }
+
+    if (window.confirm(`هل أنت متأكد من تسوية مبلغ ${driver.debt.toLocaleString()} د.ع وصرف عمولة ${driver.commission.toLocaleString()} د.ع للمندوب ${driver.name}؟`)) {
+      // 1. Add receipt transaction for debt
+      addTransaction({
+        type: 'receipt',
+        amount: driver.debt,
+        fromEntity: driver.name,
+        toEntity: 'warehouse',
+        referenceId: `settlement-${Date.now()}`,
+        description: `قبض مبالغ من المندوب: ${driver.name} عن ${driver.orderCount} طلب/طلبات`,
+        userId: 'session-user'
+      });
+
+      // 2. Add payment transaction for commission
+      addTransaction({
+        type: 'payment',
+        amount: driver.commission,
+        fromEntity: 'warehouse',
+        toEntity: driver.name,
+        referenceId: `commission-${Date.now()}`,
+        description: `صرف عمولة للمندوب: ${driver.name} عن ${driver.orderCount} طلب/طلبات`,
+        userId: 'session-user'
+      });
+
+      // 3. Mark orders as collected
+      driver.driverOrders.forEach(order => {
+        updateOrderStatus(order.id, order.status, { financialStatus: 'collected_from_driver' });
+      });
+
+      alert('تم التسوية بنجاح');
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto space-y-8" dir="rtl">
@@ -112,13 +154,13 @@ export default function WarehouseDriverIncomes() {
                               <ClipboardList className="w-4 h-4" />
                               سجل
                            </button>
-                           <button className="flex items-center gap-1.5 bg-blue-500 text-white px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-black text-xs md:text-sm hover:bg-blue-600 transition-all flex-1 whitespace-nowrap justify-center">
+                           <button 
+                             onClick={() => handleSettlement(driver)}
+                             disabled={driver.orderCount === 0}
+                             className="flex items-center gap-1.5 bg-blue-500 text-white px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-black text-xs md:text-sm hover:bg-blue-600 transition-all flex-1 whitespace-nowrap justify-center disabled:opacity-50"
+                           >
                               <Wallet className="w-4 h-4" />
-                              مستند قبض
-                           </button>
-                           <button className="flex items-center gap-1.5 bg-[#9333ea] text-white px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-black text-xs md:text-sm hover:bg-[#7e22ce] transition-all flex-1 whitespace-nowrap justify-center">
-                              <DollarSign className="w-4 h-4" />
-                              صرف عمولة
+                              تسوية الذمة والعمولة
                            </button>
                         </div>
                     </td>
