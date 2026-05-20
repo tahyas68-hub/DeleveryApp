@@ -15,11 +15,7 @@ export default function DriverWallet() {
   }, 0);
 
   const totalCommission = liabilityOrders.reduce((sum, order) => {
-    // Calculate driver's commission
-    const gov = governorates.find(g => g.name === order.province);
-    const sysCommission = gov?.commission || 0;
-    const driverCommission = Math.max(0, (order.deliveryFee || 0) - sysCommission);
-    return sum + driverCommission;
+    return sum + (order.deliveryFee || 0);
   }, 0);
 
   const displayLiability = totalLiability;
@@ -68,7 +64,7 @@ export default function DriverWallet() {
 
         {/* Card 3: Net Commission (Green) */}
         <div className="bg-white border-r-[4px] border-r-emerald-500 rounded-[20px] text-right p-4 shadow-sm relative overflow-hidden flex flex-col justify-center">
-          <h3 className="text-[13px] font-bold text-slate-500 mb-1">صافي العمولة المستحقة</h3>
+          <h3 className="text-[13px] font-bold text-slate-500 mb-1">مجموع مبلغ التوصيل</h3>
           <div className="flex items-baseline gap-1 justify-end">
             <span className="text-xl sm:text-2xl font-black font-en text-slate-800 tracking-tight">{displayCommission.toLocaleString()}</span>
             <span className="text-xs font-bold text-emerald-500">د.ع</span>
