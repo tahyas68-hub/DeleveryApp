@@ -11,7 +11,10 @@ export default function DriverWallet() {
   const liabilityOrders = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial');
 
   const totalLiability = liabilityOrders.reduce((sum, order) => {
-    return sum + (order.collectedAmount || 0);
+    const net = typeof order.collectedAmount === 'number' 
+      ? order.collectedAmount 
+      : ((order.amount || 0) + (order.deliveryFee || 0));
+    return sum + net;
   }, 0);
 
   const totalCommission = liabilityOrders.reduce((sum, order) => {
@@ -103,7 +106,9 @@ export default function DriverWallet() {
                 </tr>
               ) : (
                 liabilityOrders.map((order) => {
-                  const net = order.collectedAmount || ((order.amount || 0) + (order.deliveryFee || 0));
+                  const net = typeof order.collectedAmount === 'number'
+                    ? order.collectedAmount 
+                    : ((order.amount || 0) + (order.deliveryFee || 0));
                   const fee = order.deliveryFee || 0;
                   const itemAmount = net - fee > 0 ? net - fee : 0;
                   return (
@@ -127,14 +132,16 @@ export default function DriverWallet() {
               <tfoot className="bg-slate-50 border-t-2 border-slate-200">
                 <tr>
                   <td className="px-3 py-4 font-en font-black text-slate-900 bg-slate-100/50 text-lg border-l border-slate-200">
-                    {liabilityOrders.reduce((sum, o) => sum + (o.collectedAmount || ((o.amount || 0) + (o.deliveryFee || 0))), 0).toLocaleString()}
+                    {liabilityOrders.reduce((sum, o) => sum + (typeof o.collectedAmount === 'number' ? o.collectedAmount : ((o.amount || 0) + (o.deliveryFee || 0))), 0).toLocaleString()}
                   </td>
                   <td className="px-3 py-4 font-en font-black text-slate-800 border-x border-slate-200 text-lg">
                     {liabilityOrders.reduce((sum, o) => sum + (o.deliveryFee || 0), 0).toLocaleString()}
                   </td>
                   <td className="px-3 py-4 font-en font-black text-slate-800 text-lg border-r border-slate-200">
                     {liabilityOrders.reduce((sum, o) => {
-                      const net = o.collectedAmount || ((o.amount || 0) + (o.deliveryFee || 0));
+                      const net = typeof o.collectedAmount === 'number' 
+                        ? o.collectedAmount 
+                        : ((o.amount || 0) + (o.deliveryFee || 0));
                       const fee = o.deliveryFee || 0;
                       const itemAmt = net - fee > 0 ? net - fee : 0;
                       return sum + itemAmt;
