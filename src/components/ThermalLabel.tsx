@@ -53,11 +53,11 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
             </div>
 
             <div className="text-center w-[40%] flex flex-col items-center pt-1">
-              <h1 className="font-black text-lg leading-tight uppercase relative inline-block">
+              <h1 className="font-black text-[12px] leading-tight uppercase relative inline-block">
                 شركة الراصد
                 <div className="absolute w-[120%] h-[1px] bg-black -bottom-1 -left-[10%]"></div>
               </h1>
-              <h2 className="font-bold text-sm leading-tight mt-1.5 w-full whitespace-nowrap">
+              <h2 className="font-bold text-[10px] leading-tight mt-1.5 w-full whitespace-nowrap">
                 للتوصيل السريع
               </h2>
             </div>
@@ -73,7 +73,7 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
           <div className="shrink-0 pt-1 space-y-2 relative">
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold whitespace-nowrap">المحافظة:</span>
-              <span className="text-lg font-bold">{order.province}</span>
+              <span className="text-[12px] font-bold">{order.province}</span>
             </div>
 
             <div className="flex items-baseline gap-2">
@@ -104,7 +104,7 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
               <span className="text-sm font-bold whitespace-nowrap">
                 رقم الهاتف:
               </span>
-              <span className="text-xl font-en font-black tracking-wide">
+              <span className="text-[12px] font-en font-black tracking-wide">
                 {order.customerPhone}
               </span>
             </div>
@@ -164,7 +164,7 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
                   <span className="font-bold text-[11px] whitespace-nowrap ml-1 pr-1 text-slate-500 shrink-0">
                     هاتف المتجر:
                   </span>
-                  <span className="text-sm font-bold font-en tracking-wide leading-none dir-ltr truncate">
+                  <span className="text-[12px] font-bold font-en tracking-wide leading-none dir-ltr truncate">
                     {merchant.phone}
                   </span>
                 </div>
