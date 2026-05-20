@@ -105,7 +105,7 @@ export default function DriverWallet() {
                 liabilityOrders.map((order) => {
                   const net = order.collectedAmount || ((order.amount || 0) + (order.deliveryFee || 0));
                   const fee = order.deliveryFee || 0;
-                  const itemAmount = order.amount || 0;
+                  const itemAmount = net - fee > 0 ? net - fee : 0;
                   return (
                     <tr key={order.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="px-3 py-4 font-en font-bold text-slate-900 bg-slate-50 text-base border-l border-slate-100">
@@ -133,7 +133,12 @@ export default function DriverWallet() {
                     {liabilityOrders.reduce((sum, o) => sum + (o.deliveryFee || 0), 0).toLocaleString()}
                   </td>
                   <td className="px-3 py-4 font-en font-black text-slate-800 text-lg border-r border-slate-200">
-                    {liabilityOrders.reduce((sum, o) => sum + (o.amount || 0), 0).toLocaleString()}
+                    {liabilityOrders.reduce((sum, o) => {
+                      const net = o.collectedAmount || ((o.amount || 0) + (o.deliveryFee || 0));
+                      const fee = o.deliveryFee || 0;
+                      const itemAmt = net - fee > 0 ? net - fee : 0;
+                      return sum + itemAmt;
+                    }, 0).toLocaleString()}
                   </td>
                 </tr>
               </tfoot>
