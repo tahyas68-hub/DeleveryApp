@@ -182,8 +182,8 @@ export default function WarehouseReturnsTransfer() {
                         }}
                       />
                     </td>
-                    <td className="px-6 py-5 font-en font-bold text-[#0F3B73]">{order.trackingNumber}</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-600">{order.id.slice(0, 8)}</td>
+                    <td className="px-6 py-5 font-en font-bold text-[#0F3B73]">{order.id.slice(0, 8)}</td>
+                    <td className="px-6 py-5 font-en font-bold text-slate-600">{order.trackingNumber || '-'}</td>
                     <td className="px-6 py-5 font-bold text-slate-900">{order.merchantName}</td>
                     <td className="px-6 py-5">
                        <div className="flex flex-col">
