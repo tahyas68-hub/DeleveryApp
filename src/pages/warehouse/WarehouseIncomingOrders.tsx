@@ -95,8 +95,8 @@ export default function WarehouseIncomingOrders() {
                       checked={selectedIds.length === filteredOrders.length && filteredOrders.length > 0}
                    />
                 </th>
-                <th className="px-6 py-4 font-black text-slate-700">رقم الشحنة</th>
                 <th className="px-6 py-4 font-black text-slate-700">رقم الطلب</th>
+                <th className="px-6 py-4 font-black text-slate-700">رقم الشحنة</th>
                 <th className="px-6 py-4 font-black text-slate-700">التاجر / المتجر</th>
                 <th className="px-6 py-4 font-black text-slate-700">العميل</th>
                 <th className="px-6 py-4 font-black text-slate-700">العنوان</th>
@@ -126,8 +126,8 @@ export default function WarehouseIncomingOrders() {
                         }}
                       />
                     </td>
-                    <td className="px-6 py-5 font-en font-bold text-[#0F3B73]">{order.trackingNumber}</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-600">{order.id.slice(0, 8)}</td>
+                    <td className="px-6 py-5 font-en font-bold text-[#0F3B73]">{order.id.slice(0, 8)}</td>
+                    <td className="px-6 py-5 font-en font-bold text-slate-600">{order.trackingNumber}</td>
                     <td className="px-6 py-5 font-bold text-slate-800">{order.merchantName}</td>
                     <td className="px-6 py-5 font-bold text-slate-600">{order.customerName}</td>
                     <td className="px-6 py-5 font-bold text-slate-500">{order.province}</td>
