@@ -70,6 +70,7 @@ export default function MainWarehouse() {
             <thead className="bg-slate-50 border-b border-slate-100">
               <tr>
                 <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
+                <th className="px-6 py-4 font-bold text-slate-600">رقم الشحنة</th>
                 <th className="px-6 py-4 font-bold text-slate-600">التاريخ</th>
                 <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
                 <th className="px-6 py-4 font-bold text-slate-600">العميل</th>
@@ -80,12 +81,13 @@ export default function MainWarehouse() {
             <tbody className="divide-y divide-slate-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-slate-400 font-bold">لا يوجد طلبات في المخزن الرئيسي حالياً</td>
+                  <td colSpan={7} className="px-6 py-12 text-center text-slate-400 font-bold">لا يوجد طلبات في المخزن الرئيسي حالياً</td>
                 </tr>
               ) : (
                 filteredOrders.map(o => (
                   <tr key={o.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-bold font-en text-[#0F3B73]">{o.trackingNumber || o.id}</td>
+                    <td className="px-6 py-4 font-bold font-en text-[#0F3B73]">{(o.id || '').slice(0, 8)}</td>
+                    <td className="px-6 py-4 text-sm font-bold text-slate-600 font-en">{o.trackingNumber || '-'}</td>
                     <td className="px-6 py-4 text-sm font-bold text-slate-500 font-en">{o.date}</td>
                     <td className="px-6 py-4 font-bold text-slate-800">{o.merchantName}</td>
                     <td className="px-6 py-4">
