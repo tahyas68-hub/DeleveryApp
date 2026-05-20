@@ -131,7 +131,15 @@ export default function WarehouseIncomingOrders() {
                     <td className="px-6 py-5 font-bold text-slate-800">{order.merchantName}</td>
                     <td className="px-6 py-5 font-bold text-slate-600">{order.customerName}</td>
                     <td className="px-6 py-5 font-bold text-slate-500">{order.province}</td>
-                    <td className="px-6 py-5"><OrderStatusBadge status={order.status} /></td>
+                    <td className="px-6 py-5">
+                      <button 
+                        onClick={() => updateOrderStatus(order.id, 'branch_warehouse')}
+                        className="transition-all hover:opacity-80 active:scale-95"
+                        title="انقر لتأكيد الاستلام"
+                      >
+                        <OrderStatusBadge status={order.status} />
+                      </button>
+                    </td>
                     <td className="px-6 py-5 font-en font-bold text-slate-400">{order.date ? order.date.split('T')[0] : 'N/A'}</td>
                     <td className="px-6 py-5 font-en font-black text-slate-800">{order.totalAmount.toLocaleString()} د.ع</td>
                   </tr>
