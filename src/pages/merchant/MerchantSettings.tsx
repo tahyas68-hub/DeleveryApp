@@ -5,9 +5,11 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useUsers } from '../../context/UserContext';
 
 export default function MerchantSettings() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser: updateAuthUser } = useAuth();
+  const { updateUser: updateGlobalUser } = useUsers();
   const [activeTab, setActiveTab] = useState<'personal' | 'store'>('personal');
   const [showPassword, setShowPassword] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -31,20 +33,29 @@ export default function MerchantSettings() {
   const handleSavePersonalInfo = () => {
     setIsSaving(true);
     setTimeout(() => {
-      updateUser({ name: merchantName });
+      updateAuthUser({ name: merchantName });
+      if (user?.id) {
+        updateGlobalUser(user.id, { name: merchantName });
+      }
       setIsSaving(false);
+      alert('تم حفظ البيانات الشخصية بنجاح!');
     }, 800);
   };
 
   const handleSaveStoreInfo = () => {
     setIsSaving(true);
     setTimeout(() => {
-      updateUser({ 
+      const updates = { 
         storeName, 
         storeAddress, 
         ...(storeLogoUrl ? { storeLogoUrl } : {})
-      });
+      };
+      updateAuthUser(updates);
+      if (user?.id) {
+        updateGlobalUser(user.id, updates);
+      }
       setIsSaving(false);
+      alert('تم حفظ معلومات المتجر بنجاح!');
     }, 800);
   };
 
