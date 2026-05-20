@@ -17,7 +17,7 @@ export default function AdminTreasury() {
           <Wallet className="w-5 h-5" /> الرصيد الإجمالي في الصندوق
         </p>
         <div className="flex items-end gap-2">
-          <h2 className="text-5xl font-black tracking-tight font-en">15,450,000</h2>
+          <h2 className="text-5xl font-black tracking-tight font-en">0</h2>
           <span className="text-xl font-bold text-blue-200 mb-1">د.ع</span>
         </div>
       </div>
