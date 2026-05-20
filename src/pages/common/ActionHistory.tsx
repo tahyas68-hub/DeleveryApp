@@ -3,6 +3,26 @@ import { useOrders } from '../../context/OrderContext';
 import { Clock, Search, Filter, History, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+const keyTranslations: Record<string, string> = {
+  driverId: 'رمز المندوب',
+  driverName: 'اسم المندوب',
+  branchName: 'اسم الفرع',
+  financialStatus: 'الحالة المالية',
+  companyProfit: 'ربح الشركة',
+  merchantDue: 'مستحقات التاجر',
+  driverCommission: 'عمولة المندوب',
+  collectedAmount: 'المبلغ المحصل',
+  customerName: 'اسم العميل',
+  customerPhone: 'رقم العميل',
+  address: 'العنوان',
+  province: 'المحافظة',
+  status: 'الحالة',
+  trackingNumber: 'رقم التتبع',
+  totalAmount: 'مبلغ الطلب الإجمالي',
+};
+
+const translateKey = (key: string) => keyTranslations[key] || key;
+
 export default function ActionHistory() {
   const { logs } = useOrders();
   const [searchTerm, setSearchTerm] = useState('');
@@ -96,9 +116,27 @@ export default function ActionHistory() {
                   )}
                 </div>
                 {log.details && log.details !== '""' && (
-                  <p className="text-slate-500 text-sm mt-2 p-3 bg-slate-50 rounded-xl leading-relaxed">
-                    {log.details.replace(/"/g, '')}
-                  </p>
+                  <div className="text-slate-500 text-sm mt-2 p-3 bg-slate-50 rounded-xl leading-relaxed">
+                    {(() => {
+                      try {
+                        if (log.details.trim().startsWith('{')) {
+                          const parsed = JSON.parse(log.details);
+                          return (
+                            <div className="flex flex-col gap-1 items-start">
+                              {Object.entries(parsed).map(([key, value]) => (
+                                <span key={key} className="text-slate-600">
+                                  <span className="font-bold text-slate-700">{translateKey(key)}:</span> {String(value)}
+                                </span>
+                              ))}
+                            </div>
+                          );
+                        }
+                      } catch (e) {
+                        // ignore error
+                      }
+                      return <span>{log.details.replace(/"/g, '')}</span>;
+                    })()}
+                  </div>
                 )}
               </div>
             </div>

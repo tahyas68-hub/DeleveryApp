@@ -8,11 +8,10 @@ export default function DriverWallet() {
   const { governorates } = useSettings();
   
   // Filter only the delivered orders (either fully or partially)
-  const liabilityOrders = orders.filter(o => o.status === 'delivered');
+  const liabilityOrders = orders.filter(o => o.status === 'delivered' || o.status === 'partially_delivered');
 
   const totalLiability = liabilityOrders.reduce((sum, order) => {
-    // The driver collects the item amount plus the delivery fee.
-    return sum + (order.amount || 0) + (order.deliveryFee || 0);
+    return sum + (order.collectedAmount || 0);
   }, 0);
 
   const totalCommission = liabilityOrders.reduce((sum, order) => {
