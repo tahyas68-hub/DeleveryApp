@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DollarSign, Wallet, ArrowDownRight, ArrowUpRight, FileText, Download } from 'lucide-react';
+import { DollarSign, Wallet, ArrowDownRight, ArrowUpRight, FileText, Download, LayoutDashboard, Store, Bike, History } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useFinance } from '../../context/FinanceContext';
 
@@ -130,20 +130,36 @@ export default function AdminFinance() {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="bg-white border text-sm font-bold border-slate-200 rounded-xl p-1 flex gap-1 w-max">
+      {/* Category Cards Tabs */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { id: 'overview', label: 'نظرة عامة' },
-          { id: 'merchants', label: 'كشوفات التجار' },
-          { id: 'drivers', label: 'عهد ومناديب' },
-          { id: 'transactions', label: 'السجل المالي (Ledger)' },
+          { id: 'overview', label: 'نظرة عامة', desc: 'ملخص مالي شامل', icon: LayoutDashboard, activeBg: 'bg-blue-600', activeBorder: 'border-blue-600', iconBg: 'bg-blue-50', iconColor: 'text-blue-600', shadow: 'shadow-blue-600/20' },
+          { id: 'merchants', label: 'كشوفات التجار', desc: 'حسابات وتسويات التجار', icon: Store, activeBg: 'bg-emerald-600', activeBorder: 'border-emerald-600', iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600', shadow: 'shadow-emerald-600/20' },
+          { id: 'drivers', label: 'عهد ومناديب', desc: 'ذمم وعمولات المناديب', icon: Bike, activeBg: 'bg-orange-600', activeBorder: 'border-orange-600', iconBg: 'bg-orange-50', iconColor: 'text-orange-600', shadow: 'shadow-orange-600/20' },
+          { id: 'transactions', label: 'السجل المالي', desc: 'حركة الأموال والقيود', icon: History, activeBg: 'bg-purple-600', activeBorder: 'border-purple-600', iconBg: 'bg-purple-50', iconColor: 'text-purple-600', shadow: 'shadow-purple-600/20' },
         ].map(t => (
           <button
             key={t.id}
             onClick={() => setActiveTab(t.id as any)}
-            className={`px-6 py-2 rounded-lg transition-all ${activeTab === t.id ? 'bg-[#0F3B73] text-white shadow-md' : 'text-slate-500 hover:bg-slate-100'}`}
+            className={`relative overflow-hidden text-right p-5 rounded-[24px] border-2 transition-all duration-300 flex flex-col gap-3 ${
+              activeTab === t.id 
+                ? `${t.activeBorder} ${t.activeBg} shadow-xl ${t.shadow} transform -translate-y-1` 
+                : 'border-slate-100 bg-white hover:border-slate-200 hover:shadow-md'
+            }`}
           >
-            {t.label}
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${
+              activeTab === t.id ? 'bg-white/20 text-white' : `${t.iconBg} ${t.iconColor}`
+            }`}>
+              <t.icon className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className={`font-black text-lg ${activeTab === t.id ? 'text-white' : 'text-slate-800'}`}>
+                {t.label}
+              </h3>
+              <p className={`text-xs font-bold mt-1 ${activeTab === t.id ? 'text-white/80' : 'text-slate-400'}`}>
+                {t.desc}
+              </p>
+            </div>
           </button>
         ))}
       </div>
