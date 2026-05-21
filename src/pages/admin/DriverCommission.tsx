@@ -16,7 +16,7 @@ export default function DriverCommission() {
 
   // We should only consider delivered orders assigned to the selected driver
   const relevantOrders = orders.filter(
-    o => (o.status === 'delivered' || o.status === 'returned_partial') && 
+    o => (o.status === 'delivered' || o.status === 'returned_partial' || o.status === 'delivered_partial') && 
          (!selectedDriverId || o.driverId === selectedDriverId)
   );
 

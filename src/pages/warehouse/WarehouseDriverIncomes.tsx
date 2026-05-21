@@ -35,12 +35,16 @@ export default function WarehouseDriverIncomes() {
   const driverAccounts = driversList.map((driver) => {
     const driverOrders = orders.filter(o => 
       o.driverId === driver.id && 
-      (o.status === 'delivered' || o.status === 'returned_partial') &&
+      (o.status === 'delivered' || o.status === 'returned_partial' || o.status === 'delivered_partial') &&
       o.financialStatus === 'pending'
     );
     
     // Amount collected from customers (Debt)
-    const totalCollected = driverOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
+    const totalCollected = driverOrders.reduce((sum, o) => {
+      // For partial delivery/return, the collected amount might be less than the total amount
+      const amountToCollect = o.collectedAmount !== undefined ? o.collectedAmount : (o.amount || 0);
+      return sum + amountToCollect;
+    }, 0);
 
     // Driver's commission
     const totalCommission = driverOrders.reduce((sum, order) => sum + getDriverCommission(order.province), 0);

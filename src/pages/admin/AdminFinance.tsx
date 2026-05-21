@@ -34,7 +34,7 @@ export default function AdminFinance() {
     
     if (order.financialStatus === 'merchant_paid') {
       acc[order.merchantId].paid += order.merchantDue || 0;
-    } else if (order.status === 'delivered' || order.status === 'delivered_partial') {
+    } else if (order.status === 'delivered' || order.status === 'delivered_partial' || order.status === 'returned_partial') {
       acc[order.merchantId].balance += order.merchantDue || 0; // Owed to merchant
     } else {
       acc[order.merchantId].pending += order.merchantDue || 0; // Not yet delivered
@@ -49,8 +49,8 @@ export default function AdminFinance() {
     
     if (order.financialStatus === 'collected_from_driver' || order.financialStatus === 'merchant_paid' || order.financialStatus === 'branch_transferred') {
       acc[order.driverId].commission += order.driverCommission || 0;
-    } else if (order.status === 'delivered' || order.status === 'delivered_partial') {
-      acc[order.driverId].collected += (order.collectedAmount || 0);
+    } else if (order.status === 'delivered' || order.status === 'delivered_partial' || order.status === 'returned_partial') {
+      acc[order.driverId].collected += (order.collectedAmount !== undefined ? order.collectedAmount : (order.amount || 0));
       acc[order.driverId].commission += (order.driverCommission || 0);
     }
     return acc;
@@ -73,7 +73,7 @@ export default function AdminFinance() {
         description: 'تصفية حساب تاجر'
       });
       // Update all delivered orders for this merchant to 'merchant_paid'
-      orders.filter(o => o.merchantId === merchantId && (o.status === 'delivered' || o.status === 'delivered_partial') && o.financialStatus !== 'merchant_paid')
+      orders.filter(o => o.merchantId === merchantId && (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') && o.financialStatus !== 'merchant_paid')
             .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'merchant_paid' }));
       alert("تم إنشاء سند الصرف وتحديث حالة الطلبات");
     }
@@ -94,7 +94,7 @@ export default function AdminFinance() {
         userId: 'admin',
         description: 'استلام مبالغ من المندوب'
       });
-      orders.filter(o => o.driverId === driverId && (o.status === 'delivered' || o.status === 'delivered_partial') && o.financialStatus === 'collected_from_driver')
+      orders.filter(o => o.driverId === driverId && (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') && o.financialStatus === 'collected_from_driver')
             .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'company_received' }));
       alert("تم استلام القاصة من المندوب بنجاح");
     }

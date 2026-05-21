@@ -16,8 +16,9 @@ export default function WarehouseFinance() {
 
   // 1. Calculate pending amounts with drivers
   const pendingAmount = orders.reduce((sum, o) => {
-    if ((o.status === 'delivered' || o.status === 'returned_partial') && o.financialStatus === 'pending') {
-      return sum + (o.amount || 0);
+    if ((o.status === 'delivered' || o.status === 'returned_partial' || o.status === 'delivered_partial') && o.financialStatus === 'pending') {
+      const amountToCollect = o.collectedAmount !== undefined ? o.collectedAmount : (o.amount || 0);
+      return sum + amountToCollect;
     }
     return sum;
   }, 0);
