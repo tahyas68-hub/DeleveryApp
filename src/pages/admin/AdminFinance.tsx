@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { DollarSign, Wallet, ArrowDownRight, ArrowUpRight, FileText, Download, LayoutDashboard, Store, Bike, History } from 'lucide-react';
+import { DollarSign, Wallet, ArrowDownRight, ArrowUpRight, FileText, Download, LayoutDashboard, Store, Bike, History, Printer } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useFinance } from '../../context/FinanceContext';
 import { motion, AnimatePresence } from 'motion/react';
+import { PrintHeader } from '../../components/PrintHeader';
 
 export default function AdminFinance() {
   const { orders, updateOrderStatus } = useOrders();
@@ -124,10 +125,19 @@ export default function AdminFinance() {
 
   return (
     <div className="space-y-6 text-sm" dir="rtl">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
         <div>
           <h1 className="text-3xl font-black text-[#0F3B73]">النظام المالي الشامل</h1>
           <p className="text-slate-500 font-medium mt-1">دورة الأموال، القيود المحاسبية، والتقارير</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button 
+             onClick={() => window.print()}
+             className="flex items-center gap-2 bg-[#0F3B73] hover:bg-[#0F3B73]/90 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg transition-colors"
+          >
+            <Printer className="w-5 h-5" />
+            طباعة التقرير المالي
+          </button>
         </div>
       </div>
 
@@ -312,6 +322,61 @@ export default function AdminFinance() {
           )}
         </motion.div>
       </AnimatePresence>
+
+      {/* Printable Financial Report */}
+      <div id="printable-financial-report" className="hidden print:block w-full bg-white text-black pt-4 z-50 overflow-visible" dir="rtl">
+         <PrintHeader 
+           title="التقرير المالي للإدارة"
+           stats={[
+             { label: 'أرباح الشركة المحققة', value: totalCompanyProfit.toLocaleString() },
+             { label: 'إجمالي المقبوضات', value: totalInbound.toLocaleString() },
+             { label: 'إجمالي المصروفات', value: totalOutbound.toLocaleString() },
+             { label: 'عدد الحركات', value: transactions.length }
+           ]}
+         />
+
+         <table className="w-full text-center border-collapse mb-12 border-2 border-slate-500 text-sm">
+            <thead>
+               <tr className="border-b-2 border-black bg-slate-100">
+                  <th className="p-2 font-black text-black border-l border-slate-300">رقم السند</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">النوع</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">من</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">إلى</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">التاريخ</th>
+                  <th className="p-2 font-black text-black">المبلغ</th>
+               </tr>
+            </thead>
+            <tbody>
+               {transactions.map((t, index) => (
+                    <tr key={t.id} className="border-b border-slate-300">
+                        <td className="p-2 font-bold border-l border-slate-300 font-en text-slate-700">{t.id}</td>
+                        <td className="p-2 font-bold border-l border-slate-300">
+                           {t.type === 'receipt' ? 'قبض' : t.type === 'payment' ? 'صرف' : 'تحويل'}
+                        </td>
+                        <td className="p-2 font-bold border-l border-slate-300">{t.fromEntity}</td>
+                        <td className="p-2 font-bold border-l border-slate-300">{t.toEntity}</td>
+                        <td className="p-2 font-bold border-l border-slate-300 font-en">{new Date(t.timestamp).toLocaleDateString('ar-IQ')}</td>
+                        <td className="p-2 font-black text-slate-900 font-en">{(t.amount || 0).toLocaleString()}</td>
+                    </tr>
+               ))}
+               <tr className="border-t-[3px] border-black bg-slate-100">
+                  <td colSpan={5} className="p-2 font-black text-center border-l border-slate-300 text-lg">صافي الحركة</td>
+                  <td className="p-2 font-black text-slate-900 text-xl font-en">{(totalInbound - totalOutbound).toLocaleString()}</td>
+               </tr>
+            </tbody>
+         </table>
+
+         <div className="flex justify-between px-16 mt-20 pt-10 pb-10">
+            <div className="text-center">
+               <p className="font-black text-lg mb-12">المدير المالي</p>
+               <p className="text-black font-black">________________________</p>
+            </div>
+            <div className="text-center">
+               <p className="font-black text-lg mb-12">التدقيق المالي</p>
+               <p className="text-black font-black">________________________</p>
+            </div>
+         </div>
+      </div>
     </div>
   );
 }

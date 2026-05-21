@@ -3,6 +3,7 @@ import { Wallet, CheckCircle2, Printer, Calendar, FileText, ArrowDownRight, Arro
 import { useOrders } from '../../context/OrderContext';
 import { useSettings } from '../../context/SettingsContext';
 import { motion, AnimatePresence } from 'motion/react';
+import { PrintHeader } from '../../components/PrintHeader';
 
 export default function DriverAccounts() {
   const { orders } = useOrders();
@@ -194,11 +195,21 @@ export default function DriverAccounts() {
       </div>
 
       {/* Print Headers */}
-      <div className="hidden print:block mb-8 text-center">
-         <h2 className="text-2xl font-black text-slate-900 border-b-2 border-slate-900 pb-2 inline-block">
-           {activeTab === 'liability' ? 'كشف الذمة المالية للمندوب' : 'كشف عمولة المندوب'}
-         </h2>
-         <p className="mt-4 text-slate-600 font-bold">التاريخ: {dateFrom || 'الكل'} إلى {dateTo || 'الكل'}</p>
+      <div className="hidden print:block w-full bg-white text-black pt-4 z-50 overflow-visible px-8 mb-8" dir="rtl">
+         <PrintHeader 
+           title={activeTab === 'liability' ? 'كشف الذمة المالية للمندوب' : 'كشف عمولة المندوب'}
+           date={dateFrom && dateTo ? `${dateFrom} إلى ${dateTo}` : (dateFrom ? `من ${dateFrom}` : (dateTo ? `إلى ${dateTo}` : undefined))}
+           stats={activeTab === 'liability' ? [
+             { label: 'الذمة المالية (عليه)', value: totalLiability.toLocaleString() },
+             { label: 'المبالغ المسلمة للشركة', value: deliveredToCompany.toLocaleString() },
+             { label: 'العمولة الصافية المستحقة', value: totalCommission.toLocaleString() },
+             { label: 'عدد الطلبات', value: filteredLiabilityOrders.length }
+           ] : [
+             { label: 'العمولة المستحقة', value: filteredTotalCommission.toLocaleString() },
+             { label: 'عمولات مقبوضة', value: receivedCommissions.toLocaleString() },
+             { label: 'عدد الطلبات', value: filteredCommissionOrders.length }
+           ]}
+         />
       </div>
 
       <AnimatePresence mode="wait">
@@ -213,38 +224,40 @@ export default function DriverAccounts() {
             <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden print:border-none print:shadow-none print:rounded-none">
               <div className="overflow-x-auto">
                 <table className="w-full text-center table-fixed">
-                  <thead className="bg-[#0F3B73] text-white print:bg-slate-100 print:text-slate-900">
+                  <thead className="bg-[#0F3B73] text-white print:bg-slate-100 print:text-slate-900 border-b-2 border-[#0F3B73]">
                     <tr>
-                      <th className="px-3 py-4 font-bold text-[15px] border-l border-slate-100/20 print:border-slate-300">الصافي</th>
-                      <th className="px-3 py-4 font-bold text-[15px] border-x border-slate-100/20 print:border-slate-300">أجور التوصيل</th>
-                      <th className="px-3 py-4 font-bold text-[15px] border-r border-slate-100/20 print:border-slate-300">مبلغ الطلب</th>
+                      <th className="px-3 py-4 font-bold text-[15px] border-l border-slate-100/20 print:border-slate-300">التسلسل</th>
+                      <th className="px-3 py-4 font-bold text-[15px] border-l border-slate-100/20 print:border-slate-300">رقم الطلب</th>
+                      <th className="px-3 py-4 font-bold text-[15px] border-l border-slate-100/20 print:border-slate-300">تاريخ تسليم الطلب</th>
+                      <th className="px-3 py-4 font-bold text-[15px] print:border-slate-300">المبلغ المستلم</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 print:divide-slate-300">
                     {filteredLiabilityOrders.length === 0 ? (
                       <tr>
-                        <td colSpan={3} className="px-4 py-8 text-center text-slate-500 print:border print:border-slate-300">
+                        <td colSpan={4} className="px-4 py-8 text-center text-slate-500 print:border print:border-slate-300">
                           <CheckCircle2 className="w-8 h-8 text-slate-300 mx-auto mb-2 print:hidden" />
                           <p className="font-medium text-[15px]">لا توجد طلبات في هذه الفترة</p>
                         </td>
                       </tr>
                     ) : (
-                      filteredLiabilityOrders.map((order) => {
+                      filteredLiabilityOrders.map((order, index) => {
                         const net = typeof order.collectedAmount === 'number'
                           ? order.collectedAmount 
                           : ((order.amount || 0) + (order.deliveryFee || 0));
-                        const fee = order.deliveryFee || 0;
-                        const itemAmount = net - fee > 0 ? net - fee : 0;
                         return (
                           <tr key={order.id} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="px-3 py-4 font-en font-bold text-slate-900 bg-slate-50 print:bg-transparent text-base border-l border-slate-100 print:border-slate-300">
+                            <td className="px-3 py-4 font-bold text-slate-700 text-base border-l border-slate-100 print:border-slate-300">
+                              {index + 1}
+                            </td>
+                            <td className="px-3 py-4 font-en font-bold text-slate-700 text-base border-l border-slate-100 print:border-slate-300">
+                              {order.id}
+                            </td>
+                            <td className="px-3 py-4 font-en font-medium text-slate-700 text-base border-l border-slate-100 print:border-slate-300">
+                              {order.date ? order.date.split('T')[0] : 'N/A'}
+                            </td>
+                            <td className="px-3 py-4 font-en font-black text-slate-900 bg-slate-50 print:bg-transparent text-base border-slate-100 print:border-slate-300">
                               {net.toLocaleString()}
-                            </td>
-                            <td className="px-3 py-4 font-en font-medium text-slate-700 text-base border-x border-slate-100 print:border-slate-300">
-                              {fee.toLocaleString()}
-                            </td>
-                            <td className="px-3 py-4 font-en font-medium text-slate-700 text-base border-r border-slate-100 print:border-slate-300">
-                              {itemAmount.toLocaleString()}
                             </td>
                           </tr>
                         )
@@ -254,21 +267,11 @@ export default function DriverAccounts() {
                   {filteredLiabilityOrders.length > 0 && (
                     <tfoot className="bg-slate-50 border-t-2 border-slate-200 print:bg-slate-100 print:border-slate-900">
                       <tr>
-                        <td className="px-3 py-4 font-en font-black text-slate-900 bg-slate-100/50 print:bg-transparent text-lg border-l border-slate-200 print:border-slate-300">
+                        <td colSpan={3} className="px-3 py-4 font-black text-center text-slate-900 bg-slate-100/50 print:bg-transparent text-lg border-l border-slate-200 print:border-slate-300">
+                          المجموع
+                        </td>
+                        <td className="px-3 py-4 font-en font-black text-slate-900 bg-slate-100/50 print:bg-transparent text-xl print:border-slate-300">
                           {filteredTotalLiability.toLocaleString()}
-                        </td>
-                        <td className="px-3 py-4 font-en font-black text-slate-800 border-x border-slate-200 print:border-slate-300 text-lg">
-                          {filteredLiabilityOrders.reduce((sum, o) => sum + (o.deliveryFee || 0), 0).toLocaleString()}
-                        </td>
-                        <td className="px-3 py-4 font-en font-black text-slate-800 text-lg border-r border-slate-200 print:border-slate-300">
-                          {filteredLiabilityOrders.reduce((sum, o) => {
-                            const net = typeof o.collectedAmount === 'number' 
-                              ? o.collectedAmount 
-                              : ((o.amount || 0) + (o.deliveryFee || 0));
-                            const fee = o.deliveryFee || 0;
-                            const itemAmt = net - fee > 0 ? net - fee : 0;
-                            return sum + itemAmt;
-                          }, 0).toLocaleString()}
                         </td>
                       </tr>
                     </tfoot>
@@ -333,6 +336,18 @@ export default function DriverAccounts() {
           )}
         </motion.div>
       </AnimatePresence>
+
+      {/* Printable Footers */}
+      <div className="hidden print:flex justify-between px-16 mt-20 pt-10 pb-10">
+         <div className="text-center">
+            <p className="font-black text-lg mb-12">توقيع المستلم (المندوب)</p>
+            <p className="text-black font-black">________________________</p>
+         </div>
+         <div className="text-center">
+            <p className="font-black text-lg mb-12">المدير المالي</p>
+            <p className="text-black font-black">________________________</p>
+         </div>
+      </div>
     </div>
   );
 }

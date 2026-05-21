@@ -1,15 +1,14 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { FileText, Wallet, Printer, FileDown, Clock, ArrowRight, Landmark } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useOrders } from '../../context/OrderContext';
 import * as XLSX from 'xlsx';
-import { useReactToPrint } from 'react-to-print';
+import { PrintHeader } from '../../components/PrintHeader';
 
 export default function MerchantFinance() {
   const { user } = useAuth();
   const { orders } = useOrders();
-  const printRef = useRef<HTMLDivElement>(null);
 
   // Filter out returned orders for pending calculation if needed. 
   // Let's define the groups explicitly:
@@ -68,20 +67,9 @@ export default function MerchantFinance() {
     XLSX.writeFile(workbook, "كشف_حساب.xlsx");
   };
 
-  const handlePrint = useReactToPrint({
-    contentRef: printRef,
-    documentTitle: 'كشف_حساب',
-    pageStyle: `
-      @media print {
-        body { margin: 0; padding: 20px; background: white; }
-        .no-print { display: none !important; }
-      }
-    `,
-  });
-
   return (
     <div className="min-h-screen bg-[#f8fafc] -m-4 lg:-m-8 text-right pb-20 overflow-x-hidden" dir="rtl">
-      <div className="p-6 md:p-10 space-y-12 max-w-7xl mx-auto" ref={printRef}>
+      <div className="p-6 md:p-10 space-y-12 max-w-7xl mx-auto print:hidden">
         {/* Top Action Bar */}
         <div className="flex justify-start no-print">
           <Link to="/merchant" className="bg-[#0F3B73] text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-opacity-90 transition-all active:scale-95 shadow-lg shadow-[#0F3B73]/20 w-fit">
@@ -104,7 +92,7 @@ export default function MerchantFinance() {
                 <FileDown className="w-5 h-5" />
                 <span>تصدير Excel</span>
              </button>
-             <button onClick={() => handlePrint()} className="w-full sm:w-auto bg-[#2B6CB0] text-white px-7 py-3.5 rounded-xl font-black flex items-center justify-center gap-2.5 hover:bg-opacity-95 shadow-xl shadow-blue-500/20 transition-all active:scale-95">
+             <button onClick={() => window.print()} className="w-full sm:w-auto bg-[#2B6CB0] text-white px-7 py-3.5 rounded-xl font-black flex items-center justify-center gap-2.5 hover:bg-opacity-95 shadow-xl shadow-blue-500/20 transition-all active:scale-95">
                 <Printer className="w-6 h-6" />
                 <span className="text-lg">طباعة الكشف</span>
              </button>
@@ -217,6 +205,63 @@ export default function MerchantFinance() {
             </table>
           </div>
         </div>
+      </div>
+
+      {/* Printable Financial Report */}
+      <div id="printable-financial-report" className="hidden print:block w-full bg-white text-black pt-4 z-50 overflow-visible px-8" dir="rtl">
+         <PrintHeader 
+           title="كشف حساب لتاجر"
+           stats={[
+             { label: 'الرصيد الجاهز للسحب', value: currentBalance.toLocaleString() },
+             { label: 'إجمالي المسحوبات', value: withdrawals.toLocaleString() },
+             { label: 'مبالغ معلقة (قيد التوصيل)', value: pendingAmount.toLocaleString() },
+             { label: 'عدد العمليات', value: transactions.length }
+           ]}
+         />
+
+         <table className="w-full text-center border-collapse mb-12 border-2 border-slate-500 text-sm">
+            <thead>
+               <tr className="border-b-2 border-black bg-slate-100">
+                  <th className="p-2 font-black text-black border-l border-slate-300">التسلسل</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">رقم البوليصة</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">واسم المستلم</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">المحافظة</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">النوع</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">أجور التوصيل</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">مبلغ الطلب</th>
+                  <th className="p-2 font-black text-black">الصافي الخاص بالتاجر</th>
+               </tr>
+            </thead>
+            <tbody>
+               {transactions.map((trx, index) => (
+                    <tr key={trx.id} className="border-b border-slate-300">
+                        <td className="p-2 font-bold border-l border-slate-300">{index + 1}</td>
+                        <td className="p-2 font-bold border-l border-slate-300 font-en text-slate-700">{trx.details}</td>
+                        <td className="p-2 font-bold border-l border-slate-300">{trx.customerName}</td>
+                        <td className="p-2 font-bold border-l border-slate-300">{trx.address.split('-')[0]}</td>
+                        <td className="p-2 font-bold border-l border-slate-300">{trx.type}</td>
+                        <td className="p-2 font-bold border-l border-slate-300 font-en">{(trx.deliveryFee || 0).toLocaleString()}</td>
+                        <td className="p-2 font-bold border-l border-slate-300 font-en">{(trx.amount || 0).toLocaleString()}</td>
+                        <td className="p-2 font-black text-slate-900 font-en">{(trx.amount || 0).toLocaleString()}</td>
+                    </tr>
+               ))}
+               <tr className="border-t-[3px] border-black bg-slate-100">
+                  <td colSpan={7} className="p-2 font-black text-center border-l border-slate-300 text-lg">صافي حساب التاجر</td>
+                  <td className="p-2 font-black text-slate-900 text-xl font-en">{currentBalance.toLocaleString()}</td>
+               </tr>
+            </tbody>
+         </table>
+
+         <div className="flex justify-between px-16 mt-20 pt-10 pb-10">
+            <div className="text-center">
+               <p className="font-black text-lg mb-12">توقيع المستلم (التاجر)</p>
+               <p className="text-black font-black">________________________</p>
+            </div>
+            <div className="text-center">
+               <p className="font-black text-lg mb-12">المدير المالي</p>
+               <p className="text-black font-black">________________________</p>
+            </div>
+         </div>
       </div>
     </div>
   );

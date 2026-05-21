@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useOrders } from '../../context/OrderContext';
+import { PrintHeader } from '../../components/PrintHeader';
 
 export default function WarehouseReports() {
   const navigate = useNavigate();
@@ -224,69 +225,60 @@ export default function WarehouseReports() {
       )}
 
       {/* Printable Financial Report */}
-      <div id="printable-financial-report" className="hidden print:block w-full bg-white text-black pt-4 z-50" dir="rtl">
-         {/* Report Header */}
-         <div className="text-center mb-8">
-            <div className="flex justify-center mb-2">
-               {/* Logo */}
-               <div className="w-16 h-16 bg-[#0F3B73] rounded-2xl flex items-center justify-center">
-                  <Package className="w-8 h-8 text-white" />
-               </div>
-            </div>
-            <h1 className="text-2xl font-black text-[#0F3B73]">شركة العراب للشحن والتوصيل السريع</h1>
-         </div>
-
-         <div className="flex justify-between items-start mb-8 border-b-2 border-slate-200 pb-6">
-            <div className="space-y-2 text-right">
-               <p className="font-bold text-slate-800">الشركة: <span className="font-black text-[#0F3B73]">شركة العراب للشحن</span></p>
-               <p className="font-bold text-slate-800">رقم التقرير: <span className="font-black">RPT-{Math.floor(Math.random() * 100000)}</span></p>
-            </div>
-            <div className="space-y-2 text-right">
-               <p className="font-bold text-slate-800">العدد: <span className="font-black border border-slate-300 px-2 py-0.5 rounded">{orders.length} طلبات</span></p>
-               <p className="font-bold text-slate-800">التقرير: <span className="font-black">تقرير مالي عام</span></p>
-               <p className="font-bold text-slate-800">التاريخ: <span className="font-black whitespace-nowrap">{new Date().toLocaleDateString('ar-IQ')}</span></p>
-            </div>
-         </div>
+      <div id="printable-financial-report" className="hidden print:block w-full bg-white text-black pt-4 z-50 overflow-visible" dir="rtl">
+         <PrintHeader 
+           title="التقرير المالي التفصيلي"
+           stats={[
+             { label: 'إجمالي المقبوضات', value: orders.reduce((sum, o) => sum + (o.collectedAmount || 0), 0).toLocaleString() },
+             { label: 'صافي الأجور', value: orders.reduce((sum, o) => sum + (o.deliveryFee || 0), 0).toLocaleString() },
+             { label: 'صافي التجار', value: orders.reduce((sum, o) => sum + (o.orderAmount || 0), 0).toLocaleString() },
+             { label: 'عدد الطلبات', value: orders.length }
+           ]}
+         />
 
          {/* Report Table */}
-         <table className="w-full text-right border-collapse mb-12 border-2 border-slate-500">
+         <table className="w-full text-center border-collapse mb-12 border-2 border-slate-500 text-sm">
             <thead>
                <tr className="border-b-2 border-black bg-slate-100">
-                  <th className="p-3 font-black text-black border-l border-slate-300">رقم الطلب</th>
-                  <th className="p-3 font-black text-black border-l border-slate-300">التاجر / المتجر</th>
-                  <th className="p-3 font-black text-black border-l border-slate-300">مبلغ الطلب</th>
-                  <th className="p-3 font-black text-black border-l border-slate-300">أجرة التوصيل</th>
-                  <th className="p-3 font-black text-black">المحصل</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">التاريخ</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">رقم البوليصة</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">واسم المستلم</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">المحافظة</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">أجور التوصيل</th>
+                  <th className="p-2 font-black text-black border-l border-slate-300">مبلغ الكلف</th>
+                  <th className="p-2 font-black text-black">الصافي</th>
                </tr>
             </thead>
             <tbody>
                {orders.map(order => (
                   <tr key={order.id} className="border-b border-slate-300">
-                      <td className="p-3 font-bold border-l border-slate-300 font-en text-slate-700">{order.trackingNumber}</td>
-                      <td className="p-3 font-bold border-l border-slate-300">{order.merchantName}</td>
-                      <td className="p-3 font-bold text-slate-800 border-l border-slate-300 font-en text-left dir-ltr">{(order.orderAmount || 0).toLocaleString()} د.ع</td>
-                      <td className="p-3 font-bold text-slate-800 border-l border-slate-300 font-en text-left dir-ltr">{(order.deliveryFee || 0).toLocaleString()} د.ع</td>
-                      <td className="p-3 font-black text-[#0F3B73] font-en text-left dir-ltr">{(order.collectedAmount || 0).toLocaleString()} د.ع</td>
+                      <td className="p-2 font-bold border-l border-slate-300 font-en text-slate-700">{order.date ? order.date.split('T')[0] : 'N/A'}</td>
+                      <td className="p-2 font-bold border-l border-slate-300 font-en text-slate-700">{order.trackingNumber}</td>
+                      <td className="p-2 font-bold border-l border-slate-300 text-slate-800">{order.customerName}</td>
+                      <td className="p-2 font-bold border-l border-slate-300 text-slate-800">{order.province}</td>
+                      <td className="p-2 font-bold text-slate-800 border-l border-slate-300 font-en">{(order.deliveryFee || 0).toLocaleString()}</td>
+                      <td className="p-2 font-bold text-slate-800 border-l border-slate-300 font-en">{(order.orderAmount || 0).toLocaleString()}</td>
+                      <td className="p-2 font-black text-slate-900 font-en">{(order.collectedAmount || 0).toLocaleString()}</td>
                   </tr>
                ))}
                {/* Totals */}
                <tr className="border-t-[3px] border-black bg-slate-100">
-                  <td colSpan={2} className="p-3 font-black text-center border-l border-slate-300">الإجمالي الكلي:</td>
-                  <td className="p-3 font-black text-slate-800 border-l border-slate-300 font-en text-left dir-ltr">{orders.reduce((sum, o) => sum + (o.orderAmount || 0), 0).toLocaleString()} د.ع</td>
-                  <td className="p-3 font-black text-slate-800 border-l border-slate-300 font-en text-left dir-ltr">{orders.reduce((sum, o) => sum + (o.deliveryFee || 0), 0).toLocaleString()} د.ع</td>
-                  <td className="p-3 font-black text-emerald-700 text-lg font-en text-left dir-ltr">{orders.reduce((sum, o) => sum + (o.collectedAmount || 0), 0).toLocaleString()} د.ع</td>
+                  <td colSpan={4} className="p-2 font-black text-center border-l border-slate-300 text-lg">المجموع الكلي</td>
+                  <td className="p-2 font-black text-slate-800 border-l border-slate-300 font-en text-lg">{orders.reduce((sum, o) => sum + (o.deliveryFee || 0), 0).toLocaleString()}</td>
+                  <td className="p-2 font-black text-slate-800 border-l border-slate-300 font-en text-lg">{orders.reduce((sum, o) => sum + (o.orderAmount || 0), 0).toLocaleString()}</td>
+                  <td className="p-2 font-black text-slate-900 text-xl font-en">{orders.reduce((sum, o) => sum + (o.collectedAmount || 0), 0).toLocaleString()}</td>
                </tr>
             </tbody>
          </table>
 
          {/* Signatures */}
-         <div className="flex justify-between px-16 mt-20 pt-10">
+         <div className="flex justify-between px-16 mt-20 pt-10 pb-10">
             <div className="text-center">
-               <p className="font-black text-lg mb-12">اسم مدير الفرع والتوقيع</p>
+               <p className="font-black text-lg mb-12">صادق على التقرير</p>
                <p className="text-black font-black">________________________</p>
             </div>
             <div className="text-center">
-               <p className="font-black text-lg mb-12">اسم المحاسب المالي والتوقيع</p>
+               <p className="font-black text-lg mb-12">أعد التقرير</p>
                <p className="text-black font-black">________________________</p>
             </div>
          </div>
