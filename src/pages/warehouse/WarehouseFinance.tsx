@@ -85,10 +85,6 @@ export default function WarehouseFinance() {
             <FileSpreadsheet className="w-5 h-5" />
             تصدير Excel
           </button>
-          <button onClick={() => window.print()} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-200 transition-colors">
-            <Printer className="w-5 h-5" />
-            طباعة الكشف
-          </button>
         </div>
       </div>
 

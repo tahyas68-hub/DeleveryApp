@@ -92,10 +92,6 @@ export default function MerchantFinance() {
                 <FileDown className="w-5 h-5" />
                 <span>تصدير Excel</span>
              </button>
-             <button onClick={() => window.print()} className="w-full sm:w-auto bg-[#2B6CB0] text-white px-7 py-3.5 rounded-xl font-black flex items-center justify-center gap-2.5 hover:bg-opacity-95 shadow-xl shadow-blue-500/20 transition-all active:scale-95">
-                <Printer className="w-6 h-6" />
-                <span className="text-lg">طباعة الكشف</span>
-             </button>
           </div>
         </div>
 
