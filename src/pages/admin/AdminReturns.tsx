@@ -7,8 +7,11 @@ export default function AdminReturns() {
   const { orders, updateOrderStatus } = useOrders();
   const { branches } = useBranches();
   
-  // Fetch orders that are returned or partially returned
-  const returnedOrders = orders.filter(o => o.status === 'returned' || o.status === 'returned_partial');
+  // Fetch orders that are returned or partially returned AND are currently in the main warehouse
+  const returnedOrders = orders.filter(o => 
+    (o.status === 'returned' || o.status === 'returned_partial') &&
+    o.branchName === 'المركز الرئيسي'
+  );
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBranches, setSelectedBranches] = useState<Record<string, string>>({});
