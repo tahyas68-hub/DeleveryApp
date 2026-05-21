@@ -38,52 +38,6 @@ export default function AdminMerchantAccounts() {
   // Search filter
   const [searchTerm, setSearchTerm] = useState('');
 
-  // 1. Seed default merchants if none exist
-  useEffect(() => {
-    if (merchants.length === 0) {
-      addUser({
-        name: 'محلات الصفاء',
-        role: 'merchant',
-        phone: '07717207440',
-        username: 'alsafaa',
-        password: '123',
-        status: 'active',
-        balance: 0,
-        storeName: 'محلات الصفاء'
-      });
-      addUser({
-        name: 'ليث حسين',
-        role: 'merchant',
-        phone: '07762075401',
-        username: 'layth',
-        password: '123',
-        status: 'active',
-        balance: 0,
-        storeName: 'ليث حسين'
-      });
-      addUser({
-        name: 'بوتيك نايا',
-        role: 'merchant',
-        phone: '07706375157',
-        username: 'naya',
-        password: '123',
-        status: 'active',
-        balance: 20000,
-        storeName: 'بوتيك نايا'
-      });
-      addUser({
-        name: 'يوسف عطور',
-        role: 'merchant',
-        phone: '07749636118',
-        username: 'youssef',
-        password: '123',
-        status: 'active',
-        balance: 0,
-        storeName: 'يوسف عطور'
-      });
-    }
-  }, [merchants.length, addUser]);
-
   // Handle open settlement modal
   const openSettlement = (merchant: any) => {
     setSettleMerchant(merchant);
