@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DollarSign, Wallet, ArrowDownRight, ArrowUpRight, FileText, Download, LayoutDashboard, Store, Bike, History } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useFinance } from '../../context/FinanceContext';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function AdminFinance() {
   const { orders, updateOrderStatus } = useOrders();
@@ -164,143 +165,153 @@ export default function AdminFinance() {
         ))}
       </div>
 
-      {activeTab === 'overview' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden">
-             <p className="text-slate-500 font-bold mb-2">أرباح الشركة المحققة</p>
-             <h3 className="text-3xl font-black font-en text-[#0F3B73]">{totalCompanyProfit.toLocaleString()} د.ع</h3>
-             <div className="absolute top-6 left-6 w-12 h-12 bg-blue-50 text-[#0F3B73] rounded-2xl flex items-center justify-center">
-               <Wallet className="w-6 h-6" />
-             </div>
-          </div>
-          <div className="bg-emerald-50 rounded-3xl p-6 border border-emerald-100 shadow-sm relative overflow-hidden">
-             <p className="text-emerald-700 font-bold mb-2">إجمالي المقبوضات</p>
-             <h3 className="text-3xl font-black font-en text-emerald-800">{totalInbound.toLocaleString()}</h3>
-             <div className="absolute top-6 left-6 w-12 h-12 bg-white text-emerald-600 rounded-2xl flex items-center justify-center">
-               <ArrowDownRight className="w-6 h-6" />
-             </div>
-          </div>
-          <div className="bg-red-50 rounded-3xl p-6 border border-red-100 shadow-sm relative overflow-hidden">
-             <p className="text-red-700 font-bold mb-2">إجمالي المصروفات</p>
-             <h3 className="text-3xl font-black font-en text-red-800">{totalOutbound.toLocaleString()}</h3>
-             <div className="absolute top-6 left-6 w-12 h-12 bg-white text-red-600 rounded-2xl flex items-center justify-center">
-               <ArrowUpRight className="w-6 h-6" />
-             </div>
-          </div>
-        </div>
-      )}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 20 }}
+          transition={{ duration: 0.2 }}
+        >
+          {activeTab === 'overview' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden">
+                 <p className="text-slate-500 font-bold mb-2">أرباح الشركة المحققة</p>
+                 <h3 className="text-3xl font-black font-en text-[#0F3B73]">{totalCompanyProfit.toLocaleString()} د.ع</h3>
+                 <div className="absolute top-6 left-6 w-12 h-12 bg-blue-50 text-[#0F3B73] rounded-2xl flex items-center justify-center">
+                   <Wallet className="w-6 h-6" />
+                 </div>
+              </div>
+              <div className="bg-emerald-50 rounded-3xl p-6 border border-emerald-100 shadow-sm relative overflow-hidden">
+                 <p className="text-emerald-700 font-bold mb-2">إجمالي المقبوضات</p>
+                 <h3 className="text-3xl font-black font-en text-emerald-800">{totalInbound.toLocaleString()}</h3>
+                 <div className="absolute top-6 left-6 w-12 h-12 bg-white text-emerald-600 rounded-2xl flex items-center justify-center">
+                   <ArrowDownRight className="w-6 h-6" />
+                 </div>
+              </div>
+              <div className="bg-red-50 rounded-3xl p-6 border border-red-100 shadow-sm relative overflow-hidden">
+                 <p className="text-red-700 font-bold mb-2">إجمالي المصروفات</p>
+                 <h3 className="text-3xl font-black font-en text-red-800">{totalOutbound.toLocaleString()}</h3>
+                 <div className="absolute top-6 left-6 w-12 h-12 bg-white text-red-600 rounded-2xl flex items-center justify-center">
+                   <ArrowUpRight className="w-6 h-6" />
+                 </div>
+              </div>
+            </div>
+          )}
 
-      {activeTab === 'merchants' && (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-          <table className="w-full text-right text-sm">
-            <thead className="bg-[#0F3B73]/5 text-[#0F3B73] font-bold">
-              <tr>
-                <th className="px-6 py-4">التاجر</th>
-                <th className="px-6 py-4 text-orange-600">قيد التوصيل (المتوقع)</th>
-                <th className="px-6 py-4 text-emerald-600">الرصيد الجاهز للسحب</th>
-                <th className="px-6 py-4 text-slate-500">تم صرفه مسبقاً</th>
-                <th className="px-6 py-4 text-center">إجراءات</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {Object.entries(merchantBalances).map(([id, data]) => {
-                const merchantData = data as MerchantStats;
-                return (
-                  <tr key={id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 font-bold text-slate-800">{merchantData.name}</td>
-                    <td className="px-6 py-4 font-en text-orange-600">{merchantData.pending.toLocaleString()}</td>
-                    <td className="px-6 py-4 font-en font-black text-emerald-600">{merchantData.balance.toLocaleString()}</td>
-                    <td className="px-6 py-4 font-en text-slate-500">{merchantData.paid.toLocaleString()}</td>
-                    <td className="px-6 py-4 text-center">
-                       <button onClick={() => handlePayMerchant(id, merchantData.name, merchantData.balance)} className="bg-[#0F3B73] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
-                          سند صرف للتاجر
-                       </button>
-                    </td>
+          {activeTab === 'merchants' && (
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+              <table className="w-full text-right text-sm">
+                <thead className="bg-[#0F3B73]/5 text-[#0F3B73] font-bold">
+                  <tr>
+                    <th className="px-6 py-4">التاجر</th>
+                    <th className="px-6 py-4 text-orange-600">قيد التوصيل (المتوقع)</th>
+                    <th className="px-6 py-4 text-emerald-600">الرصيد الجاهز للسحب</th>
+                    <th className="px-6 py-4 text-slate-500">تم صرفه مسبقاً</th>
+                    <th className="px-6 py-4 text-center">إجراءات</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {Object.entries(merchantBalances).map(([id, data]) => {
+                    const merchantData = data as MerchantStats;
+                    return (
+                      <tr key={id} className="hover:bg-slate-50">
+                        <td className="px-6 py-4 font-bold text-slate-800">{merchantData.name}</td>
+                        <td className="px-6 py-4 font-en text-orange-600">{merchantData.pending.toLocaleString()}</td>
+                        <td className="px-6 py-4 font-en font-black text-emerald-600">{merchantData.balance.toLocaleString()}</td>
+                        <td className="px-6 py-4 font-en text-slate-500">{merchantData.paid.toLocaleString()}</td>
+                        <td className="px-6 py-4 text-center">
+                           <button onClick={() => handlePayMerchant(id, merchantData.name, merchantData.balance)} className="bg-[#0F3B73] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
+                              سند صرف للتاجر
+                           </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
 
-      {activeTab === 'drivers' && (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-          <table className="w-full text-right text-sm">
-            <thead className="bg-[#0F3B73]/5 text-[#0F3B73] font-bold">
-              <tr>
-                <th className="px-6 py-4">المندوب</th>
-                <th className="px-6 py-4 text-emerald-600">المبلغ بنذمة المندوب (المحصل)</th>
-                <th className="px-6 py-4 text-blue-600">عمولات مستحقة</th>
-                <th className="px-6 py-4 text-slate-500">تم صرفه مسبقاً</th>
-                <th className="px-6 py-4 text-center">إجراءات</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {Object.entries(driverBalances).map(([id, data]) => {
-                const driverData = data as DriverStats;
-                return (
-                  <tr key={id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 font-bold text-slate-800">{driverData.name}</td>
-                    <td className="px-6 py-4 font-en font-black text-emerald-600">{driverData.collected.toLocaleString()}</td>
-                    <td className="px-6 py-4 font-en text-blue-600">{driverData.commission.toLocaleString()}</td>
-                    <td className="px-6 py-4 font-en text-slate-500">{driverData.paid.toLocaleString()}</td>
-                    <td className="px-6 py-4 justify-center flex gap-2">
-                       <button onClick={() => handleReceiveFromDriver(id, driverData.name, driverData.collected)} className="bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
-                          سند قبض من المندوب
-                       </button>
-                       <button onClick={() => handlePayDriverCommission(id, driverData.name, driverData.commission)} className="bg-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
-                          سند صرف عمولة
-                       </button>
-                    </td>
+          {activeTab === 'drivers' && (
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+              <table className="w-full text-right text-sm">
+                <thead className="bg-[#0F3B73]/5 text-[#0F3B73] font-bold">
+                  <tr>
+                    <th className="px-6 py-4">المندوب</th>
+                    <th className="px-6 py-4 text-emerald-600">المبلغ بنذمة المندوب (المحصل)</th>
+                    <th className="px-6 py-4 text-blue-600">عمولات مستحقة</th>
+                    <th className="px-6 py-4 text-slate-500">تم صرفه مسبقاً</th>
+                    <th className="px-6 py-4 text-center">إجراءات</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {Object.entries(driverBalances).map(([id, data]) => {
+                    const driverData = data as DriverStats;
+                    return (
+                      <tr key={id} className="hover:bg-slate-50">
+                        <td className="px-6 py-4 font-bold text-slate-800">{driverData.name}</td>
+                        <td className="px-6 py-4 font-en font-black text-emerald-600">{driverData.collected.toLocaleString()}</td>
+                        <td className="px-6 py-4 font-en text-blue-600">{driverData.commission.toLocaleString()}</td>
+                        <td className="px-6 py-4 font-en text-slate-500">{driverData.paid.toLocaleString()}</td>
+                        <td className="px-6 py-4 justify-center flex gap-2">
+                           <button onClick={() => handleReceiveFromDriver(id, driverData.name, driverData.collected)} className="bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
+                              سند قبض من المندوب
+                           </button>
+                           <button onClick={() => handlePayDriverCommission(id, driverData.name, driverData.commission)} className="bg-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
+                              سند صرف عمولة
+                           </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
 
-      {activeTab === 'transactions' && (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-          <table className="w-full text-right text-sm">
-            <thead className="bg-slate-50 text-slate-600 font-bold">
-              <tr>
-                <th className="px-6 py-3">رقم السند</th>
-                <th className="px-6 py-3">النوع</th>
-                <th className="px-6 py-3">المبلغ</th>
-                <th className="px-6 py-3">من</th>
-                <th className="px-6 py-3">إلى</th>
-                <th className="px-6 py-3">رقم الطلب</th>
-                <th className="px-6 py-3">التاريخ</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {transactions.length === 0 ? (
-                <tr>
-                   <td colSpan={7} className="px-6 py-12 text-center text-slate-400 font-bold">لا توجد حركات مالية مسجلة</td>
-                </tr>
-              ) : (
-                transactions.map((t) => (
-                  <tr key={t.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 font-en text-slate-500 text-xs">{t.id}</td>
-                    <td className="px-6 py-4">
-                      {t.type === 'receipt' && <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded">سند قبض</span>}
-                      {t.type === 'payment' && <span className="bg-red-100 text-red-700 px-2 py-1 rounded">سند صرف</span>}
-                      {t.type === 'transfer' && <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded">سند تحويل</span>}
-                    </td>
-                    <td className="px-6 py-4 font-en font-black text-slate-800">{t.amount.toLocaleString()}</td>
-                    <td className="px-6 py-4">{t.fromEntity}</td>
-                    <td className="px-6 py-4">{t.toEntity}</td>
-                    <td className="px-6 py-4 font-en">{t.referenceId}</td>
-                    <td className="px-6 py-4 font-en text-slate-500 text-xs">{new Date(t.timestamp).toLocaleString()}</td>
+          {activeTab === 'transactions' && (
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+              <table className="w-full text-right text-sm">
+                <thead className="bg-slate-50 text-slate-600 font-bold">
+                  <tr>
+                    <th className="px-6 py-3">رقم السند</th>
+                    <th className="px-6 py-3">النوع</th>
+                    <th className="px-6 py-3">المبلغ</th>
+                    <th className="px-6 py-3">من</th>
+                    <th className="px-6 py-3">إلى</th>
+                    <th className="px-6 py-3">رقم الطلب</th>
+                    <th className="px-6 py-3">التاريخ</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {transactions.length === 0 ? (
+                    <tr>
+                       <td colSpan={7} className="px-6 py-12 text-center text-slate-400 font-bold">لا توجد حركات مالية مسجلة</td>
+                    </tr>
+                  ) : (
+                    transactions.map((t) => (
+                      <tr key={t.id} className="hover:bg-slate-50">
+                        <td className="px-6 py-4 font-en text-slate-500 text-xs">{t.id}</td>
+                        <td className="px-6 py-4">
+                          {t.type === 'receipt' && <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded">سند قبض</span>}
+                          {t.type === 'payment' && <span className="bg-red-100 text-red-700 px-2 py-1 rounded">سند صرف</span>}
+                          {t.type === 'transfer' && <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded">سند تحويل</span>}
+                        </td>
+                        <td className="px-6 py-4 font-en font-black text-slate-800">{t.amount.toLocaleString()}</td>
+                        <td className="px-6 py-4">{t.fromEntity}</td>
+                        <td className="px-6 py-4">{t.toEntity}</td>
+                        <td className="px-6 py-4 font-en">{t.referenceId}</td>
+                        <td className="px-6 py-4 font-en text-slate-500 text-xs">{new Date(t.timestamp).toLocaleString()}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
