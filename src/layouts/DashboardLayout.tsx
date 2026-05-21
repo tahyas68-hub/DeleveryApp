@@ -132,8 +132,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
             ]
           },
           { label: 'التقارير', icon: FileText, to: '/driver/reports' },
-          { label: 'كشف عمولة المندوب', icon: FileText, to: '/driver/commission-report' },
-          { label: 'كشف ذمة المندوب', icon: Wallet, to: '/driver/wallet' },
+          { label: 'الحسابات', icon: Wallet, to: '/driver/accounts' },
           { label: 'السجل', icon: History, to: '/driver/history' },
           { label: 'الإعدادات', icon: Settings, to: '/driver/settings' },
         ];

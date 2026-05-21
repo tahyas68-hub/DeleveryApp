@@ -27,8 +27,6 @@ import WarehouseReports from "./pages/warehouse/WarehouseReports";
 import WarehouseInventory from "./pages/warehouse/WarehouseInventory";
 import WarehouseReturnsTransfer from "./pages/warehouse/WarehouseReturnsTransfer";
 import AdminDrivers from "./pages/admin/AdminDrivers";
-import DriverWallet from "./pages/driver/DriverWallet";
-import DriverPerformance from "./pages/driver/DriverPerformance";
 import DriverSettings from "./pages/driver/DriverSettings";
 
 import AdminWarehouses from "./pages/admin/AdminWarehouses";
@@ -42,7 +40,8 @@ import PartialDelivery from "./pages/driver/PartialDelivery";
 import ReturnOrder from "./pages/driver/ReturnOrder";
 import PostponeOrder from "./pages/driver/PostponeOrder";
 import PostponedReturnedOrders from "./pages/driver/PostponedReturnedOrders";
-import DriverCommissionReport from "./pages/driver/DriverCommissionReport";
+import DriverAccounts from "./pages/driver/DriverAccounts";
+import DriverPerformance from "./pages/driver/DriverPerformance";
 import ActionHistory from "./pages/common/ActionHistory";
 
 import { AuthProvider } from "./context/AuthContext";
@@ -220,8 +219,7 @@ export default function App() {
                       element={<PostponedReturnedOrders />}
                     />
                     <Route path="reports" element={<DriverPerformance />} />
-                    <Route path="commission-report" element={<DriverCommissionReport />} />
-                    <Route path="wallet" element={<DriverWallet />} />
+                    <Route path="accounts" element={<DriverAccounts />} />
                     <Route path="history" element={<ActionHistory />} />
                     <Route path="settings" element={<DriverSettings />} />
                     <Route path="profile" element={<DriverProfile />} />
