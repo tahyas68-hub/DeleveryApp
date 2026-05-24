@@ -47,7 +47,12 @@ export default function DriverCommission() {
     return keep;
   });
 
-  const totalCommission = filteredOrders.reduce((sum, order) => sum + getDriverCommission(order.province), 0);
+  const totalCommission = filteredOrders.reduce((sum, order) => {
+    if (order.status === 'delivered' || order.status === 'delivered_partial') {
+      return sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province));
+    }
+    return sum;
+  }, 0);
 
   const handlePrint = () => {
     if (!selectedDriverId && drivers.length > 0) {
@@ -153,7 +158,9 @@ export default function DriverCommission() {
                 </tr>
               ) : (
                 filteredOrders.map((order, index) => {
-                  const driverCommission = getDriverCommission(order.province);
+                  const driverCommission = (order.status === 'delivered' || order.status === 'delivered_partial')
+                    ? (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province))
+                    : 0;
                   return (
                     <tr key={order.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4 font-en font-bold text-slate-600 print:border print:border-slate-300 print:text-slate-900">

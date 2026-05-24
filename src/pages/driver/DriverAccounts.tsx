@@ -43,18 +43,18 @@ export default function DriverAccounts() {
 
   // 2. Commission Orders
   const relevantCommissionOrders = orders.filter(o => 
-    (o.status === 'delivered' || o.status === 'returned_partial' || o.status === 'delivered_partial') &&
+    (o.status === 'delivered' || o.status === 'delivered_partial') &&
     o.financialStatus === 'pending'
   );
   
-  const totalCommission = relevantCommissionOrders.reduce((sum, order) => sum + getDriverCommission(order.province), 0);
+  const totalCommission = relevantCommissionOrders.reduce((sum, order) => sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province)), 0);
 
   const receivedCommissionOrders = orders.filter(o => 
-    (o.status === 'delivered' || o.status === 'returned_partial' || o.status === 'delivered_partial') &&
+    (o.status === 'delivered' || o.status === 'delivered_partial') &&
     o.financialStatus !== 'pending'
   );
 
-  const receivedCommissions = receivedCommissionOrders.reduce((sum, order) => sum + getDriverCommission(order.province), 0);
+  const receivedCommissions = receivedCommissionOrders.reduce((sum, order) => sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province)), 0);
 
 
   // Filter based on dates for lists
@@ -90,7 +90,7 @@ export default function DriverAccounts() {
     return sum + net;
   }, 0);
 
-  const filteredTotalCommission = filteredCommissionOrders.reduce((sum, order) => sum + getDriverCommission(order.province), 0);
+  const filteredTotalCommission = filteredCommissionOrders.reduce((sum, order) => sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province)), 0);
 
   return (
     <div className="space-y-6 pb-24 max-w-5xl mx-auto px-4 sm:px-0 mt-4" dir="rtl">
@@ -326,7 +326,7 @@ export default function DriverAccounts() {
                       </tr>
                     ) : (
                       filteredCommissionOrders.map((order, index) => {
-                        const driverCommission = getDriverCommission(order.province);
+                        const driverCommission = typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province);
                         return (
                           <tr key={order.id} className="hover:bg-slate-50 transition-colors">
                             <td className="px-6 py-4 font-en font-bold text-slate-600 print:border print:border-slate-300 print:text-slate-900">

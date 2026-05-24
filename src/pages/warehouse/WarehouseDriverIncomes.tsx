@@ -48,7 +48,12 @@ export default function WarehouseDriverIncomes() {
     }, 0);
 
     // Driver's commission
-    const totalCommission = driverOrders.reduce((sum, order) => sum + getDriverCommission(order.province), 0);
+    const totalCommission = driverOrders.reduce((sum, order) => {
+      if (order.status === 'delivered' || order.status === 'delivered_partial') {
+        return sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province));
+      }
+      return sum;
+    }, 0);
 
     return {
       ...driver,
@@ -304,7 +309,9 @@ export default function WarehouseDriverIncomes() {
                       ) : (
                         ledgerDriver.driverOrders.map((o: any) => {
                           const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.amount || 0);
-                          const commission = getDriverCommission(o.province);
+                          const commission = (o.status === 'delivered' || o.status === 'delivered_partial') 
+                            ? (typeof o.driverCommission === 'number' ? o.driverCommission : getDriverCommission(o.province))
+                            : 0;
                           return (
                             <tr key={o.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                               <td className="px-4 py-3 font-bold font-en text-slate-800 text-xs">{o.id}</td>
