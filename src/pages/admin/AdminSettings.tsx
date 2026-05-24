@@ -3,10 +3,21 @@ import { Save } from 'lucide-react';
 import { useSettings } from '../../context/SettingsContext';
 
 export default function AdminSettings() {
-  const { defaultDriverCommission, updateDefaultDriverCommission, requireMerchantApproval, updateRequireMerchantApproval } = useSettings();
+  const { 
+    defaultDriverCommission, updateDefaultDriverCommission, 
+    requireMerchantApproval, updateRequireMerchantApproval,
+    companyName, updateCompanyName,
+    companyLogo, updateCompanyLogo,
+    companyPhone, updateCompanyPhone,
+    companyAddress, updateCompanyAddress
+  } = useSettings();
   
   const [defaultDriverCommissionLocal, setDefaultDriverCommissionLocal] = useState(defaultDriverCommission);
   const [requireMerchantApprovalLocal, setRequireMerchantApprovalLocal] = useState(requireMerchantApproval);
+  const [companyNameLocal, setCompanyNameLocal] = useState(companyName);
+  const [companyPhoneLocal, setCompanyPhoneLocal] = useState(companyPhone);
+  const [companyAddressLocal, setCompanyAddressLocal] = useState(companyAddress);
+  const [companyLogoLocal, setCompanyLogoLocal] = useState(companyLogo);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -18,9 +29,44 @@ export default function AdminSettings() {
     setRequireMerchantApprovalLocal(requireMerchantApproval);
   }, [requireMerchantApproval]);
 
+  React.useEffect(() => {
+    setCompanyNameLocal(companyName);
+  }, [companyName]);
+
+  React.useEffect(() => {
+    setCompanyPhoneLocal(companyPhone);
+  }, [companyPhone]);
+
+  React.useEffect(() => {
+    setCompanyAddressLocal(companyAddress);
+  }, [companyAddress]);
+
+  React.useEffect(() => {
+    setCompanyLogoLocal(companyLogo);
+  }, [companyLogo]);
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+         alert('حجم الملف كبير جداً. الحد الأقصى هو 2 ميجابايت.');
+         return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCompanyLogoLocal(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSaveChanges = () => {
     updateDefaultDriverCommission(defaultDriverCommissionLocal);
     updateRequireMerchantApproval(requireMerchantApprovalLocal);
+    updateCompanyName(companyNameLocal);
+    updateCompanyPhone(companyPhoneLocal);
+    updateCompanyAddress(companyAddressLocal);
+    updateCompanyLogo(companyLogoLocal);
     alert('تم حفظ الإعدادات بنجاح!');
   };
 
@@ -143,7 +189,7 @@ export default function AdminSettings() {
                <h3 className="font-bold text-slate-800 border-b border-slate-100 pb-2">تفاصيل الشركة</h3>
                <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">اسم الشركة</label>
-                  <input type="text" defaultValue="شركة الراصد للتوصيل السريع" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
+                  <input type="text" value={companyNameLocal} onChange={(e) => setCompanyNameLocal(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
                </div>
                <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">عمولة المندوب</label>
@@ -176,15 +222,18 @@ export default function AdminSettings() {
 
                <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">شعار الشركة</label>
-                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer">
-                    <div className="space-y-1 text-center">
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative overflow-hidden">
+                    {companyLogoLocal ? (
+                       <img src={companyLogoLocal} alt="Logo" className="absolute inset-0 w-full h-full object-contain mb-4" style={{ padding: '0.5rem', opacity: 0.8 }} />
+                    ) : null}
+                    <div className="space-y-1 text-center relative z-10 w-full bg-white/70 py-2 rounded-lg backdrop-blur-sm">
                       <svg className="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                         <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                       <div className="flex text-sm text-slate-600 justify-center">
                         <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary-focus focus-within:outline-none">
                           <span>تحميل الشعار</span>
-                          <input id="file-upload" name="file-upload" type="file" className="sr-only" />
+                          <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleLogoUpload} accept="image/*" />
                         </label>
                       </div>
                       <p className="text-xs text-slate-500">PNG, JPG حتى 2MB</p>
@@ -193,11 +242,11 @@ export default function AdminSettings() {
                </div>
                <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">رقم هاتف الشركة</label>
-                  <input type="text" dir="ltr" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-en text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-right" placeholder="07XXXXXXXXX" />
+                  <input type="text" dir="ltr" value={companyPhoneLocal} onChange={(e) => setCompanyPhoneLocal(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-en text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-right" placeholder="07XXXXXXXXX" />
                </div>
                <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">عنوان الشركة</label>
-                  <input type="text" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="بغداد، الكرادة" />
+                  <input type="text" value={companyAddressLocal} onChange={(e) => setCompanyAddressLocal(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="بغداد، الكرادة" />
                </div>
             </div>
 

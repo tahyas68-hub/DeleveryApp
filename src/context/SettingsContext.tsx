@@ -28,6 +28,14 @@ interface SettingsContextType {
   updateDefaultDriverCommission: (val: number) => void;
   requireMerchantApproval: boolean;
   updateRequireMerchantApproval: (val: boolean) => void;
+  companyName: string;
+  updateCompanyName: (val: string) => void;
+  companyLogo: string;
+  updateCompanyLogo: (val: string) => void;
+  companyPhone: string;
+  updateCompanyPhone: (val: string) => void;
+  companyAddress: string;
+  updateCompanyAddress: (val: string) => void;
 }
 
 const defaultGovernorates: GovernoratePrice[] = [
@@ -107,6 +115,38 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('app_require_merchant_approval', String(requireMerchantApproval));
   }, [requireMerchantApproval]);
 
+  const [companyName, setCompanyName] = useState<string>(() => {
+    return localStorage.getItem('app_company_name') || 'شركة الراصد للتوصيل السريع';
+  });
+
+  const [companyLogo, setCompanyLogo] = useState<string>(() => {
+    return localStorage.getItem('app_company_logo') || '';
+  });
+
+  const [companyPhone, setCompanyPhone] = useState<string>(() => {
+    return localStorage.getItem('app_company_phone') || '07XXXXXXXXX';
+  });
+
+  const [companyAddress, setCompanyAddress] = useState<string>(() => {
+    return localStorage.getItem('app_company_address') || 'بغداد، الكرادة';
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem('app_company_name', companyName);
+  }, [companyName]);
+
+  React.useEffect(() => {
+    localStorage.setItem('app_company_logo', companyLogo);
+  }, [companyLogo]);
+
+  React.useEffect(() => {
+    localStorage.setItem('app_company_phone', companyPhone);
+  }, [companyPhone]);
+
+  React.useEffect(() => {
+    localStorage.setItem('app_company_address', companyAddress);
+  }, [companyAddress]);
+
   const updateGovernorate = (id: number, data: Partial<GovernoratePrice>) => {
     setGovernorates(prev => prev.map(g => g.id === id ? { ...g, ...data } : g));
   };
@@ -149,7 +189,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     <SettingsContext.Provider value={{
       governorates, updateGovernorate, bulkUpdateGovernorates, merchants, updateMerchant,
       getDeliveryFee, getDriverCommission, defaultDriverCommission, updateDefaultDriverCommission: setDefaultDriverCommission,
-      requireMerchantApproval, updateRequireMerchantApproval: setRequireMerchantApproval
+      requireMerchantApproval, updateRequireMerchantApproval: setRequireMerchantApproval,
+      companyName, updateCompanyName: setCompanyName,
+      companyLogo, updateCompanyLogo: setCompanyLogo,
+      companyPhone, updateCompanyPhone: setCompanyPhone,
+      companyAddress, updateCompanyAddress: setCompanyAddress
     }}>
       {children}
     </SettingsContext.Provider>

@@ -3,6 +3,7 @@ import QRCode from "react-qr-code";
 import Barcode from "react-barcode";
 import { MainOrder } from "../context/OrderContext";
 import { useUsers } from "../context/UserContext";
+import { useSettings } from "../context/SettingsContext";
 
 interface ThermalLabelProps {
   order: MainOrder;
@@ -11,6 +12,7 @@ interface ThermalLabelProps {
 export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
   ({ order }, ref) => {
     const { users } = useUsers();
+    const { companyName, companyLogo } = useSettings();
     const merchant = users.find(u => u.name === order.merchantName || u.id === order.merchantId);
 
     const orderAmount = order.amount || 0;
@@ -54,7 +56,7 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
 
             <div className="text-center w-[40%] flex flex-col items-center pt-1">
               <h1 className="font-black text-[12px] leading-tight uppercase relative inline-block">
-                شركة الراصد
+                {companyName}
                 <div className="absolute w-[120%] h-[1px] bg-black -bottom-1 -left-[10%]"></div>
               </h1>
               <h2 className="font-bold text-[10px] leading-tight mt-1.5 w-full whitespace-nowrap">
@@ -63,8 +65,12 @@ export const ThermalLabel = React.forwardRef<HTMLDivElement, ThermalLabelProps>(
             </div>
 
             <div className="w-[25%] flex justify-end">
-              <div className="w-12 h-12 border-[3px] border-black flex items-center justify-center font-black text-[10px] text-center rounded-lg">
-                LOGO
+              <div className="w-12 h-12 border-[3px] border-black flex items-center justify-center font-black text-[10px] text-center rounded-lg overflow-hidden relative">
+                {companyLogo ? (
+                  <img src={companyLogo} alt="Logo" className="absolute inset-0 w-full h-full object-contain p-0.5" />
+                ) : (
+                  <span>LOGO</span>
+                )}
               </div>
             </div>
           </div>

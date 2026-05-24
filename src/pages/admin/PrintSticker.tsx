@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useOrders } from '../../context/OrderContext';
 import { useUsers } from '../../context/UserContext';
+import { useSettings } from '../../context/SettingsContext';
 import Barcode from 'react-barcode';
 import QRCode from 'react-qr-code';
 
@@ -10,6 +11,7 @@ export default function PrintSticker() {
   const navigate = useNavigate();
   const { orders } = useOrders();
   const { users } = useUsers();
+  const { companyName, companyLogo } = useSettings();
   const order = orders.find(o => o.id === id || o.trackingNumber === id);
   const printedRef = useRef(false);
 
@@ -63,7 +65,12 @@ export default function PrintSticker() {
           {/* Header Row */}
           <div style={{ display: 'flex', borderBottom: '2px solid black', backgroundColor: 'transparent' }}>
             <div style={{ flex: '1', padding: '12px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <h1 style={{ fontSize: '18px', fontWeight: '900', margin: 0 }}>شركة الراصد للتوصيل السريع</h1>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                {companyLogo && (
+                  <img src={companyLogo} alt="" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                )}
+                <h1 style={{ fontSize: '18px', fontWeight: '900', margin: 0 }}>{companyName}</h1>
+              </div>
               <p style={{ fontSize: '14px', fontWeight: '700', margin: 0, marginTop: '4px' }}>للتوصيل السريع</p>
             </div>
             

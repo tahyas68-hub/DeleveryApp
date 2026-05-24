@@ -1,5 +1,6 @@
 import React from 'react';
 import { Truck } from 'lucide-react';
+import { useSettings } from '../context/SettingsContext';
 
 interface PrintHeaderProps {
   title: string;
@@ -9,6 +10,7 @@ interface PrintHeaderProps {
 }
 
 export function PrintHeader({ title, date, reportNumber, stats }: PrintHeaderProps) {
+  const { companyName, companyLogo } = useSettings();
   const currentDate = date || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const refNumber = reportNumber || Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -23,12 +25,16 @@ export function PrintHeader({ title, date, reportNumber, stats }: PrintHeaderPro
         
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <h1 className="text-3xl font-black tracking-tight" style={{ color: '#0F3B73' }}>شركة الراصد</h1>
+            <h1 className="text-3xl font-black tracking-tight" style={{ color: '#0F3B73' }}>{companyName}</h1>
             <p className="text-sm font-bold text-slate-600 mt-1">للشحن والتوصيل اللوجستي</p>
           </div>
-          <div className="w-16 h-16 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#0F3B73' }}>
-            <Truck className="w-10 h-10 text-white" />
-          </div>
+          {companyLogo ? (
+            <img src={companyLogo} alt="Logo" className="w-16 h-16 rounded-xl object-contain bg-white border border-slate-200 p-1" />
+          ) : (
+            <div className="w-16 h-16 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#0F3B73' }}>
+              <Truck className="w-10 h-10 text-white" />
+            </div>
+          )}
         </div>
       </div>
       

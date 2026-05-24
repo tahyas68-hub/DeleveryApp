@@ -237,22 +237,27 @@ export default function AdminMerchantAccounts() {
                   <div className="flex items-center gap-3">
                     <div className="text-left font-sans">
                       <h2 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-1">
-                        شركة الراصد
-                        <span className="text-amber-500 font-black">للتوصيل السريع</span>
+                        {localStorage.getItem('app_company_name') || 'شركة الراصد للتوصيل السريع'}
                       </h2>
                       <p className="text-[10px] text-slate-400 font-bold">شحن مالي سريع وآمن لجميع المحافظات</p>
                     </div>
                     {/* Fast delivery truck logo markup matching screenshot */}
                     <div className="relative w-16 h-12 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center p-1">
-                      <div className="absolute right-1 top-2 w-3 h-[2px] bg-amber-500"></div>
-                      <div className="absolute right-0.5 top-3.5 w-4 h-[2px] bg-amber-500"></div>
-                      <div className="absolute right-1.5 top-5 w-2.5 h-[2px] bg-amber-500"></div>
-                      <svg width="40" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500 transform translate-x-1">
-                        <rect x="2" y="7" width="13" height="9" rx="2" fill="#F59E0B" stroke="#F59E0B" />
-                        <path d="M15 9h3.5a1.5 1.5 0 0 1 1 1.5l1.5 2.5a2 2 0 0 1 .5 1V16h-6V9z" fill="#F59E0B" stroke="#F59E0B" />
-                        <circle cx="6.5" cy="18.5" r="2.5" fill="black" />
-                        <circle cx="16.5" cy="18.5" r="2.5" fill="black" />
-                      </svg>
+                      {localStorage.getItem('app_company_logo') ? (
+                         <img src={localStorage.getItem('app_company_logo')!} alt="Logo" className="w-full h-full object-contain" />
+                      ) : (
+                        <>
+                          <div className="absolute right-1 top-2 w-3 h-[2px] bg-amber-500"></div>
+                          <div className="absolute right-0.5 top-3.5 w-4 h-[2px] bg-amber-500"></div>
+                          <div className="absolute right-1.5 top-5 w-2.5 h-[2px] bg-amber-500"></div>
+                          <svg width="40" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500 transform translate-x-1">
+                            <rect x="2" y="7" width="13" height="9" rx="2" fill="#F59E0B" stroke="#F59E0B" />
+                            <path d="M15 9h3.5a1.5 1.5 0 0 1 1 1.5l1.5 2.5a2 2 0 0 1 .5 1V16h-6V9z" fill="#F59E0B" stroke="#F59E0B" />
+                            <circle cx="6.5" cy="18.5" r="2.5" fill="black" />
+                            <circle cx="16.5" cy="18.5" r="2.5" fill="black" />
+                          </svg>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
