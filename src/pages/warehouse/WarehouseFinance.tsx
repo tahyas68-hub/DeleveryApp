@@ -13,7 +13,7 @@ import { PrintHeader } from '../../components/PrintHeader';
 
 export default function WarehouseFinance() {
   const { transactions, addTransaction } = useFinance();
-  const { orders } = useOrders();
+  const { orders, updateOrderStatus } = useOrders();
 
   // 1. Calculate pending amounts with drivers
   const pendingAmount = orders.reduce((sum, o) => {
@@ -73,6 +73,10 @@ export default function WarehouseFinance() {
                     description: 'تسليم الرصيد المتاح من فرع المخزن إلى المركز الرئيسي',
                     userId: 'session-user'
                   });
+
+                  orders
+                    .filter(o => o.financialStatus === 'collected_from_driver' && (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial'))
+                    .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'branch_transferred' }));
                 }
               }}
               className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-lg shadow-emerald-200 transition-colors"

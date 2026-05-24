@@ -96,7 +96,7 @@ export default function AdminFinance() {
         userId: 'admin',
         description: 'استلام مبالغ من المندوب'
       });
-      orders.filter(o => o.driverId === driverId && (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') && o.financialStatus === 'collected_from_driver')
+      orders.filter(o => o.driverId === driverId && (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') && (o.financialStatus === 'collected_from_driver' || o.financialStatus === 'pending'))
             .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'company_received' }));
       alert("تم استلام القاصة من المندوب بنجاح");
     }

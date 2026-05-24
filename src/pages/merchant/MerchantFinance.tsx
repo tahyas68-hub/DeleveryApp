@@ -13,17 +13,22 @@ export default function MerchantFinance() {
   // Filter out returned orders for pending calculation if needed. 
   // Let's define the groups explicitly:
   const pendingStatuses = ['merchant_pending', 'main_warehouse', 'branch_transfering', 'branch_warehouse', 'driver_assigned', 'postponed'];
-  const deliveredStatuses = ['delivered', 'returned_partial'];
+  const deliveredStatuses = ['delivered', 'delivered_partial', 'returned_partial'];
 
-  // Current balance: delivered and partial
+  // Current balance: delivered and partial AND NOT PAID
   const currentBalance = orders
-    .filter(o => deliveredStatuses.includes(o.status))
+    .filter(o => deliveredStatuses.includes(o.status) && o.financialStatus !== 'merchant_paid')
     .reduce((sum, o) => sum + (o.amount || 0), 0);
 
   // Pending balance: not delivered, not totally returned
-  const pendingAmount = 0;
+  const pendingAmount = orders
+    .filter(o => pendingStatuses.includes(o.status))
+    .reduce((sum, o) => sum + (o.amount || 0), 0);
 
-  const withdrawals = 0; // Usually calculated from transactions where merchant receives payment
+  // Paid withdrawals
+  const withdrawals = orders
+    .filter(o => deliveredStatuses.includes(o.status) && o.financialStatus === 'merchant_paid')
+    .reduce((sum, o) => sum + (o.amount || 0), 0);
 
   // Generate transactions from Delivered & Returned_Partial orders
   const transactions = orders

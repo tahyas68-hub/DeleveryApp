@@ -38,10 +38,30 @@ export default function AdminMerchantAccounts() {
   // Search filter
   const [searchTerm, setSearchTerm] = useState('');
 
+  const merchantsWithDynamicBalance = merchants.map(m => {
+    const merchantOrders = orders.filter(
+      (o) => (o.merchantId === m.id || o.merchantName === m.name) && 
+      ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status)
+    );
+
+    // Calculate dynamic balance from orders with financialStatus !== 'merchant_paid'
+    const dynamicBalance = merchantOrders.reduce((sum, o) => {
+      if (o.financialStatus !== 'merchant_paid') {
+        return sum + (o.amount || 0);
+      }
+      return sum;
+    }, 0);
+
+    return {
+      ...m,
+      dynamicBalance
+    };
+  });
+
   // Handle open settlement modal
   const openSettlement = (merchant: any) => {
     setSettleMerchant(merchant);
-    setSettleAmount(merchant.balance || 0);
+    setSettleAmount(merchant.dynamicBalance || 0);
     setSettleDescription(`تصفية حساب التاجر: ${merchant.name}`);
   };
 
@@ -55,7 +75,7 @@ export default function AdminMerchantAccounts() {
       return;
     }
 
-    if (settleAmount > (settleMerchant.balance || 0)) {
+    if (settleAmount > (settleMerchant.dynamicBalance || 0)) {
       alert('الرصيد غير كاف لعمل هذه التسوية بهذه القيمة');
       return;
     }
@@ -71,7 +91,12 @@ export default function AdminMerchantAccounts() {
       description: settleDescription || 'تسوية حساب التاجر'
     });
 
-    // Update merchant balance in database
+    // Update orders statuses
+    orders
+      .filter((o) => (o.merchantId === settleMerchant.id || o.merchantName === settleMerchant.name) && ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status) && o.financialStatus !== 'merchant_paid')
+      .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'merchant_paid' }));
+
+    // Legacy update to user profile balance
     const newBalance = Math.max(0, (settleMerchant.balance || 0) - settleAmount);
     updateUser(settleMerchant.id, {
       balance: newBalance,
@@ -126,7 +151,7 @@ export default function AdminMerchantAccounts() {
   };
 
   // Filter merchants based on search
-  const filteredMerchants = merchants.filter(
+  const filteredMerchants = merchantsWithDynamicBalance.filter(
     (m) =>
       m.name.includes(searchTerm) ||
       (m.phone && m.phone.includes(searchTerm))
@@ -404,7 +429,7 @@ export default function AdminMerchantAccounts() {
                   </tr>
                 ) : (
                   filteredMerchants.map((merchant) => {
-                    const balance = merchant.balance || 0;
+                    const balance = merchant.dynamicBalance || 0;
                     return (
                       <tr key={merchant.id} className="hover:bg-slate-50/50 transition-all group">
                         {/* Name Column */}
