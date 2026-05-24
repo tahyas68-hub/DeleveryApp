@@ -15,8 +15,11 @@ export default function DriverAccounts() {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
 
-  // 1. Liability Orders
-  const liabilityOrders = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial');
+  // 1. Liability Orders (Pending)
+  const liabilityOrders = orders.filter(o => 
+    (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') && 
+    o.financialStatus === 'pending'
+  );
 
   const totalLiability = liabilityOrders.reduce((sum, order) => {
     const net = typeof order.collectedAmount === 'number' 
@@ -25,14 +28,34 @@ export default function DriverAccounts() {
     return sum + net;
   }, 0);
 
+  // Delivered to company
+  const deliveredCompanyOrders = orders.filter(o => 
+    (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') && 
+    o.financialStatus !== 'pending'
+  );
+
+  const deliveredToCompany = deliveredCompanyOrders.reduce((sum, order) => {
+    const net = typeof order.collectedAmount === 'number' 
+      ? order.collectedAmount 
+      : ((order.amount || 0) + (order.deliveryFee || 0));
+    return sum + net;
+  }, 0);
+
   // 2. Commission Orders
-  const relevantCommissionOrders = orders.filter(o => o.status === 'delivered' || o.status === 'returned_partial');
+  const relevantCommissionOrders = orders.filter(o => 
+    (o.status === 'delivered' || o.status === 'returned_partial' || o.status === 'delivered_partial') &&
+    o.financialStatus === 'pending'
+  );
   
   const totalCommission = relevantCommissionOrders.reduce((sum, order) => sum + getDriverCommission(order.province), 0);
 
-  // Display Cards
-  const deliveredToCompany = 0; // Placeholder
-  const receivedCommissions = 0; // Placeholder
+  const receivedCommissionOrders = orders.filter(o => 
+    (o.status === 'delivered' || o.status === 'returned_partial' || o.status === 'delivered_partial') &&
+    o.financialStatus !== 'pending'
+  );
+
+  const receivedCommissions = receivedCommissionOrders.reduce((sum, order) => sum + getDriverCommission(order.province), 0);
+
 
   // Filter based on dates for lists
   const filterByDate = (order: any) => {

@@ -32,7 +32,7 @@ export default function DeliveryOrders() {
        merchantDue: order.totalAmount - order.deliveryFee,
        driverCommission: commission,
        companyProfit: order.deliveryFee - commission,
-       financialStatus: 'collected_from_driver'
+       financialStatus: 'pending'
     });
     alert("تم تسليم الطلب");
   };
@@ -88,7 +88,7 @@ export default function DeliveryOrders() {
       merchantDue: newOrderAmount,
       driverCommission: commission,
       companyProfit: companyProfit,
-      financialStatus: amountNum > 0 ? 'collected_from_driver' : 'pending',
+      financialStatus: 'pending',
       isPartial: true
     });
     

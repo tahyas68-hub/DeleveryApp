@@ -26,7 +26,7 @@ export default function DeliverOrder() {
            merchantDue: amountNum - selectedOrder.deliveryFee,
            driverCommission: commission,
            companyProfit: selectedOrder.deliveryFee - commission,
-           financialStatus: 'collected_from_driver' // driver has it, next is transferring
+           financialStatus: 'pending' // driver has it, next is transferring
         });
       } else {
         const commission = getDriverCommission(selectedOrder.province);
@@ -35,7 +35,7 @@ export default function DeliverOrder() {
            merchantDue: selectedOrder.totalAmount - selectedOrder.deliveryFee,
            driverCommission: commission,
            companyProfit: selectedOrder.deliveryFee - commission,
-           financialStatus: 'collected_from_driver'
+           financialStatus: 'pending'
         });
       }
       setSelectedOrderId('');

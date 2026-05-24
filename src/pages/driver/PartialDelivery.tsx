@@ -47,7 +47,7 @@ export default function PartialDelivery() {
       merchantDue: newOrderAmount,
       driverCommission: commission,
       companyProfit: companyProfit,
-      financialStatus: amountNum > 0 ? 'collected_from_driver' : 'pending',
+      financialStatus: 'pending',
       isPartial: true
     });
 
