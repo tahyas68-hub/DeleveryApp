@@ -82,7 +82,15 @@ export default function DriverAccounts() {
           <p className="text-slate-500 mt-1 text-sm">متابعة الذمم المالية والعمولات المستحقة</p>
         </div>
         
-
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <button 
+             onClick={() => window.print()}
+             className="flex-1 sm:flex-none justify-center flex items-center gap-2 bg-[#0F3B73] hover:bg-[#0F3B73]/90 text-white px-5 py-2.5 rounded-xl font-bold shadow-sm transition-colors text-sm"
+          >
+             <Printer className="w-5 h-5" />
+             طباعة مستند / تفاصيل
+          </button>
+        </div>
       </div>
 
       {/* The 4 large statistic cards (Category Cards Style) */}

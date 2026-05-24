@@ -27,6 +27,7 @@ export default function WarehouseDriverIncomes() {
   
   // Modal state
   const [selectedDriver, setSelectedDriver] = useState<any>(null);
+  const [ledgerDriver, setLedgerDriver] = useState<any>(null);
 
   // Get drivers
   const driversList = users.filter((u) => u.role === 'driver');
@@ -106,7 +107,7 @@ export default function WarehouseDriverIncomes() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden">
         <div className="space-y-1">
-          <h1 className="text-3xl font-black text-[#0F3B73]">ذمة المندوب</h1>
+          <h1 className="text-3xl font-black text-[#0F3B73]">مقبوضات من المناديب</h1>
           <p className="text-slate-500 font-bold">إدارة ومتابعة الذمم المالية المستحقة على المناديب</p>
         </div>
         
@@ -161,7 +162,7 @@ export default function WarehouseDriverIncomes() {
                     </td>
                     <td className="px-4 py-4">
                         <div className="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap">
-                           <button className="flex items-center gap-1.5 bg-[#0F3B73] text-white px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-black text-xs md:text-sm hover:bg-[#0F3B73]/90 transition-all flex-1 whitespace-nowrap justify-center">
+                           <button onClick={() => setLedgerDriver(driver)} className="flex items-center gap-1.5 bg-[#0F3B73] text-white px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-black text-xs md:text-sm hover:bg-[#0F3B73]/90 transition-all flex-1 whitespace-nowrap justify-center">
                               <ClipboardList className="w-4 h-4" />
                               سجل
                            </button>
@@ -259,6 +260,75 @@ export default function WarehouseDriverIncomes() {
               >
                 <Printer className="w-5 h-5" />
                 تأكيد وتسوية وتصدير السند
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ledger Modal */}
+      {ledgerDriver && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-[#0F172A] rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-[#1E293B]">
+              <h2 className="text-xl font-black text-white">سجل المندوب: {ledgerDriver.name}</h2>
+              <button 
+                onClick={() => setLedgerDriver(null)}
+                className="p-2 hover:bg-slate-800 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-400 hover:text-white" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1 space-y-4 bg-[#0F172A]">
+              <div className="bg-white rounded-2xl p-4 shadow-inner border border-slate-800/10">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-center border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200">
+                        <th className="px-4 py-3 font-black text-slate-700 text-xs border-l border-slate-100">رقم الطلب</th>
+                        <th className="px-4 py-3 font-black text-slate-700 text-xs border-l border-slate-100">العميل</th>
+                        <th className="px-4 py-3 font-black text-slate-700 text-xs border-l border-slate-100">المبلغ المحصل (ذمة)</th>
+                        <th className="px-4 py-3 font-black text-slate-700 text-xs border-l border-slate-100">العمولة</th>
+                        <th className="px-4 py-3 font-black text-slate-700 text-xs border-l border-slate-100">الحالة</th>
+                        <th className="px-4 py-3 font-black text-slate-700 text-xs font-sans">التاريخ</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ledgerDriver.driverOrders.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="py-12 text-center text-slate-400 font-bold text-sm">
+                            لا توجد طلبات مسلمة ومستحقة التسوية
+                          </td>
+                        </tr>
+                      ) : (
+                        ledgerDriver.driverOrders.map((o: any) => {
+                          const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.amount || 0);
+                          const commission = getDriverCommission(o.province);
+                          return (
+                            <tr key={o.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                              <td className="px-4 py-3 font-bold font-en text-slate-800 text-xs">{o.id}</td>
+                              <td className="px-4 py-3 font-bold text-slate-700 text-xs">{o.customerName}</td>
+                              <td className="px-4 py-3 font-bold font-en text-orange-600 text-xs">{collected.toLocaleString()}</td>
+                              <td className="px-4 py-3 font-bold font-en text-emerald-600 text-xs">{commission.toLocaleString()}</td>
+                              <td className="px-4 py-3 font-bold text-xs">{o.status === 'delivered' ? 'واصل كلي' : o.status === 'delivered_partial' ? 'واصل جزئي' : 'راجع جزئي'}</td>
+                              <td className="px-4 py-3 font-bold font-en text-slate-500 text-xs">{o.date ? o.date.split('T')[0] : 'N/A'}</td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-slate-800 flex justify-end bg-[#1E293B]">
+              <button 
+                onClick={() => setLedgerDriver(null)}
+                className="bg-slate-800 hover:bg-slate-700 text-white font-bold px-6 py-2 rounded-xl transition-all"
+              >
+                إغلاق السجل
               </button>
             </div>
           </div>
