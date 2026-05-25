@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Save } from 'lucide-react';
 import { useSettings } from '../../context/SettingsContext';
+import { db } from '../../lib/firebase';
+import { doc, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
 
 export default function AdminSettings() {
   const { 
@@ -56,25 +58,30 @@ export default function AdminSettings() {
       reader.onload = (event) => {
         const img = new Image();
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          
-          if (width > 500 || height > 500) {
-            const ratio = Math.min(500 / width, 500 / height);
-            width = width * ratio;
-            height = height * ratio;
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          if (ctx) {
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, width, height);
-            ctx.drawImage(img, 0, 0, width, height);
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-            setCompanyLogoLocal(compressedDataUrl);
+          try {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > 300 || height > 300) {
+              const ratio = Math.min(300 / width, 300 / height);
+              width = width * ratio;
+              height = height * ratio;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.fillStyle = '#FFFFFF';
+              ctx.fillRect(0, 0, width, height);
+              ctx.drawImage(img, 0, 0, width, height);
+              const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
+              setCompanyLogoLocal(compressedDataUrl);
+            }
+          } catch(err) {
+            console.error(err);
+            alert('حدث خطأ أثناء معالجة الصورة');
           }
         };
         img.src = event.target?.result as string;
@@ -83,14 +90,23 @@ export default function AdminSettings() {
     }
   };
 
-  const handleSaveChanges = () => {
-    updateDefaultDriverCommission(defaultDriverCommissionLocal);
-    updateRequireMerchantApproval(requireMerchantApprovalLocal);
-    updateCompanyName(companyNameLocal);
-    updateCompanyPhone(companyPhoneLocal);
-    updateCompanyAddress(companyAddressLocal);
-    updateCompanyLogo(companyLogoLocal);
-    alert('تم حفظ الإعدادات بنجاح!');
+  const handleSaveChanges = async () => {
+    try {
+      if (defaultDriverCommissionLocal === undefined || isNaN(defaultDriverCommissionLocal)) {
+        alert("يرجى إدخال عمولة صحيحة");
+        return;
+      }
+      await updateDefaultDriverCommission(defaultDriverCommissionLocal);
+      await updateRequireMerchantApproval(requireMerchantApprovalLocal);
+      await updateCompanyName(companyNameLocal || '');
+      await updateCompanyPhone(companyPhoneLocal || '');
+      await updateCompanyAddress(companyAddressLocal || '');
+      await updateCompanyLogo(companyLogoLocal || '');
+      alert('تم حفظ الإعدادات بنجاح!');
+    } catch(err) {
+      console.error(err);
+      alert('حدث خطأ أثناء الحفظ. يرجى المحاولة مرة أخرى.');
+    }
   };
 
   const handleExportDB = () => {
@@ -136,54 +152,89 @@ export default function AdminSettings() {
     e.target.value = '';
   };
 
-  const handleClearDB = () => {
+  const handleClearDB = async () => {
     if (window.confirm("هل أنت متأكد من مسح جميع محتويات قاعدة البيانات (الإعدادات ستتم إعادتها للمصنع)؟")) {
-      localStorage.clear();
-      alert("تم مسح محتويات قاعدة البيانات وإعادتها للوضع الافتراضي بنجاح!");
-      window.location.replace('/');
+      try {
+        localStorage.clear();
+        await setDoc(doc(db, 'orders', 'all'), { value: [] });
+        await setDoc(doc(db, 'logs', 'all'), { value: [] });
+        await setDoc(doc(db, 'transactions', 'all'), { value: [] });
+        await setDoc(doc(db, 'branches', 'all'), { value: [] });
+        const initUsers = [{
+          id: 'admin-1',
+          name: 'أحمد المسؤول',
+          username: 'admin',
+          password: '123',
+          role: 'admin',
+          phone: '0700000000',
+          status: 'active'
+        }];
+        await setDoc(doc(db, 'users', 'all'), { value: initUsers });
+        
+        await deleteDoc(doc(db, 'settings', 'driverCommission'));
+        await deleteDoc(doc(db, 'settings', 'governorates'));
+        await deleteDoc(doc(db, 'settings', 'merchants'));
+        await deleteDoc(doc(db, 'settings', 'requireMerchantApproval'));
+        await deleteDoc(doc(db, 'settings', 'companyName'));
+        await deleteDoc(doc(db, 'settings', 'companyLogo'));
+        await deleteDoc(doc(db, 'settings', 'companyPhone'));
+        await deleteDoc(doc(db, 'settings', 'companyAddress'));
+        
+        alert("تم مسح محتويات قاعدة البيانات وإعادتها للوضع الافتراضي بنجاح!");
+        window.location.replace('/');
+      } catch (err) {
+        console.error(err);
+        alert('حدث خطأ أثناء مسح البيانات');
+      }
     }
   };
 
-  const handleResetDB = () => {
+  const handleResetDB = async () => {
     const input = window.prompt('تحذير: سيتم حذف جميع سجلات النظام بشكل نهائي ولن يمكن استعادتها. لتأكيد هذا الإجراء، اكتب "تصفير" أدناه:');
     if (input && input.trim() === 'تصفير') {
-      const usersRaw = localStorage.getItem('app_users');
-      let modifiedUsers = null;
-      if (usersRaw) {
-        try {
-          const parsed = JSON.parse(usersRaw);
-          // Only preserve users with the 'admin' role
-          const admins = parsed.filter((u: any) => u.role === 'admin');
-          modifiedUsers = JSON.stringify(admins);
-        } catch (e) {
-          console.error(e);
+      try {
+        const usersSnap = await getDoc(doc(db, 'users', 'all'));
+        let modifiedUsers = null;
+        if (usersSnap.exists()) {
+          const parsed = usersSnap.data().value;
+          if (Array.isArray(parsed)) {
+            modifiedUsers = parsed.filter((u: any) => u.role === 'admin');
+          }
         }
+        if (!modifiedUsers || modifiedUsers.length === 0) {
+           modifiedUsers = [{
+            id: 'admin-1',
+            name: 'أحمد المسؤول',
+            username: 'admin',
+            password: '123',
+            role: 'admin',
+            phone: '0700000000',
+            status: 'active'
+          }];
+        }
+        
+        const auth = localStorage.getItem('auth_user');
+        
+        // Clear EVERYTHING in localStorage
+        localStorage.clear();
+        
+        // Restore ONLY essential system configs and the admin user
+        if (auth) localStorage.setItem('auth_user', auth);
+
+        await setDoc(doc(db, 'orders', 'all'), { value: [] });
+        await setDoc(doc(db, 'logs', 'all'), { value: [] });
+        await setDoc(doc(db, 'transactions', 'all'), { value: [] });
+        await setDoc(doc(db, 'branches', 'all'), { value: [] });
+        await setDoc(doc(db, 'users', 'all'), { value: modifiedUsers });
+        
+        // Note: We don't touch settings documents so they are preserved
+        
+        alert('تم تصفير البيانات للتو. الصفحة سيتم تحديثها.');
+        window.location.replace('/');
+      } catch (err) {
+        console.error(err);
+        alert('حدث خطأ أثناء التصفير');
       }
-      
-      const auth = localStorage.getItem('auth_user');
-      const govs = localStorage.getItem('app_governorates');
-      const defaultCommission = localStorage.getItem('app_default_driver_commission');
-      const requireApproval = localStorage.getItem('app_require_merchant_approval');
-      
-      // Clear EVERYTHING in localStorage
-      localStorage.clear();
-      
-      // Restore ONLY essential system configs and the admin user
-      if (auth) localStorage.setItem('auth_user', auth);
-      if (modifiedUsers) localStorage.setItem('app_users', modifiedUsers);
-      if (govs) localStorage.setItem('app_governorates', govs);
-      if (defaultCommission) localStorage.setItem('app_default_driver_commission', defaultCommission);
-      if (requireApproval) localStorage.setItem('app_require_merchant_approval', requireApproval);
-      
-      // Explicitly set collections to empty arrays so the system doesn't error out
-      localStorage.setItem('app_orders', '[]');
-      localStorage.setItem('app_logs', '[]');
-      localStorage.setItem('app_transactions', '[]');
-      localStorage.setItem('app_branches', '[]');
-      localStorage.setItem('app_merchants_pricing', '{}');
-      
-      alert('تم تصفير البيانات للتو. الصفحة سيتم تحديثها.');
-      window.location.replace('/');
     } else {
       if (input !== null) {
         alert('تم إلغاء العملية، الكلمة التي ادخلتها غير مطابقة.');

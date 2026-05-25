@@ -35,8 +35,13 @@ export function useFirebaseSync<T>(collectionName: string, documentId: string, i
     setData(resolvedData);
     
     // Persist to firestore
-    const docRef = doc(db, collectionName, documentId);
-    await setDoc(docRef, { value: resolvedData }, { merge: true });
+    try {
+      const docRef = doc(db, collectionName, documentId);
+      await setDoc(docRef, { value: resolvedData }, { merge: true });
+    } catch (e) {
+      console.error("Firebase sync error for", collectionName, documentId, e);
+      throw e;
+    }
   };
 
   return [data, updateData, initialized] as const;
