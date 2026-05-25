@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Package, Search, Calendar, MapPin, XCircle, FileText, CheckCircle2 } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useAuth } from '../../context/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function ReturnOrder() {
   const { user } = useAuth();
   const { orders, updateOrderStatus } = useOrders();
+  const location = useLocation();
+  const navigate = useNavigate();
   const driverOrders = orders.filter(o => o.status === 'driver_assigned' && o.driverId === user?.id);
 
-  const [selectedOrderId, setSelectedOrderId] = useState<string>('');
+  const [selectedOrderId, setSelectedOrderId] = useState<string>(location.state?.orderId || '');
   const [reason, setReason] = useState<string>('');
 
   const selectedOrder = driverOrders.find(o => o.id === selectedOrderId);
@@ -31,6 +34,7 @@ export default function ReturnOrder() {
     setSelectedOrderId('');
     setReason('');
     alert('تم تأشير الطلب كمرتجع بنجاح وإرسال التحديث للإدارة');
+    navigate('/driver/delivery-orders');
   };
 
   return (

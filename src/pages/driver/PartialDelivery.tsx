@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Package, Search, Calendar, MapPin, CheckCircle2, DollarSign, XCircle, FileText } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useSettings } from '../../context/SettingsContext';
 import { useAuth } from '../../context/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function PartialDelivery() {
   const { user } = useAuth();
   const { orders, updateOrderStatus, addOrder } = useOrders();
   const { getDriverCommission } = useSettings();
+  const location = useLocation();
+  const navigate = useNavigate();
   const driverOrders = orders.filter(o => o.status === 'driver_assigned' && o.driverId === user?.id);
 
-  const [selectedOrderId, setSelectedOrderId] = useState<string>('');
+  const [selectedOrderId, setSelectedOrderId] = useState<string>(location.state?.orderId || '');
   const [receivedAmount, setReceivedAmount] = useState<string>('');
   const [reason, setReason] = useState<string>('');
 
@@ -82,6 +85,7 @@ export default function PartialDelivery() {
     setReceivedAmount('');
     setReason('');
     alert(`تم تأشير الطلب كمسلم (جزئي).\nتم استلام مبلغ (${receivedAmount} د.ع).\nتم إنشاء طلب جديد للمواد الراجعة وإرساله إلى المخزن.`);
+    navigate('/driver/delivery-orders');
   };
 
   return (

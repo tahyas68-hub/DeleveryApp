@@ -2,19 +2,18 @@ import React, { useState } from 'react';
 import { Package, Search, Calendar, MapPin, Check, X, Clock, SplitSquareHorizontal, Copy } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useSettings } from '../../context/SettingsContext';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../context/AuthContext';
 
 export default function DeliveryOrders() {
   const { user } = useAuth();
-  const { orders, updateOrderStatus, addOrder } = useOrders();
+  const navigate = useNavigate();
+  const { orders, updateOrderStatus } = useOrders();
   const { getDriverCommission } = useSettings();
   const driverOrders = orders.filter(o => o.status === 'driver_assigned' && o.driverId === user?.id);
   
   const [searchTerm, setSearchTerm] = useState('');
-  const [partialModalOpen, setPartialModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [partialAmount, setPartialAmount] = useState<string>('');
 
   const filteredOrders = driverOrders.filter(
     (o) => 
@@ -26,99 +25,19 @@ export default function DeliveryOrders() {
   );
 
   const handleDeliver = (order: any) => {
-    const commission = getDriverCommission(order.province);
-    updateOrderStatus(order.id, 'delivered', {
-       collectedAmount: order.totalAmount, 
-       merchantDue: order.totalAmount - order.deliveryFee,
-       driverCommission: commission,
-       companyProfit: order.deliveryFee - commission,
-       financialStatus: 'pending'
-    });
-    alert("تم تسليم الطلب");
+    navigate('/driver/deliver-order', { state: { orderId: order.id } });
   };
 
   const handleReturn = (id: string) => {
-    updateOrderStatus(id, 'returned', {
-      collectedAmount: 0,
-       deliveryFee: 0,
-       merchantDue: 0,
-       driverCommission: 0,
-       companyProfit: 0,
-       financialStatus: 'pending'
-    });
-    alert("تم إرجاع الطلب");
+    navigate('/driver/return-order', { state: { orderId: id } });
   };
 
   const handlePostpone = (id: string) => {
-    updateOrderStatus(id, 'postponed', {
-      collectedAmount: 0,
-       deliveryFee: 0,
-       merchantDue: 0,
-       driverCommission: 0,
-       companyProfit: 0,
-       financialStatus: 'pending'
-    });
-    alert("تم تأجيل الطلب");
+    navigate('/driver/postpone-order', { state: { orderId: id } });
   };
 
   const openPartialModal = (order: any) => {
-    setSelectedOrder(order);
-    setPartialAmount('');
-    setPartialModalOpen(true);
-  };
-
-  const handlePartialDelivery = () => {
-    if (!selectedOrder || !partialAmount) return;
-    
-    const amountNum = parseFloat(partialAmount) || 0;
-    
-    // Financial logic for partial:
-    const applyDeliveryFee = amountNum > 0 ? selectedOrder.deliveryFee : 0;
-    const newOrderAmount = amountNum > 0 ? amountNum - applyDeliveryFee : 0;
-    const commission = amountNum > 0 ? getDriverCommission(selectedOrder.province) : 0;
-    const companyProfit = applyDeliveryFee - commission;
-
-    const remainderTotal = selectedOrder.totalAmount - amountNum;
-
-    updateOrderStatus(selectedOrder.id, 'delivered', {
-      orderAmount: newOrderAmount,
-      amount: newOrderAmount,
-      collectedAmount: amountNum, 
-      deliveryFee: applyDeliveryFee, 
-      merchantDue: newOrderAmount,
-      driverCommission: commission,
-      companyProfit: companyProfit,
-      financialStatus: 'pending',
-      isPartial: true
-    });
-    
-    addOrder({
-      id: `${selectedOrder.id}-P`,
-      trackingNumber: `${selectedOrder.trackingNumber}-P`,
-      merchantName: selectedOrder.merchantName,
-      customerName: selectedOrder.customerName,
-      customerPhone: selectedOrder.customerPhone,
-      address: selectedOrder.address,
-      province: selectedOrder.province,
-      pieces: selectedOrder.pieces,
-      
-      amount: remainderTotal > 0 ? remainderTotal : 0,
-      totalAmount: remainderTotal > 0 ? remainderTotal : 0,
-      orderAmount: remainderTotal > 0 ? remainderTotal : 0,
-      collectedAmount: 0,
-      deliveryFee: 0, 
-      merchantDue: 0,
-      driverCommission: 0,
-      companyProfit: 0,
-      financialStatus: 'pending',
-
-      status: 'returned_partial',
-      isPartial: true,
-      date: new Date().toISOString().split('T')[0]
-    });
-    
-    alert("تم تسجيل التسليم الجزئي و إنشاء طلب راجع بالباقي");
-    setPartialModalOpen(false);
+    navigate('/driver/partial-delivery', { state: { orderId: order.id } });
   };
 
   return (
@@ -237,53 +156,6 @@ export default function DeliveryOrders() {
           </table>
         </div>
       </div>
-
-      {partialModalOpen && selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <h2 className="text-xl font-bold text-slate-800">تسليم جزئي للطلب {selectedOrder.id}</h2>
-              <button 
-                onClick={() => setPartialModalOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white text-slate-400 hover:text-slate-600 transition-colors shadow-sm"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="block text-slate-600 font-bold text-xs text-right">المبلغ المستلم (الجزء المسلم) <span className="text-red-500">*</span></label>
-                  <input 
-                    type="number" 
-                    value={partialAmount}
-                    onChange={(e) => setPartialAmount(e.target.value)}
-                    placeholder="أدخل المبلغ..."
-                    className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 placeholder-slate-300 focus:bg-white focus:border-[#0F3B73] focus:ring-2 focus:ring-[#0F3B73]/20 transition-all outline-none" 
-                  />
-                </div>
-                {partialAmount && !isNaN(Number(partialAmount)) && (
-                  <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 text-sm font-bold text-orange-800 flex justify-between items-center">
-                    <span>المبلغ المتبقي (للراجع):</span>
-                    <span className="font-en">
-                      {Math.max(0, (selectedOrder.amount + selectedOrder.deliveryFee) - Number(partialAmount)).toLocaleString()} د.ع
-                    </span>
-                  </div>
-                )}
-              </div>
-              <p className="text-xs text-slate-500">
-                سيتم معاملة هذا المبلغ على أنه الطلب المسلم، وسيتم إنشاء طلب راجع بالباقي.
-              </p>
-              <button 
-                onClick={handlePartialDelivery}
-                className="w-full bg-[#0F3B73] text-white py-4 rounded-xl font-bold text-lg hover:bg-opacity-90 transition-all"
-              >
-                تأكيد التسليم الجزئي
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

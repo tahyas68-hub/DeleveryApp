@@ -24,7 +24,7 @@ export default function DriverApp() {
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
 
   const handleAction = (path: string) => {
-    navigate(path);
+    navigate(path, { state: { orderId: selectedTask } });
     setSelectedTask(null);
   };
 

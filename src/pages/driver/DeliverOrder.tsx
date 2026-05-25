@@ -1,17 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Package, Search, Calendar, MapPin, CheckCircle2, DollarSign } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useSettings } from '../../context/SettingsContext';
 import { useAuth } from '../../context/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function DeliverOrder() {
   const { user } = useAuth();
   const { orders, updateOrderStatus } = useOrders();
   const { getDriverCommission } = useSettings();
+  const location = useLocation();
+  const navigate = useNavigate();
   const driverOrders = orders.filter(o => o.status === 'driver_assigned' && o.driverId === user?.id);
 
-  const [selectedOrderId, setSelectedOrderId] = useState<string>('');
+  const [selectedOrderId, setSelectedOrderId] = useState<string>(location.state?.orderId || '');
   const [receivedAmount, setReceivedAmount] = useState<string>('');
+
+  useEffect(() => {
+    if (selectedOrderId) {
+      const ord = driverOrders.find(o => o.id === selectedOrderId);
+      if (ord) setReceivedAmount((ord.amount + ord.deliveryFee).toString());
+    }
+  }, []);
 
   const selectedOrder = driverOrders.find(o => o.id === selectedOrderId);
 
@@ -41,6 +51,7 @@ export default function DeliverOrder() {
       setSelectedOrderId('');
       setReceivedAmount('');
       alert('تم تأشير الطلب كمسلم بنجاح وإرسال التحديث للإدارة');
+      navigate('/driver/delivery-orders');
     }
   };
 
