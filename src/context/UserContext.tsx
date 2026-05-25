@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { useFirebaseSync } from '../hooks/useFirebaseSync';
 
 export type UserRole = 'admin' | 'merchant' | 'driver' | 'branch_manager';
 
@@ -49,60 +50,50 @@ const initialUsers: AppUser[] = [
   }
 ];
 
-export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [users, setUsers] = useState<AppUser[]>(() => {
-    const saved = localStorage.getItem('app_users');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        // Ensure default users have their credentials if they were saved without them
-        let hasAdmin = false;
-        const mappedUsers = parsed.map((u: AppUser) => {
-          if (u.role === 'admin') {
-            hasAdmin = true;
-            if (!u.username) {
-              return { ...u, username: 'admin', password: '123' };
-            }
-          }
-          if (u.role === 'merchant' && !u.username) {
-            return { ...u, username: 'merchant', password: '123' };
-          }
-          return u;
-        });
-
-        if (!hasAdmin) {
-          mappedUsers.unshift(initialUsers[0]);
+const loadInitialUsers = (): AppUser[] => {
+  const saved = localStorage.getItem('app_users');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      let hasAdmin = false;
+      const mappedUsers = parsed.map((u: AppUser) => {
+        if (u.role === 'admin') {
+          hasAdmin = true;
+          if (!u.username) return { ...u, username: 'admin', password: '123' };
         }
-        return mappedUsers;
-      } catch (e) {
-        console.error("Failed to parse users from localStorage", e);
-      }
+        if (u.role === 'merchant' && !u.username) return { ...u, username: 'merchant', password: '123' };
+        return u;
+      });
+      if (!hasAdmin) mappedUsers.unshift(initialUsers[0]);
+      return mappedUsers;
+    } catch (e) {
+      console.error("Failed to parse users from localStorage", e);
     }
-    return initialUsers;
-  });
+  }
+  return initialUsers;
+};
 
-  React.useEffect(() => {
-    localStorage.setItem('app_users', JSON.stringify(users));
-  }, [users]);
+export function UserProvider({ children }: { children: React.ReactNode }) {
+  const [users, setUsers] = useFirebaseSync<AppUser[]>('users', 'all', loadInitialUsers());
 
   const addUser = (user: Omit<AppUser, 'id'>) => {
     const newUser = {
       ...user,
       id: Math.random().toString(36).substr(2, 9),
     };
-    setUsers([...users, newUser]);
+    setUsers(prev => [...(prev || []), newUser]);
   };
 
   const updateUser = (id: string, data: Partial<AppUser>) => {
-    setUsers(users.map(u => u.id === id ? { ...u, ...data } : u));
+    setUsers(prev => (prev || []).map(u => u.id === id ? { ...u, ...data } : u));
   };
 
   const deleteUser = (id: string) => {
-    setUsers(users.filter(u => u.id !== id));
+    setUsers(prev => (prev || []).filter(u => u.id !== id));
   };
 
   return (
-    <UserContext.Provider value={{ users, addUser, updateUser, deleteUser }}>
+    <UserContext.Provider value={{ users: users || [], addUser, updateUser, deleteUser }}>
       {children}
     </UserContext.Provider>
   );
@@ -113,3 +104,4 @@ export const useUsers = () => {
   if (!context) throw new Error('useUsers must be used within UserProvider');
   return context;
 };
+

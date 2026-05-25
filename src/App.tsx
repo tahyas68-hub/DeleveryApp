@@ -19,6 +19,7 @@ import DriverApp from "./pages/driver/DriverApp";
 import CustomerTracking from "./pages/CustomerTracking";
 import WarehouseIncomingOrders from "./pages/warehouse/WarehouseIncomingOrders";
 import WarehouseDispatch from "./pages/warehouse/WarehouseDispatch";
+import WarehousePullOrders from "./pages/warehouse/WarehousePullOrders";
 import WarehouseReturns from "./pages/warehouse/WarehouseReturns";
 import WarehouseDriverIncomes from "./pages/warehouse/WarehouseDriverIncomes";
 import WarehouseOperations from "./pages/warehouse/WarehouseOperations";
@@ -155,6 +156,7 @@ export default function App() {
                       element={<WarehouseIncomingOrders />}
                     />
                     <Route path="dispatch" element={<WarehouseDispatch />} />
+                    <Route path="pull-orders" element={<WarehousePullOrders />} />
                     <Route
                       path="returns"
                       element={<WarehouseReturns />}

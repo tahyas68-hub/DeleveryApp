@@ -167,7 +167,7 @@ export default function AdminMerchantDetails() {
                       </div>
                     </td>
                     <td className="px-6 py-4 font-en font-bold text-slate-700">
-                      {order.totalAmount.toLocaleString()} د.ع
+                      {(order.totalAmount || 0).toLocaleString()} د.ع
                     </td>
                     <td className="px-6 py-4 font-en font-bold text-amber-600">
                       {(order.deliveryFee || 0).toLocaleString()} د.ع

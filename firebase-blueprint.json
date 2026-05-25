@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user including admins, merchants, warehouse staff, and drivers.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "merchant", "warehouse", "driver"] },
+        "phone": { "type": "string" },
+        "username": { "type": "string" },
+        "password": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "inactive", "busy", "offline"] },
+        "branch": { "type": "string" },
+        "rating": { "type": "number" },
+        "vehicleType": { "type": "string" },
+        "maxLoad": { "type": "number" },
+        "currentLoad": { "type": "number" },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "balance": { "type": "number" },
+        "lastClearance": { "type": "string" },
+        "storeName": { "type": "string" },
+        "storeAddress": { "type": "string" }
+      },
+      "required": ["id", "name", "role", "phone", "status"]
+    },
+    "Branch": {
+      "title": "Branch",
+      "description": "Delivery branch.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "city": { "type": "string" },
+        "manager": { "type": "string" },
+        "phone": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "inactive"] }
+      },
+      "required": ["id", "name", "city", "status"]
+    },
+    "Transaction": {
+      "title": "Financial Transaction",
+      "description": "A financial log/receipt/payment",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["receipt", "payment", "transfer"] },
+        "amount": { "type": "number" },
+        "fromEntity": { "type": "string" },
+        "toEntity": { "type": "string" },
+        "referenceId": { "type": "string" },
+        "userId": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["id", "type", "amount", "fromEntity", "toEntity", "referenceId", "userId", "timestamp", "description"]
+    },
+    "MainOrder": {
+      "title": "Main Order",
+      "description": "Delivery Order",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "trackingNumber": { "type": "string" },
+        "merchantId": { "type": "string" },
+        "merchantName": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "address": { "type": "string" },
+        "province": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "deliveryFee": { "type": "number" },
+        "orderAmount": { "type": "number" },
+        "collectedAmount": { "type": "number" },
+        "merchantDue": { "type": "number" },
+        "driverCommission": { "type": "number" },
+        "companyProfit": { "type": "number" },
+        "financialStatus": { "type": "string" },
+        "amount": { "type": "number" },
+        "date": { "type": "string" },
+        "pieces": { "type": "number" },
+        "status": { "type": "string" },
+        "driverId": { "type": "string" },
+        "driverName": { "type": "string" },
+        "branchName": { "type": "string" },
+        "isPartial": { "type": "boolean" },
+        "postponedDate": { "type": "string" },
+        "postponedReason": { "type": "string" }
+      },
+      "required": ["id", "trackingNumber", "merchantName", "customerName", "customerPhone", "address", "province", "totalAmount", "deliveryFee", "orderAmount", "collectedAmount", "merchantDue", "driverCommission", "companyProfit", "financialStatus", "amount", "date", "pieces", "status"]
+    },
+    "OrderLog": {
+      "title": "Order Log",
+      "description": "Audit log for changes in an order",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderId": { "type": "string" },
+        "trackingNumber": { "type": "string" },
+        "action": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "user": { "type": "string" }
+      },
+      "required": ["id", "orderId", "action", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles"
+    },
+    "branches": {
+      "schema": { "$ref": "#/entities/Branch" },
+      "description": "Stores branch info"
+    },
+    "transactions": {
+      "schema": { "$ref": "#/entities/Transaction" },
+      "description": "Financial logs"
+    },
+    "orders": {
+      "schema": { "$ref": "#/entities/MainOrder" },
+      "description": "Orders data"
+    },
+    "logs": {
+      "schema": { "$ref": "#/entities/OrderLog" },
+      "description": "Order modification logs"
+    }
+  }
+}

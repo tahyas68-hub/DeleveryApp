@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { useFirebaseSync } from '../hooks/useFirebaseSync';
 
 export interface GovernoratePrice {
   id: number;
@@ -62,123 +63,54 @@ const defaultGovernorates: GovernoratePrice[] = [
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
+const parseLocal = (key: string, def?: any) => {
+  const v = localStorage.getItem(key);
+  if (v) {
+    try { return JSON.parse(v); } catch(e) {}
+  }
+  return def;
+};
+
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [defaultDriverCommission, setDefaultDriverCommission] = useState<number>(() => {
-    const saved = localStorage.getItem('app_default_driver_commission');
-    return saved ? Number(saved) : 3000;
-  });
-
-  const [governorates, setGovernorates] = useState<GovernoratePrice[]>(() => {
-    const saved = localStorage.getItem('app_governorates');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed && Array.isArray(parsed)) {
-           return defaultGovernorates.map(defaultGov => {
-             const savedGov = parsed.find((g: any) => g.name === defaultGov.name);
-             return savedGov ? { ...defaultGov, ...savedGov, active: true } : defaultGov;
-           });
-        }
-      } catch (e) {}
-    }
-    return defaultGovernorates;
-  });
-
-  const [merchants, setMerchants] = useState<MerchantPrice[]>(() => {
-    const saved = localStorage.getItem('app_merchants_pricing');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {}
-    }
-    return [];
-  });
-
-  React.useEffect(() => {
-    localStorage.setItem('app_governorates', JSON.stringify(governorates));
-  }, [governorates]);
-
-  React.useEffect(() => {
-    localStorage.setItem('app_merchants_pricing', JSON.stringify(merchants));
-  }, [merchants]);
-
-  React.useEffect(() => {
-    localStorage.setItem('app_default_driver_commission', String(defaultDriverCommission));
-  }, [defaultDriverCommission]);
-
-  const [requireMerchantApproval, setRequireMerchantApproval] = useState<boolean>(() => {
-    const saved = localStorage.getItem('app_require_merchant_approval');
-    return saved !== null ? saved === 'true' : true;
-  });
-
-  React.useEffect(() => {
-    localStorage.setItem('app_require_merchant_approval', String(requireMerchantApproval));
-  }, [requireMerchantApproval]);
-
-  const [companyName, setCompanyName] = useState<string>(() => {
-    return localStorage.getItem('app_company_name') || 'شركة الراصد للتوصيل السريع';
-  });
-
-  const [companyLogo, setCompanyLogo] = useState<string>(() => {
-    return localStorage.getItem('app_company_logo') || '';
-  });
-
-  const [companyPhone, setCompanyPhone] = useState<string>(() => {
-    return localStorage.getItem('app_company_phone') || '07XXXXXXXXX';
-  });
-
-  const [companyAddress, setCompanyAddress] = useState<string>(() => {
-    return localStorage.getItem('app_company_address') || 'بغداد، الكرادة';
-  });
-
-  React.useEffect(() => {
-    localStorage.setItem('app_company_name', companyName);
-  }, [companyName]);
-
-  React.useEffect(() => {
-    localStorage.setItem('app_company_logo', companyLogo);
-  }, [companyLogo]);
-
-  React.useEffect(() => {
-    localStorage.setItem('app_company_phone', companyPhone);
-  }, [companyPhone]);
-
-  React.useEffect(() => {
-    localStorage.setItem('app_company_address', companyAddress);
-  }, [companyAddress]);
+  const [defaultDriverCommission, setDefaultDriverCommission] = useFirebaseSync<number>('settings', 'driverCommission', parseInt(localStorage.getItem('app_default_driver_commission') || '3000'));
+  const [governorates, setGovernorates] = useFirebaseSync<GovernoratePrice[]>('settings', 'governorates', parseLocal('app_governorates', defaultGovernorates));
+  const [merchants, setMerchants] = useFirebaseSync<MerchantPrice[]>('settings', 'merchants', parseLocal('app_merchants_pricing', []));
+  const [requireMerchantApproval, setRequireMerchantApproval] = useFirebaseSync<boolean>('settings', 'requireMerchantApproval', localStorage.getItem('app_require_merchant_approval') === 'true' || true);
+  const [companyName, setCompanyName] = useFirebaseSync<string>('settings', 'companyName', localStorage.getItem('app_company_name') || 'شركة الراصد للتوصيل السريع');
+  const [companyLogo, setCompanyLogo] = useFirebaseSync<string>('settings', 'companyLogo', localStorage.getItem('app_company_logo') || '');
+  const [companyPhone, setCompanyPhone] = useFirebaseSync<string>('settings', 'companyPhone', localStorage.getItem('app_company_phone') || '07XXXXXXXXX');
+  const [companyAddress, setCompanyAddress] = useFirebaseSync<string>('settings', 'companyAddress', localStorage.getItem('app_company_address') || 'بغداد، الكرادة');
 
   const updateGovernorate = (id: number, data: Partial<GovernoratePrice>) => {
-    setGovernorates(prev => prev.map(g => g.id === id ? { ...g, ...data } : g));
+    setGovernorates(prev => (prev || []).map(g => g.id === id ? { ...g, ...data } : g));
   };
 
   const updateMerchant = (id: string, data: Partial<MerchantPrice>) => {
     setMerchants(prev => {
-      const exists = prev.find(m => m.id === id);
+      const p = prev || [];
+      const exists = p.find(m => m.id === id);
       if (exists) {
-        return prev.map(m => m.id === id ? { ...m, ...data } : m);
+        return p.map(m => m.id === id ? { ...m, ...data } : m);
       } else {
-        return [...prev, { id, name: data.name || '', provincePrices: data.provincePrices || {} } as MerchantPrice];
+        return [...p, { id, name: data.name || '', provincePrices: data.provincePrices || {} } as MerchantPrice];
       }
     });
   };
 
   const getDeliveryFee = (province: string, merchantId?: string) => {
-    // 1) First check merchant specific price for this province
     if (merchantId) {
-       // Support both old localized 'm-1' and new 'merch-1' ID formats
        const normalizedId = merchantId === 'm-1' ? 'merch-1' : merchantId;
-       const m = merchants.find(m => m.id === normalizedId);
+       const m = (merchants || []).find(m => m.id === normalizedId);
        if (m && m.provincePrices && m.provincePrices[province] !== undefined && m.provincePrices[province] >= 0) {
-         return m.provincePrices[province]; // overwrite the governorate price
+         return m.provincePrices[province];
        }
     }
-    // 2) Fallback to default governorate price
-    const gov = governorates.find(g => g.name === province);
+    const gov = (governorates || []).find(g => g.name === province);
     return gov?.base || 0;
   };
 
   const getDriverCommission = (_province?: string) => {
-    return defaultDriverCommission;
+    return defaultDriverCommission || 0;
   };
 
   const bulkUpdateGovernorates = (newGovs: GovernoratePrice[]) => {
@@ -187,13 +119,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   return (
     <SettingsContext.Provider value={{
-      governorates, updateGovernorate, bulkUpdateGovernorates, merchants, updateMerchant,
-      getDeliveryFee, getDriverCommission, defaultDriverCommission, updateDefaultDriverCommission: setDefaultDriverCommission,
-      requireMerchantApproval, updateRequireMerchantApproval: setRequireMerchantApproval,
-      companyName, updateCompanyName: setCompanyName,
-      companyLogo, updateCompanyLogo: setCompanyLogo,
-      companyPhone, updateCompanyPhone: setCompanyPhone,
-      companyAddress, updateCompanyAddress: setCompanyAddress
+      governorates: governorates || defaultGovernorates, updateGovernorate, bulkUpdateGovernorates, 
+      merchants: merchants || [], updateMerchant,
+      getDeliveryFee, getDriverCommission, 
+      defaultDriverCommission: defaultDriverCommission || 3000, updateDefaultDriverCommission: setDefaultDriverCommission,
+      requireMerchantApproval: requireMerchantApproval ?? true, updateRequireMerchantApproval: setRequireMerchantApproval,
+      companyName: companyName || '', updateCompanyName: setCompanyName,
+      companyLogo: companyLogo || '', updateCompanyLogo: setCompanyLogo,
+      companyPhone: companyPhone || '', updateCompanyPhone: setCompanyPhone,
+      companyAddress: companyAddress || '', updateCompanyAddress: setCompanyAddress
     }}>
       {children}
     </SettingsContext.Provider>

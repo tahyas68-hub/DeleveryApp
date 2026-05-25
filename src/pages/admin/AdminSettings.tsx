@@ -53,8 +53,31 @@ export default function AdminSettings() {
          return;
       }
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setCompanyLogoLocal(reader.result as string);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > 500 || height > 500) {
+            const ratio = Math.min(500 / width, 500 / height);
+            width = width * ratio;
+            height = height * ratio;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            setCompanyLogoLocal(compressedDataUrl);
+          }
+        };
+        img.src = event.target?.result as string;
       };
       reader.readAsDataURL(file);
     }

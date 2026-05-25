@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { useFirebaseSync } from '../hooks/useFirebaseSync';
 
 export interface Branch {
   id: string;
@@ -20,22 +21,16 @@ interface BranchContextType {
 
 const BranchContext = createContext<BranchContextType | undefined>(undefined);
 
-export function BranchProvider({ children }: { children: React.ReactNode }) {
-  const [branches, setBranches] = useState<Branch[]>(() => {
-    const saved = localStorage.getItem('app_branches');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error("Failed to parse branches from localStorage", e);
-      }
-    }
-    return [];
-  });
+const initialBranchesFromStorage = (): Branch[] => {
+  const saved = localStorage.getItem('app_branches');
+  if (saved) {
+    try { return JSON.parse(saved); } catch (e) {}
+  }
+  return [];
+};
 
-  React.useEffect(() => {
-    localStorage.setItem('app_branches', JSON.stringify(branches));
-  }, [branches]);
+export function BranchProvider({ children }: { children: React.ReactNode }) {
+  const [branches, setBranches] = useFirebaseSync<Branch[]>('branches', 'all', initialBranchesFromStorage());
 
   const addBranch = (branch: Omit<Branch, 'id' | 'drivers' | 'orders'>) => {
     const newBranch = {
@@ -44,19 +39,19 @@ export function BranchProvider({ children }: { children: React.ReactNode }) {
       drivers: 0,
       orders: 0
     };
-    setBranches(prev => [...prev, newBranch as Branch]);
+    setBranches(prev => [...(prev || []), newBranch as Branch]);
   };
 
   const updateBranch = (id: string, data: Partial<Branch>) => {
-    setBranches(prev => prev.map(b => b.id === id ? { ...b, ...data } : b));
+    setBranches(prev => (prev || []).map(b => b.id === id ? { ...b, ...data } : b));
   };
 
   const deleteBranch = (id: string) => {
-    setBranches(prev => prev.filter(b => b.id !== id));
+    setBranches(prev => (prev || []).filter(b => b.id !== id));
   };
 
   return (
-    <BranchContext.Provider value={{ branches, addBranch, updateBranch, deleteBranch }}>
+    <BranchContext.Provider value={{ branches: branches || [], addBranch, updateBranch, deleteBranch }}>
       {children}
     </BranchContext.Provider>
   );

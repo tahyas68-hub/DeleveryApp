@@ -16,13 +16,15 @@ import {
 import { useUsers } from '../../context/UserContext';
 import { useFinance } from '../../context/FinanceContext';
 import { useOrders } from '../../context/OrderContext';
+import { useSettings } from '../../context/SettingsContext';
 import { PrintHeader } from '../../components/PrintHeader';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function AdminMerchantAccounts() {
   const { users, addUser, updateUser } = useUsers();
   const { transactions, addTransaction } = useFinance();
-  const { orders } = useOrders();
+  const { orders, updateOrderStatus } = useOrders();
+  const { companyName, companyLogo } = useSettings();
 
   const merchants = users.filter(u => u.role === 'merchant');
 
@@ -237,14 +239,14 @@ export default function AdminMerchantAccounts() {
                   <div className="flex items-center gap-3">
                     <div className="text-left font-sans">
                       <h2 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-1">
-                        {localStorage.getItem('app_company_name') || 'شركة الراصد للتوصيل السريع'}
+                        {companyName}
                       </h2>
                       <p className="text-[10px] text-slate-400 font-bold">شحن مالي سريع وآمن لجميع المحافظات</p>
                     </div>
                     {/* Fast delivery truck logo markup matching screenshot */}
                     <div className="relative w-16 h-12 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center p-1">
-                      {localStorage.getItem('app_company_logo') ? (
-                         <img src={localStorage.getItem('app_company_logo')!} alt="Logo" className="w-full h-full object-contain" />
+                      {companyLogo ? (
+                         <img src={companyLogo} alt="Logo" className="w-full h-full object-contain" />
                       ) : (
                         <>
                           <div className="absolute right-1 top-2 w-3 h-[2px] bg-amber-500"></div>

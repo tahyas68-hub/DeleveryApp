@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useUsers } from "../context/UserContext";
+import { useSettings } from "../context/SettingsContext";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -9,6 +10,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const { login } = useAuth();
   const { users } = useUsers();
+  const { companyName, companyLogo } = useSettings();
   const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
@@ -33,13 +35,17 @@ export default function Login() {
       dir="rtl"
     >
       <div className="mb-8 flex flex-col items-center gap-3">
-        <div className="w-20 h-20 bg-[#FF6B00] rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
-          <span className="text-4xl font-bold text-white tracking-tighter">
-            D
-          </span>
-        </div>
-        <h1 className="text-4xl font-bold text-[#0F3B73] font-en tracking-tight">
-          Delevary
+        {companyLogo ? (
+          <img src={companyLogo} alt={companyName} className="w-24 h-24 object-contain rounded-xl shadow-lg border border-slate-100 bg-white p-2" />
+        ) : (
+          <div className="w-20 h-20 bg-[#FF6B00] rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+            <span className="text-4xl font-bold text-white tracking-tighter">
+              {companyName ? companyName.charAt(0) : "D"}
+            </span>
+          </div>
+        )}
+        <h1 className="text-4xl font-bold text-[#0F3B73] font-en tracking-tight text-center">
+          {companyName || "Delevary"}
         </h1>
         <p className="text-slate-500 text-center max-w-sm mt-2 font-medium">
           المنصة اللوجستية المتكاملة لإدارة مستودعاتك، وتتبع مناديبك بسلاسة.

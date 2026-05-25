@@ -22,7 +22,8 @@ export default function WarehouseReturnsTransfer() {
   // Filters out orders that have been returned (e.g. status === 'returned' or 'returned_partial')
   const returnableOrders = orders.filter(o => 
     (o.status === 'returned' || o.status === 'returned_partial') &&
-    o.branchName !== 'المركز الرئيسي'
+    o.branchName !== 'المركز الرئيسي' &&
+    !o.driverId
   );
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -203,7 +204,7 @@ export default function WarehouseReturnsTransfer() {
                          جاهز للتحويل (مسترجع)
                        </span>
                     </td>
-                    <td className="px-6 py-5 font-en font-black text-slate-900 text-left whitespace-nowrap">{order.totalAmount.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-5 font-en font-black text-slate-900 text-left whitespace-nowrap">{(order.totalAmount || 0).toLocaleString()} د.ع</td>
                   </tr>
                 ))
               )}

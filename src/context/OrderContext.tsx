@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { useFirebaseSync } from '../hooks/useFirebaseSync';
 
 export type OrderStatus = 
   | 'merchant_pending' // merchant created, pending admin pickup 
@@ -64,8 +65,6 @@ export interface FinancialTransaction {
   description: string;
 }
 
-const defaultOrders: MainOrder[] = [];
-
 export interface OrderLog {
   id: string;
   orderId: string;
@@ -88,38 +87,25 @@ interface OrderContextType {
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
+const loadInitialOrders = (): MainOrder[] => {
+  const saved = localStorage.getItem('app_orders');
+  if (saved) {
+    try { return JSON.parse(saved); } catch (e) {}
+  }
+  return [];
+};
+
+const loadInitialLogs = (): OrderLog[] => {
+  const saved = localStorage.getItem('app_logs');
+  if (saved) {
+    try { return JSON.parse(saved); } catch (e) {}
+  }
+  return [];
+};
+
 export function OrderProvider({ children }: { children: ReactNode }) {
-  const [orders, setOrders] = useState<MainOrder[]>(() => {
-    const saved = localStorage.getItem('app_orders');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error("Failed to parse orders from localStorage", e);
-      }
-    }
-    return defaultOrders;
-  });
-
-  const [logs, setLogs] = useState<OrderLog[]>(() => {
-    const saved = localStorage.getItem('app_logs');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error("Failed to parse logs from localStorage", e);
-      }
-    }
-    return [];
-  });
-
-  React.useEffect(() => {
-    localStorage.setItem('app_orders', JSON.stringify(orders));
-  }, [orders]);
-
-  React.useEffect(() => {
-    localStorage.setItem('app_logs', JSON.stringify(logs));
-  }, [logs]);
+  const [orders, setOrders] = useFirebaseSync<MainOrder[]>('orders', 'all', loadInitialOrders());
+  const [logs, setLogs] = useFirebaseSync<OrderLog[]>('logs', 'all', loadInitialLogs());
 
   const addLog = (log: Omit<OrderLog, 'id' | 'timestamp'>) => {
     const newLog: OrderLog = {
@@ -127,11 +113,11 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       id: Math.random().toString(36).substring(2, 9),
       timestamp: new Date().toISOString()
     };
-    setLogs(prev => [newLog, ...prev]);
+    setLogs(prev => [newLog, ...(prev || [])]);
   };
 
   const addOrder = (order: MainOrder) => {
-    setOrders((prev) => [order, ...prev]);
+    setOrders((prev) => [order, ...(prev || [])]);
     addLog({
       orderId: order.id,
       trackingNumber: order.trackingNumber,
@@ -142,7 +128,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 
   const updateOrderStatus = (id: string, newStatus: OrderStatus, extra?: Partial<MainOrder>) => {
     setOrders((prev) => 
-      prev.map(o => {
+      (prev || []).map(o => {
         if (o.id === id) {
           addLog({
             orderId: id,
@@ -158,12 +144,12 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   };
 
   const getOrdersByStatus = (status: OrderStatus) => {
-    return orders.filter(o => o.status === status);
+    return (orders || []).filter(o => o.status === status);
   };
 
   const deleteOrder = (id: string) => {
     setOrders((prev) => {
-      const order = prev.find(o => o.id === id);
+      const order = (prev || []).find(o => o.id === id);
       if (order) {
         addLog({
           orderId: id,
@@ -172,12 +158,12 @@ export function OrderProvider({ children }: { children: ReactNode }) {
           user: 'Admin'
         });
       }
-      return prev.filter(o => o.id !== id);
+      return (prev || []).filter(o => o.id !== id);
     });
   };
 
   return (
-    <OrderContext.Provider value={{ orders, logs, addOrder, updateOrderStatus, getOrdersByStatus, deleteOrder, addLog }}>
+    <OrderContext.Provider value={{ orders: orders || [], logs: logs || [], addOrder, updateOrderStatus, getOrdersByStatus, deleteOrder, addLog }}>
       {children}
     </OrderContext.Provider>
   );

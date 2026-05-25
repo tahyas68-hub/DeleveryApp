@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { FinancialTransaction } from './OrderContext';
+import { useFirebaseSync } from '../hooks/useFirebaseSync';
 
 interface FinanceContextType {
   transactions: FinancialTransaction[];
@@ -9,18 +10,16 @@ interface FinanceContextType {
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 
-export function FinanceProvider({ children }: { children: ReactNode }) {
-  const [transactions, setTransactions] = useState<FinancialTransaction[]>(() => {
-    const saved = localStorage.getItem('app_transactions');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
-    }
-    return [];
-  });
+const initialTransactionsFromStorage = (): FinancialTransaction[] => {
+  const saved = localStorage.getItem('app_transactions');
+  if (saved) {
+    try { return JSON.parse(saved); } catch (e) {}
+  }
+  return [];
+};
 
-  React.useEffect(() => {
-    localStorage.setItem('app_transactions', JSON.stringify(transactions));
-  }, [transactions]);
+export function FinanceProvider({ children }: { children: ReactNode }) {
+  const [transactions, setTransactions] = useFirebaseSync<FinancialTransaction[]>('transactions', 'all', initialTransactionsFromStorage());
 
   const addTransaction = (transaction: Omit<FinancialTransaction, 'id' | 'timestamp'>) => {
     const newTx: FinancialTransaction = {
@@ -28,15 +27,15 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       id: "TXN-" + Math.floor(Math.random() * 1000000),
       timestamp: new Date().toISOString()
     };
-    setTransactions(prev => [newTx, ...prev]);
+    setTransactions(prev => [newTx, ...(prev || [])]);
   };
 
   const getTransactionsByOrder = (orderId: string) => {
-    return transactions.filter(t => t.referenceId === orderId);
+    return (transactions || []).filter(t => t.referenceId === orderId);
   };
 
   return (
-    <FinanceContext.Provider value={{ transactions, addTransaction, getTransactionsByOrder }}>
+    <FinanceContext.Provider value={{ transactions: transactions || [], addTransaction, getTransactionsByOrder }}>
       {children}
     </FinanceContext.Provider>
   );

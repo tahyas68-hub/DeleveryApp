@@ -141,7 +141,7 @@ export default function WarehouseIncomingOrders() {
                       </button>
                     </td>
                     <td className="px-6 py-5 font-en font-bold text-slate-400">{order.date ? order.date.split('T')[0] : 'N/A'}</td>
-                    <td className="px-6 py-5 font-en font-black text-slate-800">{order.totalAmount.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-5 font-en font-black text-slate-800">{(order.totalAmount || 0).toLocaleString()} د.ع</td>
                   </tr>
                 ))
               )}

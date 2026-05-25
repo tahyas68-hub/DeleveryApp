@@ -8,7 +8,8 @@ import {
   Box, 
   Calculator,
   ChevronLeft,
-  FileText
+  FileText,
+  UserX
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -28,6 +29,14 @@ const operationCards = [
     icon: Truck,
     to: '/warehouse/dispatch',
     color: 'from-indigo-500 to-indigo-600 shadow-indigo-500/20'
+  },
+  {
+    id: 'pull_orders',
+    title: 'سحب من المندوب',
+    description: 'إرجاع الطلبات من ذمة المندوب إلى المخزن الفرعي.',
+    icon: UserX,
+    to: '/warehouse/pull-orders',
+    color: 'from-pink-500 to-pink-600 shadow-pink-500/20'
   },
   {
     id: 'returns',
