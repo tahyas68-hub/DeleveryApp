@@ -80,7 +80,7 @@ export default function DeliveryOrders() {
 
     const remainderTotal = selectedOrder.totalAmount - amountNum;
 
-    updateOrderStatus(selectedOrder.id, 'delivered_partial', {
+    updateOrderStatus(selectedOrder.id, 'delivered', {
       orderAmount: newOrderAmount,
       amount: newOrderAmount,
       collectedAmount: amountNum, 

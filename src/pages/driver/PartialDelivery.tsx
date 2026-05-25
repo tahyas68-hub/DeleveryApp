@@ -39,7 +39,7 @@ export default function PartialDelivery() {
     const remainderTotal = selectedOrder.totalAmount - amountNum;
 
     // Update current order as partial delivered
-    updateOrderStatus(selectedOrder.id, 'delivered_partial', {
+    updateOrderStatus(selectedOrder.id, 'delivered', {
       orderAmount: newOrderAmount,
       amount: newOrderAmount, // Keep backward compatibility
       collectedAmount: amountNum, 

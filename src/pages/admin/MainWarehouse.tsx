@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { Package, Search, Warehouse, CheckCircle, CheckSquare } from 'lucide-react';
+import { Package, Search, Warehouse, CheckCircle, CheckSquare, Settings } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { OrderStatusBadge } from '../../components/OrderStatusBadge';
+import { useBranches } from '../../context/BranchContext';
 
 export default function MainWarehouse() {
   const { orders, updateOrderStatus } = useOrders();
+  const { branches } = useBranches();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [targetBranchId, setTargetBranchId] = useState('');
 
-  const mainWarehouseOrders = orders.filter(o => o.status === 'main_warehouse');
+  const mainWarehouseOrders = orders.filter(o => o.status === 'main_warehouse' || o.status === 'branch_transfering');
 
   const filteredOrders = mainWarehouseOrders.filter(o => {
     if (!searchQuery) return true;
@@ -23,7 +26,7 @@ export default function MainWarehouse() {
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      setSelectedIds(filteredOrders.map(o => o.id));
+      setSelectedIds(filteredOrders.filter(o => o.status === 'main_warehouse').map(o => o.id));
     } else {
       setSelectedIds([]);
     }
@@ -36,13 +39,23 @@ export default function MainWarehouse() {
   };
 
   const handleTransferToBranch = (id: string) => {
-    updateOrderStatus(id, 'branch_transfering');
+    if (!targetBranchId) {
+      alert("الرجاء تحديد الفرع أولاً من أعلى الشاشة");
+      return;
+    }
+    const branch = branches.find(b => b.id === targetBranchId);
+    updateOrderStatus(id, 'branch_transfering', { branchName: branch?.name });
   };
 
   const handleTransferSelected = () => {
     if (selectedIds.length === 0) return;
-    if (window.confirm(`هل أنت متأكد من تحويل ${selectedIds.length} طلبات إلى الفروع؟`)) {
-      selectedIds.forEach(id => updateOrderStatus(id, 'branch_transfering'));
+    if (!targetBranchId) {
+      alert("الرجاء تحديد الفرع أولاً من أعلى الشاشة");
+      return;
+    }
+    if (window.confirm(`هل أنت متأكد من تحويل ${selectedIds.length} طلبات إلى الفرع المحدد؟`)) {
+      const branch = branches.find(b => b.id === targetBranchId);
+      selectedIds.forEach(id => updateOrderStatus(id, 'branch_transfering', { branchName: branch?.name }));
       setSelectedIds([]);
       alert("تمت عملية التحويل بنجاح!");
     }
@@ -79,6 +92,21 @@ export default function MainWarehouse() {
              الطلبات الحالية في المخزن
            </h2>
            <div className="flex flex-col sm:flex-row items-center gap-4 flex-1 justify-end">
+             <div className="relative w-full sm:w-64">
+               <select
+                 value={targetBranchId}
+                 onChange={(e) => setTargetBranchId(e.target.value)}
+                 className="w-full bg-white border border-slate-200 rounded-xl py-2 px-4 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-sm appearance-none"
+               >
+                 <option value="">-- اختر الفرع للتحويل --</option>
+                 {branches.map(b => (
+                   <option key={b.id} value={b.id}>{b.name} - {b.city}</option>
+                 ))}
+               </select>
+               <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                 <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+               </div>
+             </div>
              {selectedIds.length > 0 && (
                <button 
                  onClick={handleTransferSelected}
@@ -110,7 +138,7 @@ export default function MainWarehouse() {
                     <input 
                       type="checkbox" 
                       className="w-5 h-5 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer"
-                      checked={selectedIds.length === filteredOrders.length && filteredOrders.length > 0}
+                      checked={selectedIds.length === filteredOrders.filter(o => o.status === 'main_warehouse').length && filteredOrders.filter(o => o.status === 'main_warehouse').length > 0}
                       onChange={handleSelectAll}
                     />
                   </div>
@@ -118,6 +146,7 @@ export default function MainWarehouse() {
                 <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
                 <th className="px-6 py-4 font-bold text-slate-600">رقم الشحنة</th>
                 <th className="px-6 py-4 font-bold text-slate-600">التاريخ</th>
+                <th className="px-6 py-4 font-bold text-slate-600">الحالة</th>
                 <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
                 <th className="px-6 py-4 font-bold text-slate-600">العميل</th>
                 <th className="px-6 py-4 font-bold text-slate-600">المحافظة</th>
@@ -138,7 +167,8 @@ export default function MainWarehouse() {
                       <div className="flex items-center justify-center">
                         <input 
                           type="checkbox" 
-                          className="w-5 h-5 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer"
+                          disabled={o.status === 'branch_transfering'}
+                          className="w-5 h-5 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
                           checked={selectedIds.includes(o.id)}
                           onChange={() => handleToggleSelect(o.id)}
                         />
@@ -147,6 +177,7 @@ export default function MainWarehouse() {
                     <td className="px-6 py-4 font-bold font-en text-[#0F3B73]">{(o.id || '').slice(0, 8)}</td>
                     <td className="px-6 py-4 text-sm font-bold text-slate-600 font-en">{o.trackingNumber || '-'}</td>
                     <td className="px-6 py-4 text-sm font-bold text-slate-500 font-en">{o.date}</td>
+                    <td className="px-6 py-4"><OrderStatusBadge status={o.status} /></td>
                     <td className="px-6 py-4 font-bold text-slate-800">{o.merchantName}</td>
                     <td className="px-6 py-4">
                       <div className="font-bold text-slate-800">{o.customerName}</div>
@@ -155,13 +186,17 @@ export default function MainWarehouse() {
                     <td className="px-6 py-4 font-bold text-slate-600">{o.province}</td>
                     <td className="px-6 py-4">
                         <div className="flex justify-center">
-                          <button 
-                            onClick={() => handleTransferToBranch(o.id)}
-                            className="bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors flex items-center gap-1"
-                          >
-                            <CheckCircle className="w-4 h-4" />
-                            تحويل للفرع
-                          </button>
+                          {o.status === 'branch_transfering' ? (
+                            <span className="text-slate-400 font-bold text-sm bg-slate-100 px-4 py-2 rounded-xl">تم التحويل (بانتظار الاستلام)</span>
+                          ) : (
+                            <button 
+                              onClick={() => handleTransferToBranch(o.id)}
+                              className="bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors flex items-center gap-1"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                              تحويل للفرع
+                            </button>
+                          )}
                         </div>
                     </td>
                   </tr>
