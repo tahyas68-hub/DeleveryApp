@@ -112,6 +112,8 @@ export default function DriverCommission() {
             <Calendar className="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input 
               type="date" 
+              lang="en"
+              dir="ltr"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
               className="w-full pr-10 pl-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-en text-sm"
@@ -125,6 +127,8 @@ export default function DriverCommission() {
             <Calendar className="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input 
               type="date" 
+              lang="en"
+              dir="ltr"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
               className="w-full pr-10 pl-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-en text-sm"

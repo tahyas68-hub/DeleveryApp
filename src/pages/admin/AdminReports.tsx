@@ -148,11 +148,11 @@ export default function AdminReports() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
             <span className="text-xs text-slate-500 font-bold">من</span>
-            <input type="date" className="text-sm bg-transparent border-none focus:outline-none font-en text-slate-800" />
+            <input type="date" lang="en" dir="ltr" className="text-sm bg-transparent border-none focus:outline-none font-en text-slate-800" />
           </div>
           <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
             <span className="text-xs text-slate-500 font-bold">إلى</span>
-            <input type="date" className="text-sm bg-transparent border-none focus:outline-none font-en text-slate-800" />
+            <input type="date" lang="en" dir="ltr" className="text-sm bg-transparent border-none focus:outline-none font-en text-slate-800" />
           </div>
         </div>
       </div>

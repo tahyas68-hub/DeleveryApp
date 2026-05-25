@@ -112,6 +112,8 @@ export default function PostponeOrder() {
               <div className="relative">
                 <input
                   type="date"
+                  lang="en"
+                  dir="ltr"
                   value={postponeDate}
                   onChange={(e) => setPostponeDate(e.target.value)}
                   className="w-full bg-white border-2 border-purple-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-en font-bold text-slate-800 text-lg"

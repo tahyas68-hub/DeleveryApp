@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Package, Search, Warehouse, CheckCircle } from 'lucide-react';
+import { Package, Search, Warehouse, CheckCircle, CheckSquare } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 
@@ -7,6 +7,7 @@ export default function MainWarehouse() {
   const { orders, updateOrderStatus } = useOrders();
   
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const mainWarehouseOrders = orders.filter(o => o.status === 'main_warehouse');
 
@@ -20,8 +21,31 @@ export default function MainWarehouse() {
            o.merchantName?.toLowerCase().includes(q);
   });
 
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedIds(filteredOrders.map(o => o.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
   const handleTransferToBranch = (id: string) => {
     updateOrderStatus(id, 'branch_transfering');
+  };
+
+  const handleTransferSelected = () => {
+    if (selectedIds.length === 0) return;
+    if (window.confirm(`هل أنت متأكد من تحويل ${selectedIds.length} طلبات إلى الفروع؟`)) {
+      selectedIds.forEach(id => updateOrderStatus(id, 'branch_transfering'));
+      setSelectedIds([]);
+      alert("تمت عملية التحويل بنجاح!");
+    }
   };
 
   return (
@@ -54,15 +78,26 @@ export default function MainWarehouse() {
              <Warehouse className="w-5 h-5 text-blue-600" />
              الطلبات الحالية في المخزن
            </h2>
-           <div className="relative w-full sm:w-64">
-             <Search className="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
-             <input 
-               type="text" 
-               placeholder="البحث في الطلبات..." 
-               value={searchQuery}
-               onChange={e => setSearchQuery(e.target.value)}
-               className="w-full bg-white border border-slate-200 rounded-xl py-2 pr-10 pl-4 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-sm"
-             />
+           <div className="flex flex-col sm:flex-row items-center gap-4 flex-1 justify-end">
+             {selectedIds.length > 0 && (
+               <button 
+                 onClick={handleTransferSelected}
+                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all active:scale-95"
+               >
+                 <CheckSquare className="w-5 h-5" />
+                 تحويل {selectedIds.length} طلبات محددة
+               </button>
+             )}
+             <div className="relative w-full sm:w-64">
+               <Search className="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+               <input 
+                 type="text" 
+                 placeholder="البحث في الطلبات..." 
+                 value={searchQuery}
+                 onChange={e => setSearchQuery(e.target.value)}
+                 className="w-full bg-white border border-slate-200 rounded-xl py-2 pr-10 pl-4 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-sm"
+               />
+             </div>
            </div>
         </div>
         
@@ -70,6 +105,16 @@ export default function MainWarehouse() {
           <table className="w-full text-right whitespace-nowrap">
             <thead className="bg-slate-50 border-b border-slate-100">
               <tr>
+                <th className="px-6 py-4">
+                  <div className="flex items-center justify-center">
+                    <input 
+                      type="checkbox" 
+                      className="w-5 h-5 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer"
+                      checked={selectedIds.length === filteredOrders.length && filteredOrders.length > 0}
+                      onChange={handleSelectAll}
+                    />
+                  </div>
+                </th>
                 <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
                 <th className="px-6 py-4 font-bold text-slate-600">رقم الشحنة</th>
                 <th className="px-6 py-4 font-bold text-slate-600">التاريخ</th>
@@ -82,13 +127,23 @@ export default function MainWarehouse() {
             <tbody className="divide-y divide-slate-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-slate-400 font-bold">
+                  <td colSpan={8} className="px-6 py-12 text-center text-slate-400 font-bold">
                     لا يوجد طلبات في المخزن الرئيسي حالياً
                   </td>
                 </tr>
               ) : (
                 filteredOrders.map(o => (
-                  <tr key={o.id} className="hover:bg-slate-50 transition-colors">
+                  <tr key={o.id} className={`hover:bg-slate-50 transition-colors ${selectedIds.includes(o.id) ? 'bg-blue-50/50' : ''}`}>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center">
+                        <input 
+                          type="checkbox" 
+                          className="w-5 h-5 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer"
+                          checked={selectedIds.includes(o.id)}
+                          onChange={() => handleToggleSelect(o.id)}
+                        />
+                      </div>
+                    </td>
                     <td className="px-6 py-4 font-bold font-en text-[#0F3B73]">{(o.id || '').slice(0, 8)}</td>
                     <td className="px-6 py-4 text-sm font-bold text-slate-600 font-en">{o.trackingNumber || '-'}</td>
                     <td className="px-6 py-4 text-sm font-bold text-slate-500 font-en">{o.date}</td>
