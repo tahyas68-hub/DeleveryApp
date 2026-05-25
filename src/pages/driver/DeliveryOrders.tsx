@@ -11,7 +11,11 @@ export default function DeliveryOrders() {
   const navigate = useNavigate();
   const { orders, updateOrderStatus } = useOrders();
   const { getDriverCommission } = useSettings();
-  const driverOrders = orders.filter(o => o.status === 'driver_assigned' && o.driverId === user?.id);
+  const driverOrders = orders.filter(
+    o => 
+      (o.status === 'driver_assigned' || o.status === 'postponed' || o.status === 'returned' || o.status === 'returned_partial') && 
+      o.driverId === user?.id
+  );
   
   const [searchTerm, setSearchTerm] = useState('');
 

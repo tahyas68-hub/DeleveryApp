@@ -9,7 +9,10 @@ export default function PostponeOrder() {
   const { orders, updateOrderStatus } = useOrders();
   const location = useLocation();
   const navigate = useNavigate();
-  const driverOrders = orders.filter(o => o.status === 'driver_assigned' && o.driverId === user?.id);
+  const driverOrders = orders.filter(o => 
+    (o.status === 'driver_assigned' || o.status === 'postponed' || o.status === 'returned' || o.status === 'returned_partial') && 
+    o.driverId === user?.id
+  );
 
   const [selectedOrderId, setSelectedOrderId] = useState<string>(location.state?.orderId || '');
   const [reason, setReason] = useState<string>('');
