@@ -72,14 +72,14 @@ const parseLocal = (key: string, def?: any) => {
 };
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [defaultDriverCommission, setDefaultDriverCommission] = useFirebaseSync<number>('settings', 'driverCommission', parseInt(localStorage.getItem('app_default_driver_commission') || '3000'));
+  const [defaultDriverCommission, setDefaultDriverCommission] = useFirebaseSync<number>('settings', 'driverCommission', parseInt(localStorage.getItem('app_default_driver_commission') || '0'));
   const [governorates, setGovernorates] = useFirebaseSync<GovernoratePrice[]>('settings', 'governorates', parseLocal('app_governorates', defaultGovernorates));
   const [merchants, setMerchants] = useFirebaseSync<MerchantPrice[]>('settings', 'merchants', parseLocal('app_merchants_pricing', []));
   const [requireMerchantApproval, setRequireMerchantApproval] = useFirebaseSync<boolean>('settings', 'requireMerchantApproval', localStorage.getItem('app_require_merchant_approval') === 'true' || true);
-  const [companyName, setCompanyName] = useFirebaseSync<string>('settings', 'companyName', localStorage.getItem('app_company_name') || 'شركة الراصد للتوصيل السريع');
+  const [companyName, setCompanyName] = useFirebaseSync<string>('settings', 'companyName', localStorage.getItem('app_company_name') || '');
   const [companyLogo, setCompanyLogo] = useFirebaseSync<string>('settings', 'companyLogo', localStorage.getItem('app_company_logo') || '');
-  const [companyPhone, setCompanyPhone] = useFirebaseSync<string>('settings', 'companyPhone', localStorage.getItem('app_company_phone') || '07XXXXXXXXX');
-  const [companyAddress, setCompanyAddress] = useFirebaseSync<string>('settings', 'companyAddress', localStorage.getItem('app_company_address') || 'بغداد، الكرادة');
+  const [companyPhone, setCompanyPhone] = useFirebaseSync<string>('settings', 'companyPhone', localStorage.getItem('app_company_phone') || '');
+  const [companyAddress, setCompanyAddress] = useFirebaseSync<string>('settings', 'companyAddress', localStorage.getItem('app_company_address') || '');
 
   const updateGovernorate = (id: number, data: Partial<GovernoratePrice>) => {
     setGovernorates(prev => (prev || []).map(g => g.id === id ? { ...g, ...data } : g));
@@ -110,7 +110,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   };
 
   const getDriverCommission = (_province?: string) => {
-    return defaultDriverCommission || 0;
+    return typeof defaultDriverCommission === 'number' ? defaultDriverCommission : 0;
   };
 
   const bulkUpdateGovernorates = (newGovs: GovernoratePrice[]) => {
@@ -122,7 +122,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       governorates: governorates || defaultGovernorates, updateGovernorate, bulkUpdateGovernorates, 
       merchants: merchants || [], updateMerchant,
       getDeliveryFee, getDriverCommission, 
-      defaultDriverCommission: defaultDriverCommission || 3000, updateDefaultDriverCommission: setDefaultDriverCommission,
+      defaultDriverCommission: typeof defaultDriverCommission === 'number' ? defaultDriverCommission : 0, updateDefaultDriverCommission: setDefaultDriverCommission,
       requireMerchantApproval: requireMerchantApproval ?? true, updateRequireMerchantApproval: setRequireMerchantApproval,
       companyName: companyName || '', updateCompanyName: setCompanyName,
       companyLogo: companyLogo || '', updateCompanyLogo: setCompanyLogo,
