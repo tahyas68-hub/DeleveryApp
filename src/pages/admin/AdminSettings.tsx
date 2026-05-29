@@ -171,16 +171,19 @@ export default function AdminSettings() {
         }];
         await setDoc(doc(db, 'users', 'all'), { value: initUsers });
         
-        await deleteDoc(doc(db, 'settings', 'driverCommission'));
+        await setDoc(doc(db, 'settings', 'driverCommission'), { value: 0 });
+        await setDoc(doc(db, 'settings', 'companyName'), { value: '' });
+        await setDoc(doc(db, 'settings', 'companyLogo'), { value: '' });
+        await setDoc(doc(db, 'settings', 'companyPhone'), { value: '' });
+        await setDoc(doc(db, 'settings', 'companyAddress'), { value: '' });
+        // Keeping governorates and merchants since deleting them causes fallback to defaults anyway, 
+        // but maybe we just delete them to reset to defaults. Deleting them might trigger useFirebaseSync to re-write defaults
         await deleteDoc(doc(db, 'settings', 'governorates'));
         await deleteDoc(doc(db, 'settings', 'merchants'));
         await deleteDoc(doc(db, 'settings', 'requireMerchantApproval'));
-        await deleteDoc(doc(db, 'settings', 'companyName'));
-        await deleteDoc(doc(db, 'settings', 'companyLogo'));
-        await deleteDoc(doc(db, 'settings', 'companyPhone'));
-        await deleteDoc(doc(db, 'settings', 'companyAddress'));
         
-        alert("تم مسح محتويات قاعدة البيانات وإعادتها للوضع الافتراضي بنجاح!");
+        alert("تم مسح محتويات قاعدة البيانات وإعادتها للوضع الافتراضي بنجاح! سيتم إعادة تحميل الصفحة للتطبيق.");
+        window.location.reload();
         window.location.replace('/');
       } catch (err) {
         console.error(err);

@@ -9,6 +9,7 @@ import { PrintHeader } from '../../components/PrintHeader';
 export default function MerchantFinance() {
   const { user } = useAuth();
   const { orders } = useOrders();
+  const merchantOrders = orders.filter(o => o.merchantId === user?.id);
 
   // Filter out returned orders for pending calculation if needed. 
   // Let's define the groups explicitly:
@@ -16,22 +17,22 @@ export default function MerchantFinance() {
   const deliveredStatuses = ['delivered', 'delivered_partial', 'returned_partial'];
 
   // Current balance: delivered and partial AND NOT PAID
-  const currentBalance = orders
+  const currentBalance = merchantOrders
     .filter(o => deliveredStatuses.includes(o.status) && o.financialStatus !== 'merchant_paid')
     .reduce((sum, o) => sum + (o.amount || 0), 0);
 
   // Pending balance: not delivered, not totally returned
-  const pendingAmount = orders
+  const pendingAmount = merchantOrders
     .filter(o => pendingStatuses.includes(o.status))
     .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
 
   // Paid withdrawals
-  const withdrawals = orders
+  const withdrawals = merchantOrders
     .filter(o => deliveredStatuses.includes(o.status) && o.financialStatus === 'merchant_paid')
     .reduce((sum, o) => sum + (o.amount || 0), 0);
 
   // Generate transactions from Delivered & Returned_Partial orders
-  const transactions = orders
+  const transactions = merchantOrders
     .filter(o => deliveredStatuses.includes(o.status) || o.status === 'returned')
     .map((o) => {
       let typeStr = 'توصيل ناجح';

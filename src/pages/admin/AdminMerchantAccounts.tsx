@@ -43,7 +43,7 @@ export default function AdminMerchantAccounts() {
   const merchantsWithDynamicBalance = merchants.map(m => {
     const merchantOrders = orders.filter(
       (o) => (o.merchantId === m.id || o.merchantName === m.name) && 
-      ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status)
+      ['delivered', 'delivered_partial'].includes(o.status)
     );
 
     // Calculate dynamic balance from orders with financialStatus !== 'merchant_paid'
@@ -95,7 +95,7 @@ export default function AdminMerchantAccounts() {
 
     // Update orders statuses
     orders
-      .filter((o) => (o.merchantId === settleMerchant.id || o.merchantName === settleMerchant.name) && ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status) && o.financialStatus !== 'merchant_paid')
+      .filter((o) => (o.merchantId === settleMerchant.id || o.merchantName === settleMerchant.name) && ['delivered', 'delivered_partial'].includes(o.status) && o.financialStatus !== 'merchant_paid')
       .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'merchant_paid' }));
 
     // Legacy update to user profile balance
@@ -116,7 +116,7 @@ export default function AdminMerchantAccounts() {
       // Find all completed (delivered) orders for this merchant
       const merchantOrders = orders.filter(
         (o) => (o.merchantId === m.id || o.merchantName === m.name) && 
-        ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status)
+        ['delivered', 'delivered_partial'].includes(o.status)
       );
 
       // Sum values of completed orders for the merchant
@@ -308,7 +308,7 @@ export default function AdminMerchantAccounts() {
                     </thead>
                     <tbody className="divide-y divide-slate-200 bg-white">
                       {orders
-                        .filter(o => (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name) && ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status))
+                        .filter(o => (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name) && ['delivered', 'delivered_partial'].includes(o.status))
                         .length === 0 ? (
                         <tr>
                           <td colSpan={7} className="p-8 text-center text-slate-400 font-bold text-sm">
@@ -317,7 +317,7 @@ export default function AdminMerchantAccounts() {
                         </tr>
                       ) : (
                         orders
-                          .filter(o => (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name) && ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status))
+                          .filter(o => (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name) && ['delivered', 'delivered_partial'].includes(o.status))
                           .map((o, idx) => {
                             const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.totalAmount || o.amount || 0);
                             const fee = o.deliveryFee || 0;
@@ -346,7 +346,7 @@ export default function AdminMerchantAccounts() {
                     <span className="text-slate-400 font-black text-xs block mb-1">إجمالي المبالغ المحصلة</span>
                     <span className="text-slate-800 font-black text-2xl font-en">
                       {orders
-                        .filter(o => (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name) && ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status))
+                        .filter(o => (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name) && ['delivered', 'delivered_partial'].includes(o.status))
                         .reduce((sum, o) => {
                           const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.totalAmount || o.amount || 0);
                           return sum + collected;

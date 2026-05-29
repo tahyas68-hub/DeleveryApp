@@ -16,6 +16,7 @@ export default function MerchantDashboard() {
   const { user, logout } = useAuth();
   const { orders, addOrder, deleteOrder } = useOrders();
   const { getDeliveryFee, governorates, requireMerchantApproval } = useSettings();
+  const merchantOrders = orders.filter(o => o.merchantId === user?.id);
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'all');
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
@@ -36,7 +37,7 @@ export default function MerchantDashboard() {
   const stats = [
     {
       title: 'بحوزة المندوب',
-      count: orders.filter(o => o.status === 'driver_assigned').length,
+      count: merchantOrders.filter(o => o.status === 'driver_assigned').length,
       icon: <Truck className="w-8 h-8 text-black/50" />,
       bg: 'bg-[#ffff00]', // Bright Yellow
       textColor: 'text-black',
@@ -44,7 +45,7 @@ export default function MerchantDashboard() {
     },
     {
       title: 'في المخزن الرئيسي',
-      count: orders.filter(o => o.status === 'main_warehouse').length,
+      count: merchantOrders.filter(o => o.status === 'main_warehouse').length,
       icon: <Warehouse className="w-8 h-8 text-black/50" />,
       bg: 'bg-[#fbc02d]',
       textColor: 'text-black',
@@ -52,7 +53,7 @@ export default function MerchantDashboard() {
     },
     {
       title: 'في مخزن الفرع',
-      count: orders.filter(o => o.status === 'branch_warehouse').length,
+      count: merchantOrders.filter(o => o.status === 'branch_warehouse').length,
       icon: <Building2 className="w-8 h-8 text-black/50" />,
       bg: 'bg-[#f57f17]',
       textColor: 'text-black',
@@ -60,7 +61,7 @@ export default function MerchantDashboard() {
     },
     {
       title: 'قيد التنفيذ',
-      count: orders.filter(o => ['merchant_pending', 'branch_transfering'].includes(o.status)).length,
+      count: merchantOrders.filter(o => ['merchant_pending', 'branch_transfering'].includes(o.status)).length,
       icon: <Star className="w-8 h-8 text-black/50" />,
       bg: 'bg-[#ffeb3b]', // Yellow
       textColor: 'text-black',
@@ -68,7 +69,7 @@ export default function MerchantDashboard() {
     },
     {
       title: 'مؤجل',
-      count: orders.filter(o => o.status === 'postponed').length,
+      count: merchantOrders.filter(o => o.status === 'postponed').length,
       icon: <Clock className="w-8 h-8 text-black/50" />,
       bg: 'bg-[#ff9800]', // Orange
       textColor: 'text-black',
@@ -76,7 +77,7 @@ export default function MerchantDashboard() {
     },
     {
       title: 'تم التسليم',
-      count: orders.filter(o => o.status === 'delivered').length,
+      count: merchantOrders.filter(o => o.status === 'delivered').length,
       icon: <Building2 className="w-8 h-8 text-white/50" />,
       bg: 'bg-[#4caf50]', // Green
       textColor: 'text-white',
@@ -84,7 +85,7 @@ export default function MerchantDashboard() {
     },
     {
       title: 'واصل جزئي',
-      count: orders.filter(o => o.status === 'delivered_partial').length,
+      count: merchantOrders.filter(o => o.status === 'delivered_partial').length,
       icon: <Package className="w-8 h-8 text-white/50" />,
       bg: 'bg-[#388e3c]', // Dark Green
       textColor: 'text-white',
@@ -92,7 +93,7 @@ export default function MerchantDashboard() {
     },
     {
       title: 'رفض',
-      count: orders.filter(o => o.status === 'returned').length,
+      count: merchantOrders.filter(o => o.status === 'returned').length,
       icon: <RotateCcw className="w-8 h-8 text-white/50" />,
       bg: 'bg-[#f44336]', // Red
       textColor: 'text-white',
@@ -100,7 +101,7 @@ export default function MerchantDashboard() {
     },
     {
       title: 'راجع مخزن',
-      count: orders.filter(o => o.status === 'returned_to_merchant').length,
+      count: merchantOrders.filter(o => o.status === 'returned_to_merchant').length,
       icon: <RotateCcw className="w-8 h-8 text-white/50" />,
       bg: 'bg-[#9c27b0]', // Purple
       textColor: 'text-white',
@@ -108,7 +109,7 @@ export default function MerchantDashboard() {
     },
     {
       title: 'راجع جزئي',
-      count: orders.filter(o => o.status === 'returned_partial').length,
+      count: merchantOrders.filter(o => o.status === 'returned_partial').length,
       icon: <RotateCcw className="w-8 h-8 text-white/50" />,
       bg: 'bg-[#ab47bc]', // Lighter Purple
       textColor: 'text-white',
@@ -135,7 +136,7 @@ export default function MerchantDashboard() {
 
   // Filter and Search Logic
   let filteredOrders = useMemo(() => {
-    return orders.filter(order => {
+    return merchantOrders.filter(order => {
       let matchesStatus = true;
       if (activeTab && activeTab !== 'all') {
         if (activeTab === 'pending') {
@@ -151,7 +152,7 @@ export default function MerchantDashboard() {
         order.id?.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesStatus && matchesSearch;
     });
-  }, [orders, activeTab, searchQuery, queryStatus]);
+  }, [merchantOrders, activeTab, searchQuery, queryStatus]);
 
   // Selection Handlers
   const toggleSelectAll = () => {
@@ -299,7 +300,7 @@ export default function MerchantDashboard() {
                      <p className="font-bold text-base opacity-90 tracking-wide mt-1">الكل</p>
                      <div><Package className="w-8 h-8 opacity-50" /></div>
                    </div>
-                   <h2 className="text-4xl font-black text-right">{orders.length}</h2>
+                   <h2 className="text-4xl font-black text-right">{merchantOrders.length}</h2>
                 </div>
               </div>
               

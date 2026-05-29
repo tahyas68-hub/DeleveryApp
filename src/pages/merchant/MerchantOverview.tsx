@@ -12,11 +12,12 @@ import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 export default function MerchantOverview() {
   const { user } = useAuth();
   const { orders } = useOrders();
+  const merchantOrders = orders.filter(o => o.merchantId === user?.id);
   
-  const latestOrders = orders.slice(0, 5);
+  const latestOrders = merchantOrders.slice(0, 5);
 
-  const activeOrdersCount = orders.filter(o => o.status !== 'delivered' && o.status !== 'returned').length;
-  const completedOrdersCount = orders.filter(o => o.status === 'delivered').length;
+  const activeOrdersCount = merchantOrders.filter(o => o.status !== 'delivered' && o.status !== 'returned').length;
+  const completedOrdersCount = merchantOrders.filter(o => o.status === 'delivered').length;
 
   return (
     <div className="min-h-screen bg-[#f8fafc] -m-4 lg:-m-8 p-6 md:p-10 space-y-10 text-right overflow-x-hidden" dir="rtl">

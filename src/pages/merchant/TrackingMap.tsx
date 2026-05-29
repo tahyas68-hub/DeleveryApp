@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Search, MapPin, Truck, RefreshCcw, Navigation2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { useUsers } from '../../context/UserContext';
 import { useOrders } from '../../context/OrderContext';
 
 export default function TrackingMap() {
   const { users } = useUsers();
+  const { user } = useAuth();
   const { orders } = useOrders();
+  const merchantOrders = orders.filter(o => o.merchantId === user?.id);
   const [activeDriver, setActiveDriver] = useState<string | null>(null);
 
   const activeDrivers = users.filter(d => d.role === 'driver' && d.status !== 'offline');
@@ -99,7 +102,7 @@ export default function TrackingMap() {
         <div className={`bg-white border-r border-slate-200 shadow-xl overflow-y-auto transition-all duration-300 ${activeDriver ? 'w-80' : 'w-0 border-r-0'}`}>
           {activeDriver && (() => {
             const driver = activeDrivers.find(d => d.id === activeDriver)!;
-            const driverOrders = orders.filter(o => o.driverId === driver.id);
+            const driverOrders = merchantOrders.filter(o => o.driverId === driver.id);
 
             return (
               <div className="p-4 w-80">

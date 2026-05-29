@@ -36,7 +36,7 @@ export default function WarehouseDriverIncomes() {
   const driverAccounts = driversList.map((driver) => {
     const driverOrders = orders.filter(o => 
       o.driverId === driver.id && 
-      (o.status === 'delivered' || o.status === 'returned_partial' || o.status === 'delivered_partial') &&
+      (o.status === 'delivered' || o.status === 'delivered_partial') &&
       o.financialStatus === 'pending'
     );
     

@@ -62,13 +62,16 @@ export default function PartialDelivery() {
     addOrder({
       id: `${selectedOrder.id}-P`,
       trackingNumber: `${selectedOrder.trackingNumber}-P`,
+      merchantId: selectedOrder.merchantId,
       merchantName: selectedOrder.merchantName,
       customerName: selectedOrder.customerName,
       customerPhone: selectedOrder.customerPhone,
       address: selectedOrder.address,
       province: selectedOrder.province,
       pieces: selectedOrder.pieces,
-      
+      driverId: user?.id,
+      driverName: user?.name,
+
       amount: remainderTotal > 0 ? remainderTotal : 0,
       totalAmount: remainderTotal > 0 ? remainderTotal : 0,
       orderAmount: remainderTotal > 0 ? remainderTotal : 0,

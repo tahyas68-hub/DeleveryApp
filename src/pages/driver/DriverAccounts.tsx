@@ -17,7 +17,7 @@ export default function DriverAccounts() {
 
   // 1. Liability Orders (Pending)
   const liabilityOrders = orders.filter(o => 
-    (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') && 
+    (o.status === 'delivered' || o.status === 'delivered_partial') && 
     o.financialStatus === 'pending'
   );
 
@@ -30,7 +30,7 @@ export default function DriverAccounts() {
 
   // Delivered to company
   const deliveredCompanyOrders = orders.filter(o => 
-    (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') && 
+    (o.status === 'delivered' || o.status === 'delivered_partial') && 
     o.financialStatus !== 'pending'
   );
 
