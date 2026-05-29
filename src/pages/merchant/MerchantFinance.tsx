@@ -14,7 +14,7 @@ export default function MerchantFinance() {
   // Filter out returned orders for pending calculation if needed. 
   // Let's define the groups explicitly:
   const pendingStatuses = ['merchant_pending', 'main_warehouse', 'branch_transfering', 'branch_warehouse', 'driver_assigned', 'postponed'];
-  const deliveredStatuses = ['delivered', 'delivered_partial', 'returned_partial'];
+  const deliveredStatuses = ['delivered', 'delivered_partial'];
 
   // Current balance: delivered and partial AND NOT PAID
   const currentBalance = merchantOrders

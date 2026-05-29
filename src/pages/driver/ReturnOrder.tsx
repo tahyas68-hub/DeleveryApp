@@ -28,11 +28,7 @@ export default function ReturnOrder() {
 
     updateOrderStatus(selectedOrder.id, 'returned', {
       collectedAmount: 0,
-       deliveryFee: 0,
-       merchantDue: 0,
-       driverCommission: 0,
-       companyProfit: 0,
-       financialStatus: 'pending' // Meaning there's nothing to process financially
+      financialStatus: 'pending' // Meaning there's nothing to process financially
     });
     setSelectedOrderId('');
     setReason('');
