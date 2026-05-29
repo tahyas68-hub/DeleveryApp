@@ -126,6 +126,17 @@ export default function MainWarehouse() {
                  className="w-full bg-white border border-slate-200 rounded-xl py-2 pr-10 pl-4 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-sm"
                />
              </div>
+             <button 
+               onClick={() => {
+                 import('../../utils/excelExport').then(({ exportOrdersToExcel }) => {
+                   exportOrdersToExcel(filteredOrders, 'الطلبات : قيد الشحن');
+                 });
+               }}
+               className="bg-[#0F3B73] hover:bg-[#0F3B73]/90 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shrink-0 shadow-lg shadow-[#0F3B73]/20 text-sm"
+             >
+               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>
+               حفظ إكسل
+             </button>
            </div>
         </div>
         

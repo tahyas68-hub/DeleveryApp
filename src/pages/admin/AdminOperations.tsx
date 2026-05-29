@@ -169,7 +169,7 @@ export default function AdminOperations() {
       </div>
       
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-        <div className="p-4 border-b border-slate-100 bg-slate-50">
+        <div className="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
           <div className="relative w-full max-w-sm">
             <Search className="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
             <input 
@@ -180,6 +180,17 @@ export default function AdminOperations() {
               className="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-sm"
             />
           </div>
+           <button 
+             onClick={() => {
+               import('../../utils/excelExport').then(({ exportOrdersToExcel }) => {
+                 exportOrdersToExcel(filteredOrders, 'الطلبات : قيد الشحن');
+               });
+             }}
+             className="bg-[#0F3B73] hover:bg-[#0F3B73]/90 text-white px-6 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0F3B73]/20 text-sm"
+           >
+             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>
+             حفظ إكسل
+           </button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-right text-sm">

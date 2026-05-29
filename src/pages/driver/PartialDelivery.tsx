@@ -61,7 +61,7 @@ export default function PartialDelivery() {
     // No delivery fee, no driver commission
     addOrder({
       id: `${selectedOrder.id}-P`,
-      trackingNumber: `${selectedOrder.trackingNumber}-P`,
+      trackingNumber: selectedOrder.trackingNumber,
       merchantId: selectedOrder.merchantId,
       merchantName: selectedOrder.merchantName,
       customerName: selectedOrder.customerName,
