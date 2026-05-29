@@ -23,7 +23,7 @@ export default function MerchantFinance() {
   // Pending balance: not delivered, not totally returned
   const pendingAmount = orders
     .filter(o => pendingStatuses.includes(o.status))
-    .reduce((sum, o) => sum + (o.amount || 0), 0);
+    .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
 
   // Paid withdrawals
   const withdrawals = orders
