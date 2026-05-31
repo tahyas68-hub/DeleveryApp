@@ -279,6 +279,9 @@ export default function MerchantDashboard() {
             onClick={() => {
                import('../../utils/excelExport').then(({ exportOrdersToExcel }) => {
                  exportOrdersToExcel(filteredOrders, 'الطلبات : قيد الشحن');
+               }).catch(err => {
+                 console.error(err);
+                 alert('حدث خطأ أثناء التصدير: ' + err.message);
                });
             }}
             className="bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-600/20"

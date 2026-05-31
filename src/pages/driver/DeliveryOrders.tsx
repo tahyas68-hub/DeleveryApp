@@ -57,6 +57,9 @@ export default function DeliveryOrders() {
            onClick={() => {
              import('../../utils/excelExport').then(({ exportOrdersToExcel }) => {
                exportOrdersToExcel(filteredOrders, 'الطلبات قيد التوصيل');
+             }).catch(err => {
+               console.error(err);
+               alert('حدث خطأ أثناء التصدير: ' + err.message);
              });
            }}
            className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shrink-0 shadow-lg shadow-emerald-500/20"
