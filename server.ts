@@ -8,7 +8,19 @@ const app = express();
 const PORT = 3000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+
+const excelCache = new Map<string, { buffer: Buffer, fileName: string, timestamp: number }>();
+
+// Clean up old cached files periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of excelCache.entries()) {
+    if (now - value.timestamp > 1000 * 60 * 10) { // 10 minutes
+      excelCache.delete(key);
+    }
+  }
+}, 1000 * 60 * 5);
 
 // --- Setup SQLite Database ---
 const db = new Database('database.sqlite', { verbose: console.log });
@@ -74,6 +86,34 @@ app.post('/api/orders', (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Failed to create order' });
   }
+});
+
+// Upload Excel Blob (Base64) to get a downloadable link
+app.post('/api/upload-excel', (req, res) => {
+  try {
+    const { base64, fileName } = req.body;
+    if (!base64 || !fileName) {
+      return res.status(400).json({ error: 'Missing base64 or fileName' });
+    }
+    const id = Date.now().toString(36) + Math.random().toString(36).substring(2);
+    const buffer = Buffer.from(base64, 'base64');
+    excelCache.set(id, { buffer, fileName, timestamp: Date.now() });
+    res.json({ downloadUrl: `/api/download-excel/${id}` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to upload export' });
+  }
+});
+
+app.get('/api/download-excel/:id', (req, res) => {
+  const file = excelCache.get(req.params.id);
+  if (!file) {
+    return res.status(404).send('File not found or expired');
+  }
+  // This header forces the browser/WebView native DownloadManager to start downloading
+  res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(file.fileName)}"`);
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.send(file.buffer);
 });
 
 // --- Vite Integration ---

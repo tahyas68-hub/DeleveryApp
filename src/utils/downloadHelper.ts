@@ -7,12 +7,34 @@ export const handleFileDownload = async (wb: XLSX.WorkBook, fileName: string) =>
     const isWebView = /wv|Android.*Version\/[0-9].[0-9]/i.test(userAgent) || /AppCreator24/i.test(userAgent);
     
     if (isWebView) {
-      const currentUrl = window.location.href;
-      prompt(
-        "التطبيق الحالي لا يدعم التنزيل المباشر للملفات.\n\nيرجى نسخ الرابط أدناه وفتحه في متصفح خارجي (مثل جوجل كروم) لتتمكن من تصدير الإكسل:",
-        currentUrl
-      );
-      return;
+      alert("جاري تجهيز وتنزيل الملف... يرجى الانتظار.");
+      try {
+        const base64 = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+        
+        const response = await fetch('/api/upload-excel', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            base64,
+            fileName
+          })
+        });
+        
+        const result = await response.json();
+        if (result.downloadUrl) {
+          // Open the native download link securely from our own backend
+          window.location.href = result.downloadUrl;
+        } else {
+          alert('فشل في استلام رابط التنزيل. الرجاء المحاولة مرة أخرى.');
+        }
+        return;
+      } catch (apiError) {
+        console.error('Upload to server failed:', apiError);
+        alert('حدث خطأ في الاتصال بالخادم. فضلاً افتح النظام في متصفح جوجل كروم.');
+        return;
+      }
     }
 
     // Default web approach (Safe for Chrome, Safari, etc.)
