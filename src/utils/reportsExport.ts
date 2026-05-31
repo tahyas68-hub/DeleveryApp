@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx-js-style';
 
-export const exportCustomTableToExcel = (title: string, headers: string[], data: any[][]) => {
+export const exportCustomTableToExcel = async (title: string, headers: string[], data: any[][]) => {
   try {
     const dateStr = new Date().toISOString().split('T')[0];
     const fullTitle = `${title}\nالتاريخ: ${dateStr}`;
@@ -77,7 +77,32 @@ export const exportCustomTableToExcel = (title: string, headers: string[], data:
     XLSX.utils.book_append_sheet(wb, ws, title.substring(0, 31));
 
     const safeTitle = title.replace(/[:\\/?*\[\]]/g, '_');
-    XLSX.writeFile(wb, `${safeTitle}.xlsx`);
+    const fileName = `${safeTitle}.xlsx`;
+
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const file = new File([blob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: fileName,
+        });
+        return;
+      } catch (err: any) {
+        console.error('Share error:', err);
+        if (err.name === 'AbortError') return;
+      }
+    }
+
+    const isAndroidWebView = /wv|Android.*Version\/[0-9].[0-9]/i.test(navigator.userAgent);
+    if (isAndroidWebView) {
+        alert('يبدو أن تطبيقك الحالي لا يدعم التنزيل المباشر أو مشاركة الملفات. يرجى فتح النظام في متصفح جوجل كروم لتتمكن من تصدير الإكسل.');
+        return;
+    }
+
+    XLSX.writeFile(wb, fileName);
   } catch (err: any) {
     console.error(err);
     alert('حدث خطأ أثناء تصدير التقرير: ' + err.message);
