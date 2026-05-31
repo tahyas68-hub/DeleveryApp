@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
 import { FileText, Download, BarChart2, Filter, Calendar, Search, Users, Truck, RotateCcw, Building2, TrendingUp, DollarSign } from 'lucide-react';
+import { useOrders } from '../../context/OrderContext';
+import { useUsers } from '../../context/UserContext';
+import { useSettings } from '../../context/SettingsContext';
+import { exportCustomTableToExcel } from '../../utils/reportsExport';
+import { exportOrdersToExcel } from '../../utils/excelExport';
 
 export default function AdminReports() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  
+  const { orders } = useOrders();
+  const { users } = useUsers();
+  const { getDeliveryFee, getDriverCommission } = useSettings();
 
   const reportsCategories = [
     { id: 'all', label: 'الكل' },
@@ -18,37 +27,108 @@ export default function AdminReports() {
       id: 1, 
       title: 'تقرير أرباح المنصة', 
       description: 'يحتوي على صافي أرباح المنصة من التوصيل والعمولات',
-      type: 'PDF / Excel',
+      type: 'Excel',
       category: 'finance',
       icon: <TrendingUp className="w-6 h-6 text-emerald-600" />,
-      bgIcon: 'bg-emerald-50'
+      bgIcon: 'bg-emerald-50',
+      onExport: () => {
+        const data = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial').map(o => {
+          const fee = o.deliveryFee || getDeliveryFee(o.province);
+          const comm = getDriverCommission(o.province);
+          const profit = fee - comm;
+          return [
+            o.id,
+            o.trackingNumber || '',
+            o.date,
+            fee,
+            comm,
+            profit
+          ];
+        });
+        exportCustomTableToExcel('تقرير أرباح المنصة', ['رقم الطلب', 'رقم الشحنة', 'التاريخ', 'أجرة التوصيل', 'عمولة المندوب', 'صافي الربح'], data);
+      }
     },
     { 
       id: 2, 
       title: 'كشف حساب التجار العام', 
       description: 'إحصائيات شاملة لمبيعات وحسابات كافة التجار',
-      type: 'PDF / Excel',
+      type: 'Excel',
       category: 'merchants',
       icon: <Users className="w-6 h-6 text-blue-600" />,
-      bgIcon: 'bg-blue-50'
+      bgIcon: 'bg-blue-50',
+      onExport: () => {
+        const merchants = users.filter(u => u.role === 'merchant');
+        const data = merchants.map(m => {
+          const mOrders = orders.filter(o => o.merchantId === m.id);
+          const totalOrders = mOrders.length;
+          const delivered = mOrders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial').length;
+          const returned = mOrders.filter(o => o.status === 'returned' || o.status === 'returned_partial').length;
+          
+          const currentBalance = mOrders
+             .filter(o => (o.status === 'delivered' || o.status === 'delivered_partial') && o.financialStatus !== 'merchant_paid')
+             .reduce((sum, o) => sum + (o.amount || 0), 0);
+          
+          return [
+            m.name,
+            totalOrders,
+            delivered,
+            returned,
+            currentBalance
+          ];
+        });
+        exportCustomTableToExcel('كشف حساب التجار العام', ['اسم التاجر', 'اجمالي الطلبات', 'الطلبات الواصلة', 'المرتجعات', 'المبالغ المعلقة (غير مدفوعة)'], data);
+      }
     },
     { 
       id: 3, 
       title: 'تقرير أداء المناديب', 
       description: 'إحصائيات التوصيل والطلبيات الناجحة والراجعة للمناديب',
-      type: 'PDF',
+      type: 'Excel',
       category: 'drivers',
       icon: <Truck className="w-6 h-6 text-purple-600" />,
-      bgIcon: 'bg-purple-50'
+      bgIcon: 'bg-purple-50',
+      onExport: () => {
+        const drivers = users.filter(u => u.role === 'driver');
+        const data = drivers.map(d => {
+          const dOrders = orders.filter(o => o.driverId === d.id);
+          const totalAssigned = dOrders.length;
+          const delivered = dOrders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial').length;
+          const pending = dOrders.filter(o => o.status === 'driver_assigned' || o.status === 'postponed').length;
+          const returned = dOrders.filter(o => o.status === 'returned' || o.status === 'returned_partial').length;
+          const commission = dOrders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial')
+             .reduce((sum, o) => sum + getDriverCommission(o.province), 0);
+             
+          return [
+            d.name,
+            totalAssigned,
+            delivered,
+            pending,
+            returned,
+            commission
+          ];
+        });
+        exportCustomTableToExcel('تقرير أداء المناديب', ['اسم المندوب', 'الطلبات المسندة', 'الواصلة', 'قيد التوصيل/مؤجلة', 'المرتجعة', 'الأرباح الكلية'], data);
+      }
     },
     { 
       id: 4, 
       title: 'تقرير الطلبيات المرتجعة', 
       description: 'تفاصيل المرتجعات الكلية والجزئية مع ذكر الأسباب الواردة',
-      type: 'PDF / CSV',
+      type: 'Excel',
       category: 'operations',
       icon: <RotateCcw className="w-6 h-6 text-red-600" />,
-      bgIcon: 'bg-red-50'
+      bgIcon: 'bg-red-50',
+      onExport: () => {
+        const returnedOrders = orders.filter(o => o.status === 'returned' || o.status === 'returned_partial');
+        exportCustomTableToExcel('الطلبات المرتجعة', ['رقم الطلب', 'رقم الشحنة', 'اسم التاجر', 'المندوب', 'المحافظة', 'حالة الراجع'], returnedOrders.map(o => [
+          o.id,
+          o.trackingNumber || o.id,
+          o.merchantName || '',
+          o.driverName || 'غير مسند',
+          o.province,
+          o.status === 'returned' ? 'مرتجع كلي' : 'مرتجع جزئي'
+        ]));
+      }
     },
     { 
       id: 5, 
@@ -57,34 +137,90 @@ export default function AdminReports() {
       type: 'Excel',
       category: 'operations',
       icon: <Building2 className="w-6 h-6 text-indigo-600" />,
-      bgIcon: 'bg-indigo-50'
+      bgIcon: 'bg-indigo-50',
+      onExport: () => {
+        const warehouseOrders = orders.filter(o => o.status === 'main_warehouse' || o.status === 'branch_warehouse' || o.status === 'branch_transfering');
+        exportCustomTableToExcel('حركة المخازن', ['رقم الطلب', 'رقم الشحنة', 'اسم التاجر', 'المكان الحالي'], warehouseOrders.map(o => [
+          o.id,
+          o.trackingNumber || o.id,
+          o.merchantName || '',
+          o.status === 'main_warehouse' ? 'المخزن الرئيسي' : o.status === 'branch_warehouse' ? 'مخزن الفرع' : 'قيد النقل للفرع'
+        ]));
+      }
     },
     { 
       id: 6, 
       title: 'التقرير المالي الشامل', 
       description: 'تقارير مالية مجمعة للواردات والصادرات والخزينة',
-      type: 'PDF',
+      type: 'Excel',
       category: 'finance',
       icon: <DollarSign className="w-6 h-6 text-teal-600" />,
-      bgIcon: 'bg-teal-50'
+      bgIcon: 'bg-teal-50',
+      onExport: () => {
+         const deliveredOrders = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial');
+         const totalSales = deliveredOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
+         const totalDeliveryFees = deliveredOrders.reduce((sum, o) => sum + (o.deliveryFee || getDeliveryFee(o.province)), 0);
+         const totalPlatformsProfits = deliveredOrders.reduce((sum, o) => {
+           const fee = o.deliveryFee || getDeliveryFee(o.province);
+           const comm = getDriverCommission(o.province);
+           return sum + (fee - comm);
+         }, 0);
+         const totalDriversCommissions = deliveredOrders.reduce((sum, o) => sum + getDriverCommission(o.province), 0);
+         
+         exportCustomTableToExcel('التقرير المالي الشامل', ['البيان', 'المبلغ (د.ع)'], [
+           ['اجمالي مبيعات التجار (الواصلة)', totalSales],
+           ['اجمالي أجور التوصيل', totalDeliveryFees],
+           ['اجمالي عمولات المناديب', totalDriversCommissions],
+           ['صافي أرباح المنصة', totalPlatformsProfits]
+         ]);
+      }
     },
     { 
       id: 7, 
       title: 'تقرير النشاط العام', 
       description: 'ملخص يومي/أسبوعي/شهري لأهم أحداث وحركات المنصة',
-      type: 'PDF',
+      type: 'Excel',
       category: 'all',
       icon: <BarChart2 className="w-6 h-6 text-orange-600" />,
-      bgIcon: 'bg-orange-50'
+      bgIcon: 'bg-orange-50',
+      onExport: () => {
+         const totalOrders = orders.length;
+         const delivered = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial').length;
+         const returned = orders.filter(o => o.status === 'returned' || o.status === 'returned_partial').length;
+         const pending = orders.filter(o => ['merchant_pending', 'main_warehouse', 'branch_warehouse'].includes(o.status)).length;
+         
+         exportCustomTableToExcel('النشاط العام', ['البيان', 'العدد'], [
+           ['إجمالي الطلبات في النظام', totalOrders],
+           ['الطلبات الواصلة', delivered],
+           ['الطلبات المرتجعة', returned],
+           ['طلبات قيد التنفيذ/مخازن', pending]
+         ]);
+      }
     },
     { 
       id: 8, 
       title: 'كشوفات الفروع', 
       description: 'تقارير الإنجاز والأرباح الخاصة بكل فرع على حدة',
-      type: 'PDF / Excel',
+      type: 'Excel',
       category: 'operations',
       icon: <FileText className="w-6 h-6 text-cyan-600" />,
-      bgIcon: 'bg-cyan-50'
+      bgIcon: 'bg-cyan-50',
+      onExport: () => {
+        const provinces = [...new Set(orders.map(o => o.province).filter(Boolean))];
+        const data = provinces.map(p => {
+           const pOrders = orders.filter(o => o.province === p);
+           const total = pOrders.length;
+           const delivered = pOrders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial').length;
+           const returned = pOrders.filter(o => o.status === 'returned' || o.status === 'returned_partial').length;
+           return [
+             p,
+             total,
+             delivered,
+             returned
+           ];
+        });
+        exportCustomTableToExcel('كشوفات الفروع', ['المحافظة (الفرع)', 'اجمالي الطلبات', 'الطلبات الواصلة', 'المرتجعات'], data);
+      }
     }
   ];
 
@@ -180,8 +316,11 @@ export default function AdminReports() {
                   <button className="flex-1 flex justify-center items-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 py-2.5 rounded-xl text-sm font-bold transition-colors">
                     <BarChart2 className="w-4 h-4" /> عرض
                   </button>
-                  <button className="flex-1 flex justify-center items-center gap-2 bg-[#0F3B73] hover:bg-[#0F3B73]/90 text-white py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm">
-                    <Download className="w-4 h-4" /> تصدير
+                  <button 
+                    onClick={() => report.onExport && report.onExport()}
+                    className="flex-1 flex justify-center items-center gap-2 bg-[#0F3B73] hover:bg-[#0F3B73]/90 text-white py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm"
+                  >
+                    <Download className="w-4 h-4" /> تصدير إكسل
                   </button>
                 </div>
              </div>
