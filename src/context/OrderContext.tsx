@@ -18,6 +18,7 @@ export type FinancialStatus =
   | 'pending'
   | 'collected_from_driver'
   | 'branch_transferred'
+  | 'admin_received'
   | 'merchant_paid'
   | 'driver_commission_paid';
 

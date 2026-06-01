@@ -46,10 +46,14 @@ export default function AdminMerchantAccounts() {
       ['delivered', 'delivered_partial'].includes(o.status)
     );
 
-    // Calculate dynamic balance from orders with financialStatus !== 'merchant_paid'
+    // Calculate dynamic balance from orders with financialStatus === 'admin_received'
     const dynamicBalance = merchantOrders.reduce((sum, o) => {
-      if (o.financialStatus !== 'merchant_paid') {
-        return sum + (o.amount || 0);
+      // Only pay merchant if HQ has received the funds, OR if there's legacy missing financialStatus context
+      if (o.financialStatus === 'admin_received' || (o.financialStatus !== 'merchant_paid' && o.financialStatus !== 'pending' && o.financialStatus !== 'collected_from_driver' && o.financialStatus !== 'branch_transferred')) {
+        const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.totalAmount || o.amount || 0);
+        const fee = o.deliveryFee || 0;
+        const net = o.merchantDue !== undefined ? o.merchantDue : (collected - fee);
+        return sum + net;
       }
       return sum;
     }, 0);
@@ -95,7 +99,12 @@ export default function AdminMerchantAccounts() {
 
     // Update orders statuses
     orders
-      .filter((o) => (o.merchantId === settleMerchant.id || o.merchantName === settleMerchant.name) && ['delivered', 'delivered_partial'].includes(o.status) && o.financialStatus !== 'merchant_paid')
+      .filter((o) => {
+        const isTarget = (o.merchantId === settleMerchant.id || o.merchantName === settleMerchant.name);
+        const isDelivered = ['delivered', 'delivered_partial'].includes(o.status);
+        const isReadyForPayment = o.financialStatus === 'admin_received' || (o.financialStatus !== 'merchant_paid' && o.financialStatus !== 'pending' && o.financialStatus !== 'collected_from_driver' && o.financialStatus !== 'branch_transferred');
+        return isTarget && isDelivered && isReadyForPayment;
+      })
       .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'merchant_paid' }));
 
     // Legacy update to user profile balance
@@ -121,9 +130,14 @@ export default function AdminMerchantAccounts() {
 
       // Sum values of completed orders for the merchant
       const totalEarned = merchantOrders.reduce((sum, o) => {
-        // Calculate merchant's share: orderAmount or collectedAmount minus delivery fee (if fee is paid by merchant)
-        // Usually, the merchant gets the net amount. Let's calculate: 
-        return sum + (o.amount || 0);
+        const isReadyForPayment = o.financialStatus === 'admin_received' || o.financialStatus === 'merchant_paid' || (o.financialStatus !== 'pending' && o.financialStatus !== 'collected_from_driver' && o.financialStatus !== 'branch_transferred');
+        if (isReadyForPayment) {
+          const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.totalAmount || o.amount || 0);
+          const fee = o.deliveryFee || 0;
+          const net = o.merchantDue !== undefined ? o.merchantDue : (collected - fee);
+          return sum + net;
+        }
+        return sum;
       }, 0);
 
       // Get all settlements paid to this merchant from transactions log
@@ -308,16 +322,26 @@ export default function AdminMerchantAccounts() {
                     </thead>
                     <tbody className="divide-y divide-slate-200 bg-white">
                       {orders
-                        .filter(o => (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name) && ['delivered', 'delivered_partial'].includes(o.status))
+                        .filter(o => {
+                          const isTarget = (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name);
+                          const isDelivered = ['delivered', 'delivered_partial'].includes(o.status);
+                          const isReadyForPayment = o.financialStatus === 'admin_received' || (o.financialStatus !== 'merchant_paid' && o.financialStatus !== 'pending' && o.financialStatus !== 'collected_from_driver' && o.financialStatus !== 'branch_transferred');
+                          return isTarget && isDelivered && isReadyForPayment;
+                        })
                         .length === 0 ? (
                         <tr>
                           <td colSpan={7} className="p-8 text-center text-slate-400 font-bold text-sm">
-                            لا توجد طلبات مسلمة ومكتملة مسجلة في هذا الكشف
+                            لا توجد طلبات مسلمة ومكتملة جاهزة للصرف في هذا الكشف
                           </td>
                         </tr>
                       ) : (
                         orders
-                          .filter(o => (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name) && ['delivered', 'delivered_partial'].includes(o.status))
+                          .filter(o => {
+                            const isTarget = (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name);
+                            const isDelivered = ['delivered', 'delivered_partial'].includes(o.status);
+                            const isReadyForPayment = o.financialStatus === 'admin_received' || (o.financialStatus !== 'merchant_paid' && o.financialStatus !== 'pending' && o.financialStatus !== 'collected_from_driver' && o.financialStatus !== 'branch_transferred');
+                            return isTarget && isDelivered && isReadyForPayment;
+                          })
                           .map((o, idx) => {
                             const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.totalAmount || o.amount || 0);
                             const fee = o.deliveryFee || 0;
@@ -346,7 +370,12 @@ export default function AdminMerchantAccounts() {
                     <span className="text-slate-400 font-black text-xs block mb-1">إجمالي المبالغ المحصلة</span>
                     <span className="text-slate-800 font-black text-2xl font-en">
                       {orders
-                        .filter(o => (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name) && ['delivered', 'delivered_partial'].includes(o.status))
+                        .filter(o => {
+                          const isTarget = (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name);
+                          const isDelivered = ['delivered', 'delivered_partial'].includes(o.status);
+                          const isReadyForPayment = o.financialStatus === 'admin_received' || (o.financialStatus !== 'merchant_paid' && o.financialStatus !== 'pending' && o.financialStatus !== 'collected_from_driver' && o.financialStatus !== 'branch_transferred');
+                          return isTarget && isDelivered && isReadyForPayment;
+                        })
                         .reduce((sum, o) => {
                           const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.totalAmount || o.amount || 0);
                           return sum + collected;

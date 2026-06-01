@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { DollarSign, Search, Building2, TrendingUp, Calendar } from 'lucide-react';
+import { DollarSign, Search, Building2, TrendingUp, Calendar, CheckCircle, FileText, X } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useBranches } from '../../context/BranchContext';
+import { useFinance } from '../../context/FinanceContext';
 
 export default function AdminBranchIncomes() {
-  const { orders } = useOrders();
+  const { orders, updateOrderStatus } = useOrders();
   const { branches } = useBranches();
+  const { addTransaction } = useFinance();
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedBranch, setSelectedBranch] = useState<any>(null);
 
   // Calculate incomes per branch
   const branchIncomes = branches.map(branch => {
@@ -33,6 +36,7 @@ export default function AdminBranchIncomes() {
     return {
       ...branch,
       deliveredOrdersCount: branchOrders.length,
+      branchOrders,
       totalAmount,
       driverCommissions,
       deliveryFees,
@@ -45,6 +49,28 @@ export default function AdminBranchIncomes() {
   );
 
   const grandTotal = branchIncomes.reduce((sum, b) => sum + b.netIncome, 0);
+
+  const handleConfirmAdminReceipt = () => {
+    if (!selectedBranch) return;
+    
+    // Add transaction
+    addTransaction({
+      type: 'receipt',
+      amount: selectedBranch.netIncome,
+      fromEntity: 'warehouse',
+      toEntity: 'admin',
+      referenceId: `admin-receipt-${Date.now()}`,
+      description: `تأكيد استلام موارد فرع ${selectedBranch.name}`,
+      userId: 'admin'
+    });
+
+    // Update order status
+    selectedBranch.branchOrders.forEach((o: any) => {
+      updateOrderStatus(o.id, o.status, { financialStatus: 'admin_received' });
+    });
+
+    setSelectedBranch(null);
+  };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto" dir="rtl">
@@ -91,12 +117,13 @@ export default function AdminBranchIncomes() {
                 <th className="px-6 py-4 font-bold text-slate-600">إجمالي المبالغ</th>
                 <th className="px-6 py-4 font-bold text-slate-600">عمولات المناديب المصروفة</th>
                 <th className="px-6 py-4 font-bold text-slate-600">صافي وارد الصندوق</th>
+                <th className="px-6 py-4 font-bold text-slate-600 text-center flex-1">الإجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredBranches.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-slate-500 font-bold">لا توجد فروع مطابقة للبحث</td>
+                  <td colSpan={7} className="px-6 py-12 text-center text-slate-500 font-bold">لا توجد فروع مطابقة للبحث</td>
                 </tr>
               ) : (
                 filteredBranches.map((branch) => (
@@ -114,6 +141,18 @@ export default function AdminBranchIncomes() {
                     <td className="px-6 py-4 font-en font-bold text-emerald-600">{branch.totalAmount.toLocaleString()}</td>
                     <td className="px-6 py-4 font-en font-bold text-red-500">{branch.driverCommissions.toLocaleString()}</td>
                     <td className="px-6 py-4 font-en font-black text-[#0F3B73]">{branch.netIncome.toLocaleString()}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center">
+                        <button 
+                          onClick={() => setSelectedBranch(branch)}
+                          disabled={branch.netIncome <= 0 || branch.deliveredOrdersCount === 0}
+                          className="flex items-center gap-1.5 bg-[#0F3B73] hover:bg-[#0A2A55] text-white px-3 py-2 rounded-xl font-bold text-xs transition-colors disabled:opacity-50"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                          تأكيد وقبض الواردات
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}
@@ -121,6 +160,53 @@ export default function AdminBranchIncomes() {
           </table>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {selectedBranch && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden relative">
+            <div className="p-6 border-b border-slate-100 bg-[#0F3B73]/5 flex items-center justify-between">
+              <h2 className="text-xl font-black text-[#0F3B73] flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                مستند قبض واردات الفرع
+              </h2>
+              <button 
+                onClick={() => setSelectedBranch(null)}
+                className="p-1 hover:bg-slate-200 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div className="bg-slate-50 p-4 rounded-xl text-center border border-slate-100">
+                <span className="text-slate-500 font-bold block mb-1">صافي وارد الصندوق من: {selectedBranch.name}</span>
+                <span className="text-3xl font-black text-[#0F3B73] font-en">{selectedBranch.netIncome.toLocaleString()} <span className="text-sm font-sans">د.ع</span></span>
+              </div>
+              
+              <div className="text-slate-600 text-sm font-bold bg-amber-50 p-3 rounded-lg border border-amber-100 flex items-start gap-2">
+                <TrendingUp className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                <span>بانجاز هذه العملية يتم احتساب المبالغ المستحقة للتاجر وتكون جاهزة في شاشة (حسابات التجار)</span>
+              </div>
+            </div>
+
+            <div className="p-4 bg-slate-50 border-t border-slate-100 flex gap-3">
+              <button 
+                onClick={handleConfirmAdminReceipt}
+                className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl font-black transition-colors"
+                >
+                تأكيد العملية
+              </button>
+              <button 
+                onClick={() => setSelectedBranch(null)}
+                className="hidden sm:block px-6 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 py-3 rounded-xl font-bold transition-colors"
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

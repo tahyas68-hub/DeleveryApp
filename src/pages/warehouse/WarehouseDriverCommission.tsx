@@ -3,7 +3,7 @@ import {
   Users, 
   Search, 
   ArrowLeft, 
-  BanknotesIcon as DollarSign, 
+  BanknoteIcon as DollarSign, 
   ClipboardList,
   FileText,
   Printer,
