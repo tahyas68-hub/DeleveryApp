@@ -11,17 +11,30 @@ export default function AdminBranchIncomes() {
   // Calculate incomes per branch
   const branchIncomes = branches.map(branch => {
     const branchOrders = orders.filter(o => 
-      o.branchName === branch.name && o.status === 'delivered'
+      o.branchName === branch.name &&
+      o.financialStatus === 'branch_transferred'
     );
     
-    const totalAmount = branchOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
+    // Amount collected and transferred to admin
+    const totalAmount = branchOrders.reduce((sum, o) => {
+      const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.amount || 0);
+      return sum + collected;
+    }, 0);
+
+    const driverCommissions = branchOrders.reduce((sum, o) => {
+       // Only count commissions if they were paid at the branch
+       const commission = o.driverCommissionStatus === 'paid' ? (o.driverCommission || 0) : 0;
+       return sum + commission;
+    }, 0);
+
     const deliveryFees = branchOrders.reduce((sum, o) => sum + (o.deliveryFee || 0), 0);
-    const netIncome = totalAmount - deliveryFees; // this depends on how the business works, but it's an example
+    const netIncome = totalAmount - driverCommissions;
 
     return {
       ...branch,
       deliveredOrdersCount: branchOrders.length,
       totalAmount,
+      driverCommissions,
       deliveryFees,
       netIncome
     };
@@ -31,7 +44,7 @@ export default function AdminBranchIncomes() {
     b.name.includes(searchTerm) || b.city.includes(searchTerm) || b.manager.includes(searchTerm)
   );
 
-  const grandTotal = branchIncomes.reduce((sum, b) => sum + b.totalAmount, 0);
+  const grandTotal = branchIncomes.reduce((sum, b) => sum + b.netIncome, 0);
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto" dir="rtl">
@@ -76,8 +89,8 @@ export default function AdminBranchIncomes() {
                 <th className="px-6 py-4 font-bold text-slate-600">المدينة</th>
                 <th className="px-6 py-4 font-bold text-slate-600">الطلبات الواصلة</th>
                 <th className="px-6 py-4 font-bold text-slate-600">إجمالي المبالغ</th>
-                <th className="px-6 py-4 font-bold text-slate-600">أجور التوصيل</th>
-                <th className="px-6 py-4 font-bold text-slate-600">الصافي</th>
+                <th className="px-6 py-4 font-bold text-slate-600">عمولات المناديب المصروفة</th>
+                <th className="px-6 py-4 font-bold text-slate-600">صافي وارد الصندوق</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -99,7 +112,7 @@ export default function AdminBranchIncomes() {
                     <td className="px-6 py-4 font-bold text-slate-600">{branch.city}</td>
                     <td className="px-6 py-4 font-en font-bold text-slate-600">{branch.deliveredOrdersCount}</td>
                     <td className="px-6 py-4 font-en font-bold text-emerald-600">{branch.totalAmount.toLocaleString()}</td>
-                    <td className="px-6 py-4 font-en font-bold text-amber-600">{branch.deliveryFees.toLocaleString()}</td>
+                    <td className="px-6 py-4 font-en font-bold text-red-500">{branch.driverCommissions.toLocaleString()}</td>
                     <td className="px-6 py-4 font-en font-black text-[#0F3B73]">{branch.netIncome.toLocaleString()}</td>
                   </tr>
                 ))
