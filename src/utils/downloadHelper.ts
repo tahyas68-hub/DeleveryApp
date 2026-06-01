@@ -24,23 +24,46 @@ export const handleFileDownload = async (wb: XLSX.WorkBook, fileName: string) =>
       document.body.appendChild(loadingToast);
 
       try {
-        const base64 = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
-        
-        const response = await fetch('/api/upload-excel', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ base64, fileName })
-        });
-        
-        const result = await response.json();
-        
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+        // 1. Try file upload to catbox.moe directly
+        const formData = new FormData();
+        formData.append('reqtype', 'fileupload');
+        formData.append('fileToUpload', blob, fileName);
+
+        let downloadUrl = '';
+        try {
+            const response = await fetch('https://catbox.moe/user/api.php', {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                downloadUrl = await response.text();
+            }
+        } catch (catboxErr) {
+            console.error('Catbox upload failed:', catboxErr);
+        }
+
+        // 2. Fallback to tmpfiles.org if catbox failed
+        if (!downloadUrl || !downloadUrl.startsWith('http')) {
+            const fallbackFormData = new FormData();
+            fallbackFormData.append('file', blob, fileName);
+            const fallbackRes = await fetch('https://tmpfiles.org/api/v1/upload', {
+                method: 'POST',
+                body: fallbackFormData
+            });
+            const fallbackData = await fallbackRes.json();
+            if (fallbackData?.data?.url) {
+                downloadUrl = fallbackData.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+            }
+        }
+
         if (document.body.contains(loadingToast)) {
           document.body.removeChild(loadingToast);
         }
 
-        if (result.downloadUrl) {
-          const fullUrl = window.location.origin + result.downloadUrl;
-          
+        if (downloadUrl && downloadUrl.startsWith('http')) {
           // Show modal with explicit download link
           const modal = document.createElement('div');
           modal.style.position = 'fixed';
@@ -58,7 +81,7 @@ export const handleFileDownload = async (wb: XLSX.WorkBook, fileName: string) =>
               <h3 style="margin-top: 0; color: #1e293b; font-size: 1.25rem; font-weight: bold; margin-bottom: 8px;">جاهز للتحميل</h3>
               <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 24px; line-height: 1.5;">تم تجهيز الملف بنجاح. اضغط على الزر أدناه لبدء التنزيل والحفظ في جهازك.</p>
               
-              <a href="${fullUrl}" target="_blank" download="${fileName}" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #10b981; color: white; padding: 14px 20px; border-radius: 12px; text-decoration: none; font-weight: bold; font-size: 1.05rem; margin-bottom: 12px; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);">
+              <a href="${downloadUrl}" target="_blank" download="${fileName}" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #10b981; color: white; padding: 14px 20px; border-radius: 12px; text-decoration: none; font-weight: bold; font-size: 1.05rem; margin-bottom: 12px; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);">
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
                 تحميل الإكسل
               </a>
@@ -68,15 +91,38 @@ export const handleFileDownload = async (wb: XLSX.WorkBook, fileName: string) =>
           `;
           document.body.appendChild(modal);
           
-          document.getElementById('close-modal-btn')?.addEventListener('click', () => {
-             document.body.removeChild(modal);
-          });
+          const closeBtn = document.getElementById('close-modal-btn');
+          if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+               document.body.removeChild(modal);
+            });
+          }
+        } else {
+             alert('فشل في رفع الملف للتنزيل. الرجاء المحاولة مرة أخرى.');
         }
         return;
       } catch (uploadErr) {
         if (document.body.contains(loadingToast)) document.body.removeChild(loadingToast);
         console.error('Upload failed:', uploadErr);
-        alert('حدث خطأ في الاتصال. حاول مرة أخرى.');
+        
+        // Final fallback: Share API
+        try {
+          const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+          const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          const file = new File([blob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          
+          if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+             await navigator.share({
+                 files: [file],
+                 title: fileName
+             });
+             return;
+          }
+        } catch (shareErr) {
+            console.error('Share failed', shareErr);
+        }
+
+        alert('حدث خطأ في الاتصال. لا يدعم هذا التطبيق التنزيل المباشر أو الرفع.');
       }
     } else {
       // For desktop, it's safe to use XLSX.writeFile which triggers blob download immediately
