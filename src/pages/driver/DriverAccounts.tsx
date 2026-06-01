@@ -17,7 +17,7 @@ export default function DriverAccounts() {
 
   // 1. Liability Orders (Pending)
   const liabilityOrders = orders.filter(o => 
-    (o.status === 'delivered' || o.status === 'delivered_partial') && 
+    (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') && 
     o.financialStatus === 'pending'
   );
 
@@ -30,7 +30,7 @@ export default function DriverAccounts() {
 
   // Delivered to company
   const deliveredCompanyOrders = orders.filter(o => 
-    (o.status === 'delivered' || o.status === 'delivered_partial') && 
+    (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') && 
     o.financialStatus !== 'pending'
   );
 
@@ -44,14 +44,14 @@ export default function DriverAccounts() {
   // 2. Commission Orders
   const relevantCommissionOrders = orders.filter(o => 
     (o.status === 'delivered' || o.status === 'delivered_partial') &&
-    o.financialStatus === 'pending'
+    o.driverCommissionStatus !== 'paid'
   );
   
   const totalCommission = relevantCommissionOrders.reduce((sum, order) => sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province)), 0);
 
   const receivedCommissionOrders = orders.filter(o => 
     (o.status === 'delivered' || o.status === 'delivered_partial') &&
-    o.financialStatus !== 'pending'
+    o.driverCommissionStatus === 'paid'
   );
 
   const receivedCommissions = receivedCommissionOrders.reduce((sum, order) => sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province)), 0);

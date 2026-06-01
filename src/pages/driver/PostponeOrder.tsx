@@ -29,9 +29,6 @@ export default function PostponeOrder() {
 
     updateOrderStatus(selectedOrder.id, 'postponed', {
       collectedAmount: 0,
-       merchantDue: 0,
-       driverCommission: 0,
-       companyProfit: 0,
        financialStatus: 'pending'
     });
     setSelectedOrderId('');

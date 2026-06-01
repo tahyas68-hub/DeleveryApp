@@ -38,6 +38,7 @@ export interface MainOrder {
   collectedAmount: number; // ما تم تحصيله فعلياً
   merchantDue: number; // مستحقات التاجر
   driverCommission: number; // عمولة المندوب
+  driverCommissionStatus?: 'pending' | 'paid'; // حالة دفع عمولة المندوب
   companyProfit: number; // ربح الشركة
   financialStatus: FinancialStatus;
 

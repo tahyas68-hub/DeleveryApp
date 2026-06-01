@@ -22,6 +22,7 @@ import WarehouseDispatch from "./pages/warehouse/WarehouseDispatch";
 import WarehousePullOrders from "./pages/warehouse/WarehousePullOrders";
 import WarehouseReturns from "./pages/warehouse/WarehouseReturns";
 import WarehouseDriverIncomes from "./pages/warehouse/WarehouseDriverIncomes";
+import WarehouseDriverCommission from "./pages/warehouse/WarehouseDriverCommission";
 import WarehouseOperations from "./pages/warehouse/WarehouseOperations";
 import WarehouseFinance from "./pages/warehouse/WarehouseFinance";
 import WarehouseReports from "./pages/warehouse/WarehouseReports";
@@ -176,6 +177,10 @@ export default function App() {
                     <Route
                       path="incomes"
                       element={<WarehouseDriverIncomes />}
+                    />
+                    <Route
+                      path="commissions"
+                      element={<WarehouseDriverCommission />}
                     />
                     <Route
                       path="drivers"

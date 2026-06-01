@@ -111,6 +111,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
             subItems: [
               { label: 'حسابات الفرع', icon: DollarSign, to: '/warehouse/finance' },
               { label: 'مقبوضات من المناديب', icon: Users, to: '/warehouse/incomes' },
+              { label: 'تسليم عمولة المندوبين', icon: DollarSign, to: '/warehouse/commissions' },
             ]
           },
           { label: 'المندوبين', icon: Bike, to: '/warehouse/drivers' },
