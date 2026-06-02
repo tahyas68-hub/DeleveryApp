@@ -110,7 +110,7 @@ export default function AdminMerchantAccounts() {
       .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'merchant_paid' }));
 
     // Legacy update to user profile balance
-    const newBalance = Math.max(0, (settleMerchant.balance || 0) - settleAmount);
+    const newBalance = Math.max(0, (settleMerchant.dynamicBalance || 0) - settleAmount);
     updateUser(settleMerchant.id, {
       balance: newBalance,
       lastClearance: new Date().toLocaleDateString('ar-IQ')
@@ -700,7 +700,7 @@ export default function AdminMerchantAccounts() {
                 <div className="bg-slate-50 p-4 rounded-2xl text-center space-y-1">
                   <span className="text-slate-400 font-bold text-xs block">إجمالي الرصيد المستحق المتوفر للتاجر</span>
                   <span className="text-[#EF4444] font-black text-2xl font-en block">
-                    {(settleMerchant.balance || 0).toLocaleString()} د.ع
+                    {(settleMerchant.dynamicBalance || 0).toLocaleString()} د.ع
                   </span>
                 </div>
 
@@ -708,7 +708,7 @@ export default function AdminMerchantAccounts() {
                   <label className="block text-slate-600 font-bold text-xs">قيمة المبلغ المراد صرفه وتسويته (د.ع)</label>
                   <input 
                     type="number" 
-                    max={settleMerchant.balance || 0}
+                    max={settleMerchant.dynamicBalance || 0}
                     value={settleAmount}
                     onChange={(e) => setSettleAmount(parseInt(e.target.value) || 0)}
                     placeholder="أدخل قيمة الصرف"
@@ -718,7 +718,7 @@ export default function AdminMerchantAccounts() {
                   <div className="flex justify-between text-[11px] text-slate-400 font-bold px-1 mt-1">
                     <span>الرصيد المتبقي بعد العملية:</span>
                     <span className="font-en text-slate-600">
-                      {Math.max(0, (settleMerchant.balance || 0) - settleAmount).toLocaleString()} د.ع
+                      {Math.max(0, (settleMerchant.dynamicBalance || 0) - settleAmount).toLocaleString()} د.ع
                     </span>
                   </div>
                 </div>

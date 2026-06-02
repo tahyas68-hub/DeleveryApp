@@ -25,9 +25,11 @@ export default function AdminFinance() {
   }
 
   // Overview Stats
-  const totalInbound = transactions.filter(t => t.type === 'receipt').reduce((sum, t) => sum + t.amount, 0);
-  const totalOutbound = transactions.filter(t => t.type === 'payment').reduce((sum, t) => sum + t.amount, 0);
-  const totalCompanyProfit = orders.reduce((sum, o) => sum + (o.companyProfit || 0), 0);
+  const deliveredOrders = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial');
+  
+  const totalInbound = deliveredOrders.reduce((sum, o) => sum + (o.collectedAmount !== undefined ? o.collectedAmount : (o.amount || 0)), 0);
+  const totalOutbound = deliveredOrders.reduce((sum, o) => sum + (o.merchantDue || 0) + (o.driverCommission || 0), 0);
+  const totalCompanyProfit = totalInbound - totalOutbound;
 
   // Merchants Data
   const merchantBalances = orders.reduce((acc, order) => {

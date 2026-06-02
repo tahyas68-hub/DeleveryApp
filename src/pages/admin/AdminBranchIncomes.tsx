@@ -55,7 +55,7 @@ export default function AdminBranchIncomes() {
     
     // Add transaction
     addTransaction({
-      type: 'receipt',
+      type: 'transfer',
       amount: selectedBranch.netIncome,
       fromEntity: 'warehouse',
       toEntity: 'admin',
