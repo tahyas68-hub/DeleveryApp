@@ -43,7 +43,7 @@ export default function AdminMerchantAccounts() {
   const merchantsWithDynamicBalance = merchants.map(m => {
     const merchantOrders = orders.filter(
       (o) => (o.merchantId === m.id || o.merchantName === m.name) && 
-      ['delivered', 'delivered_partial'].includes(o.status)
+      ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status)
     );
 
     // Calculate dynamic balance from orders with financialStatus === 'admin_received'
@@ -101,7 +101,7 @@ export default function AdminMerchantAccounts() {
     orders
       .filter((o) => {
         const isTarget = (o.merchantId === settleMerchant.id || o.merchantName === settleMerchant.name);
-        const isDelivered = ['delivered', 'delivered_partial'].includes(o.status);
+        const isDelivered = ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status);
         const isReadyForPayment = o.financialStatus === 'admin_received' || (o.financialStatus !== 'merchant_paid' && o.financialStatus !== 'pending' && o.financialStatus !== 'collected_from_driver' && o.financialStatus !== 'branch_transferred');
         return isTarget && isDelivered && isReadyForPayment;
       })
@@ -125,7 +125,7 @@ export default function AdminMerchantAccounts() {
       // Find all completed (delivered) orders for this merchant
       const merchantOrders = orders.filter(
         (o) => (o.merchantId === m.id || o.merchantName === m.name) && 
-        ['delivered', 'delivered_partial'].includes(o.status)
+        ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status)
       );
 
       // Sum values of completed orders for the merchant
@@ -324,7 +324,7 @@ export default function AdminMerchantAccounts() {
                       {orders
                         .filter(o => {
                           const isTarget = (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name);
-                          const isDelivered = ['delivered', 'delivered_partial'].includes(o.status);
+                          const isDelivered = ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status);
                           const isReadyForPayment = o.financialStatus === 'admin_received' || (o.financialStatus !== 'merchant_paid' && o.financialStatus !== 'pending' && o.financialStatus !== 'collected_from_driver' && o.financialStatus !== 'branch_transferred');
                           return isTarget && isDelivered && isReadyForPayment;
                         })
@@ -338,7 +338,7 @@ export default function AdminMerchantAccounts() {
                         orders
                           .filter(o => {
                             const isTarget = (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name);
-                            const isDelivered = ['delivered', 'delivered_partial'].includes(o.status);
+                            const isDelivered = ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status);
                             const isReadyForPayment = o.financialStatus === 'admin_received' || (o.financialStatus !== 'merchant_paid' && o.financialStatus !== 'pending' && o.financialStatus !== 'collected_from_driver' && o.financialStatus !== 'branch_transferred');
                             return isTarget && isDelivered && isReadyForPayment;
                           })
@@ -372,7 +372,7 @@ export default function AdminMerchantAccounts() {
                       {orders
                         .filter(o => {
                           const isTarget = (o.merchantId === activePrintMerchant.id || o.merchantName === activePrintMerchant.name);
-                          const isDelivered = ['delivered', 'delivered_partial'].includes(o.status);
+                          const isDelivered = ['delivered', 'delivered_partial', 'returned_partial'].includes(o.status);
                           const isReadyForPayment = o.financialStatus === 'admin_received' || (o.financialStatus !== 'merchant_paid' && o.financialStatus !== 'pending' && o.financialStatus !== 'collected_from_driver' && o.financialStatus !== 'branch_transferred');
                           return isTarget && isDelivered && isReadyForPayment;
                         })

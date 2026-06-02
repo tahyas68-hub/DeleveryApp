@@ -32,7 +32,7 @@ export default function AdminReports() {
       icon: <TrendingUp className="w-6 h-6 text-emerald-600" />,
       bgIcon: 'bg-emerald-50',
       onExport: () => {
-        const data = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial').map(o => {
+        const data = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial').map(o => {
           const fee = o.deliveryFee || getDeliveryFee(o.province);
           const comm = getDriverCommission(o.province);
           const profit = fee - comm;
@@ -65,7 +65,7 @@ export default function AdminReports() {
           const returned = mOrders.filter(o => o.status === 'returned' || o.status === 'returned_partial').length;
           
           const currentBalance = mOrders
-             .filter(o => (o.status === 'delivered' || o.status === 'delivered_partial') && o.financialStatus !== 'merchant_paid')
+             .filter(o => (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') && o.financialStatus !== 'merchant_paid')
              .reduce((sum, o) => sum + (o.amount || 0), 0);
           
           return [
@@ -95,7 +95,7 @@ export default function AdminReports() {
           const delivered = dOrders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial').length;
           const pending = dOrders.filter(o => o.status === 'driver_assigned' || o.status === 'postponed').length;
           const returned = dOrders.filter(o => o.status === 'returned' || o.status === 'returned_partial').length;
-          const commission = dOrders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial')
+          const commission = dOrders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial')
              .reduce((sum, o) => sum + getDriverCommission(o.province), 0);
              
           return [
@@ -157,7 +157,7 @@ export default function AdminReports() {
       icon: <DollarSign className="w-6 h-6 text-teal-600" />,
       bgIcon: 'bg-teal-50',
       onExport: () => {
-         const deliveredOrders = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial');
+         const deliveredOrders = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial');
          const totalSales = deliveredOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
          const totalDeliveryFees = deliveredOrders.reduce((sum, o) => sum + (o.deliveryFee || getDeliveryFee(o.province)), 0);
          const totalPlatformsProfits = deliveredOrders.reduce((sum, o) => {

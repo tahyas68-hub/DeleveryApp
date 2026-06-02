@@ -43,7 +43,7 @@ export default function DriverAccounts() {
 
   // 2. Commission Orders
   const relevantCommissionOrders = orders.filter(o => 
-    (o.status === 'delivered' || o.status === 'delivered_partial') &&
+    (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') &&
     o.driverCommissionStatus !== 'paid'
   );
   

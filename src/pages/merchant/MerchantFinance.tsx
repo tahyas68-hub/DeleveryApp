@@ -14,12 +14,17 @@ export default function MerchantFinance() {
   // Filter out returned orders for pending calculation if needed. 
   // Let's define the groups explicitly:
   const pendingStatuses = ['merchant_pending', 'main_warehouse', 'branch_transfering', 'branch_warehouse', 'driver_assigned', 'postponed'];
-  const deliveredStatuses = ['delivered', 'delivered_partial'];
+  const deliveredStatuses = ['delivered', 'delivered_partial', 'returned_partial'];
 
   // Current balance: delivered and partial AND NOT PAID
   const currentBalance = merchantOrders
     .filter(o => deliveredStatuses.includes(o.status) && o.financialStatus !== 'merchant_paid')
-    .reduce((sum, o) => sum + (o.amount || 0), 0);
+    .reduce((sum, o) => {
+      const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.totalAmount || o.amount || 0);
+      const fee = o.deliveryFee || 0;
+      const net = o.merchantDue !== undefined ? o.merchantDue : (collected - fee);
+      return sum + net;
+    }, 0);
 
   // Pending balance: not delivered, not totally returned
   const pendingAmount = merchantOrders
@@ -29,7 +34,12 @@ export default function MerchantFinance() {
   // Paid withdrawals
   const withdrawals = merchantOrders
     .filter(o => deliveredStatuses.includes(o.status) && o.financialStatus === 'merchant_paid')
-    .reduce((sum, o) => sum + (o.amount || 0), 0);
+    .reduce((sum, o) => {
+      const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.totalAmount || o.amount || 0);
+      const fee = o.deliveryFee || 0;
+      const net = o.merchantDue !== undefined ? o.merchantDue : (collected - fee);
+      return sum + net;
+    }, 0);
 
   // Generate transactions from Delivered & Returned_Partial orders
   const transactions = merchantOrders

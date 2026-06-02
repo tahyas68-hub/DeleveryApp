@@ -37,13 +37,13 @@ export default function WarehouseDriverCommission() {
     // Financial status 'pending' OR 'collected_from_driver' AND driverCommissionStatus !== 'paid'
     const driverOrders = orders.filter(o => 
       o.driverId === driver.id && 
-      (o.status === 'delivered' || o.status === 'delivered_partial') &&
+      (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') &&
       o.driverCommissionStatus !== 'paid'
     );
 
     // Driver's commission
     const totalCommission = driverOrders.reduce((sum, order) => {
-      if (order.status === 'delivered' || order.status === 'delivered_partial') {
+      if (order.status === 'delivered' || order.status === 'delivered_partial' || order.status === 'returned_partial') {
         return sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province));
       }
       return sum;
@@ -277,7 +277,7 @@ export default function WarehouseDriverCommission() {
                         </tr>
                       ) : (
                         ledgerDriver.driverOrders.map((o: any) => {
-                          const commission = (o.status === 'delivered' || o.status === 'delivered_partial') 
+                          const commission = (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') 
                             ? (typeof o.driverCommission === 'number' ? o.driverCommission : getDriverCommission(o.province))
                             : 0;
                           return (
