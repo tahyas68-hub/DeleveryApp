@@ -132,7 +132,7 @@ export default function AdminFinance() {
         </div>
         <div className="flex items-center gap-3">
           <button 
-             onClick={() => window.print()}
+             onClick={() => setTimeout(() => window.print(), 100)}
              className="flex items-center gap-2 bg-[#0F3B73] hover:bg-[#0F3B73]/90 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg transition-colors"
           >
             <Printer className="w-5 h-5" />

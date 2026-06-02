@@ -226,7 +226,9 @@ export default function AdminMerchantAccounts() {
                   <div className="flex flex-col items-start text-right">
                     {/* On-screen visual placeholder button to look exactly like the screenshot */}
                     <button 
-                      onClick={() => window.print()}
+                      onClick={() => {
+                        setTimeout(() => window.print(), 100);
+                      }}
                       className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2 rounded-lg font-bold text-xs shadow-md flex items-center gap-2 mb-3 print:hidden transition-all cursor-pointer"
                     >
                       طباعة الكشف الرسمي

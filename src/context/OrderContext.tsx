@@ -16,6 +16,7 @@ export type OrderStatus =
 
 export type FinancialStatus = 
   | 'pending'
+  | 'driver_cleared'
   | 'collected_from_driver'
   | 'branch_transferred'
   | 'admin_received'

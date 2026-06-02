@@ -82,10 +82,13 @@ export default function WarehouseDriverCommission() {
       updateOrderStatus(order.id, order.status, { driverCommissionStatus: 'paid' });
     });
 
-    // Optional: Print before closing
-    window.print();
-
-    setSelectedDriver(null);
+    // Add a slight delay before opening the print dialog, then close modal after
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => {
+        setSelectedDriver(null);
+      }, 500);
+    }, 100);
   };
 
   return (
@@ -165,8 +168,9 @@ export default function WarehouseDriverCommission() {
 
       {/* Receipt Modal (Also acts as Print View) */}
       {selectedDriver && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 print:p-0 print:bg-white print:block">
-          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden print:shadow-none print:w-full print:max-w-none">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm print:static print:bg-white">
+          <div className="flex min-h-full items-center justify-center p-4 print:p-0 print:block">
+            <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden print:shadow-none print:w-full print:max-w-none print:rounded-none">
             
             {/* Header / Actions - Hidden in Print */}
             <div className="flex items-center justify-between p-4 border-b border-slate-100 print:hidden bg-slate-50">
@@ -239,12 +243,14 @@ export default function WarehouseDriverCommission() {
             </div>
           </div>
         </div>
+      </div>
       )}
 
       {/* Ledger Modal */}
       {ledgerDriver && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="bg-[#0F172A] rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <div className="bg-[#0F172A] rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
             <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-[#1E293B]">
               <h2 className="text-xl font-black text-white">سجل عمولات المندوب: {ledgerDriver.name}</h2>
               <button 
@@ -307,6 +313,7 @@ export default function WarehouseDriverCommission() {
             </div>
           </div>
         </div>
+      </div>
       )}
     </div>
   );
