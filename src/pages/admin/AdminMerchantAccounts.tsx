@@ -11,7 +11,8 @@ import {
   Printer, 
   AlertTriangle,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Wallet
 } from 'lucide-react';
 import { useUsers } from '../../context/UserContext';
 import { useFinance } from '../../context/FinanceContext';
@@ -32,6 +33,7 @@ export default function AdminMerchantAccounts() {
   const [ledgerMerchant, setLedgerMerchant] = useState<any | null>(null);
   const [settleMerchant, setSettleMerchant] = useState<any | null>(null);
   const [activePrintMerchant, setActivePrintMerchant] = useState<any | null>(null);
+  const [receiptMerchantData, setReceiptMerchantData] = useState<any | null>(null);
   
   // Form States for Settlement
   const [settleAmount, setSettleAmount] = useState<number>(0);
@@ -114,7 +116,16 @@ export default function AdminMerchantAccounts() {
       lastClearance: new Date().toLocaleDateString('ar-IQ')
     });
 
-    alert(`تمت عملية التسوية بنجاح وصرف مبلغ ${settleAmount.toLocaleString()} د.ع للتاجر`);
+    // Populate receipt data before clearing
+    setReceiptMerchantData({
+      merchantName: settleMerchant.name,
+      amount: settleAmount,
+      description: settleDescription || 'تسوية حساب التاجر',
+      date: new Date().toLocaleDateString('ar-IQ'),
+      time: new Date().toLocaleTimeString('ar-IQ'),
+      receiptNumber: `REC-${Date.now().toString().slice(-6)}`
+    });
+
     setSettleMerchant(null);
   };
 
@@ -744,6 +755,85 @@ export default function AdminMerchantAccounts() {
           </div>
         )}
       </AnimatePresence>
+      {/* MODAL 3: Print Receipt after Settlement */}
+      {receiptMerchantData && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm print:static print:bg-white">
+          <div className="flex min-h-full items-center justify-center p-4 print:p-0 print:block">
+            <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden print:shadow-none print:w-full print:max-w-none print:rounded-none">
+            
+            {/* Header / Actions - Hidden in Print */}
+            <div className="flex items-center justify-between p-4 border-b border-slate-100 print:hidden bg-slate-50">
+              <h2 className="text-xl font-black text-[#0F3B73]">استخراج مستند صرف للتاجر</h2>
+              <button 
+                onClick={() => setReceiptMerchantData(null)}
+                className="p-2 hover:bg-slate-200 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+
+            {/* Printable Area */}
+            <div className="p-8 space-y-6">
+              {/* Receipt Header */}
+              <div className="text-center space-y-2 border-b-2 border-dashed border-slate-300 pb-6">
+                <div className="w-16 h-16 bg-[#0F3B73] text-white rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Wallet className="w-8 h-8" />
+                </div>
+                <h1 className="text-3xl font-black text-slate-800 tracking-tight">مستند صرف مستحقات</h1>
+                <p className="text-slate-500 font-bold font-en">{receiptMerchantData.date} - {receiptMerchantData.time}</p>
+                <div className="pt-2 text-sm font-bold text-slate-400">
+                  رقم المستند: <span className="font-en">{receiptMerchantData.receiptNumber}</span>
+                </div>
+              </div>
+
+              {/* Merchant Details */}
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500 font-bold">اسم المتجر / التاجر</span>
+                  <span className="text-lg font-black text-slate-800">{receiptMerchantData.merchantName}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500 font-bold">تفاصيل العملية</span>
+                  <span className="text-sm font-bold text-slate-800">{receiptMerchantData.description}</span>
+                </div>
+              </div>
+
+              {/* Financial Summary */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-4 rounded-2xl bg-slate-900 text-white">
+                  <span className="text-lg font-black">المبلغ المصروف للتاجر</span>
+                  <span className="text-3xl font-black font-en tracking-tight">
+                    {receiptMerchantData.amount.toLocaleString()} د.ع
+                  </span>
+                </div>
+              </div>
+
+              {/* Signatures */}
+              <div className="flex justify-between mt-12 pt-8 text-center text-slate-600 font-bold">
+                <div className="w-32 border-t-2 border-slate-300 pt-2">توقيع محاسب الشركة</div>
+                <div className="w-32 border-t-2 border-slate-300 pt-2">توقيع المستلم (التاجر)</div>
+              </div>
+            </div>
+
+            {/* Footer Actions - Hidden in Print */}
+            <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3 print:hidden">
+               <button 
+                onClick={() => {
+                  window.print();
+                  setTimeout(() => {
+                    setReceiptMerchantData(null);
+                  }, 500);
+                }}
+                className="flex-1 bg-[#0F3B73] hover:bg-[#0F3B73]/90 text-white py-3 rounded-xl font-black flex items-center justify-center gap-2 transition-colors"
+               >
+                 <Printer className="w-5 h-5" />
+                 طباعة مستند الاستلام
+               </button>
+            </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
