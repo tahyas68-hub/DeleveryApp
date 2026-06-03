@@ -44,10 +44,6 @@ export default function WarehouseFinance() {
       // Transferred to Admin
       currentBalance -= t.amount;
       adminWithdrawals += t.amount;
-    } else if (t.fromEntity === 'warehouse' && t.type === 'receipt' && (t.toEntity === 'الحساب المالي للشركة' || t.toEntity === 'admin')) {
-      // Admin confirmed receipt from warehouse
-      currentBalance -= t.amount;
-      adminWithdrawals += t.amount;
     }
   });
 
