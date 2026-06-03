@@ -44,6 +44,10 @@ export default function WarehouseFinance() {
       // Transferred to Admin
       currentBalance -= t.amount;
       adminWithdrawals += t.amount;
+    } else if (t.fromEntity === 'warehouse' && t.type === 'receipt' && (t.toEntity === 'الحساب المالي للشركة' || t.toEntity === 'admin')) {
+      // Admin confirmed receipt from warehouse
+      currentBalance -= t.amount;
+      adminWithdrawals += t.amount;
     }
   });
 
@@ -163,7 +167,7 @@ export default function WarehouseFinance() {
                       <td className="px-4 py-3 font-bold text-slate-600">{warehouseTransactions.length - index}</td>
                       <td className="px-4 py-3 font-en font-bold text-slate-800">{t.id}</td>
                       <td className={`px-4 py-3 font-bold ${isNegative ? 'text-red-500' : 'text-emerald-500'}`}>
-                        {t.type === 'receipt' ? 'قبض' : t.type === 'payment' ? 'صرف' : 'تحويل'}
+                        {t.type === 'receipt' && isNegative ? 'سحب إدارة' : t.type === 'receipt' ? 'قبض' : t.type === 'payment' ? 'صرف' : 'تحويل'}
                       </td>
                       <td className="px-4 py-3 font-bold text-slate-800 whitespace-normal min-w-[200px]">{t.description}</td>
                       <td className="px-4 py-3 font-en font-bold text-slate-600">{new Date(t.timestamp).toLocaleString('ar-IQ')}</td>
@@ -213,7 +217,7 @@ export default function WarehouseFinance() {
                     <tr key={t.id} className="border-b border-slate-300">
                         <td className="p-2 font-bold border-l border-slate-300">{warehouseTransactions.length - index}</td>
                         <td className="p-2 font-bold border-l border-slate-300 font-en">{t.id}</td>
-                        <td className="p-2 font-bold border-l border-slate-300">{t.type === 'receipt' ? 'قبض' : t.type === 'payment' ? 'صرف' : 'تحويل'}</td>
+                        <td className="p-2 font-bold border-l border-slate-300">{t.type === 'receipt' && isNegative ? 'سحب إدارة' : t.type === 'receipt' ? 'قبض' : t.type === 'payment' ? 'صرف' : 'تحويل'}</td>
                         <td className="p-2 font-bold border-l border-slate-300">{t.description}</td>
                         <td className="p-2 font-bold border-l border-slate-300 font-en text-slate-700">{new Date(t.timestamp).toLocaleDateString('ar-IQ')}</td>
                         <td className={`p-2 font-black font-en text-left dir-ltr ${isNegative ? 'text-red-700' : 'text-emerald-700'}`}>
