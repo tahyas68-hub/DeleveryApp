@@ -82,7 +82,7 @@ export default function PartialDelivery() {
       companyProfit: 0,
       financialStatus: 'pending',
 
-      status: 'returned',
+      status: 'returned_partial',
       isPartial: true,
       date: new Date().toISOString().split('T')[0]
     });
