@@ -9,6 +9,7 @@ export default function AdminFinance() {
   const { orders, updateOrderStatus } = useOrders();
   const { transactions, addTransaction } = useFinance();
   const [activeTab, setActiveTab] = useState<'overview' | 'merchants' | 'drivers' | 'branches' | 'transactions'>('overview');
+  const [receiptMerchantData, setReceiptMerchantData] = useState<any | null>(null);
 
   interface MerchantStats {
     name: string;
@@ -62,71 +63,69 @@ export default function AdminFinance() {
 
   const handlePayMerchant = (merchantId: string, merchantName: string, amount: number) => {
     if (amount <= 0) {
-      alert("لا يوجد رصيد جاهز للسحب");
       return;
     }
-    if (window.confirm(`هل أنت متأكد من إنشاء سند صرف للتاجر بقيمة ${amount}؟`)) {
-      // Create transaction
-      addTransaction({
-        type: 'payment',
-        amount: amount,
-        fromEntity: 'شركة',
-        toEntity: merchantName,
-        referenceId: `MERCHANT-PAY-${merchantId}`,
-        userId: 'admin',
-        description: 'تصفية حساب تاجر'
-      });
-      // Update all delivered orders for this merchant to 'merchant_paid'
-      orders.filter(o => o.merchantId === merchantId && (o.status === 'delivered' || o.status === 'delivered_partial') && o.financialStatus !== 'merchant_paid')
-            .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'merchant_paid' }));
-      alert("تم إنشاء سند الصرف وتحديث حالة الطلبات");
-    }
+    // Create transaction
+    addTransaction({
+      type: 'payment',
+      amount: amount,
+      fromEntity: 'شركة',
+      toEntity: merchantName,
+      referenceId: `MERCHANT-PAY-${merchantId}`,
+      userId: 'admin',
+      description: 'تصفية حساب تاجر'
+    });
+    // Update all delivered orders for this merchant to 'merchant_paid'
+    orders.filter(o => o.merchantId === merchantId && (o.status === 'delivered' || o.status === 'delivered_partial') && o.financialStatus !== 'merchant_paid')
+          .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'merchant_paid' }));
+    
+    setReceiptMerchantData({
+      merchantName: merchantName,
+      amount: amount,
+      description: 'تصفية حساب تاجر',
+      date: new Date().toLocaleDateString('ar-IQ'),
+      time: new Date().toLocaleTimeString('ar-IQ'),
+      receiptNumber: `REC-${Date.now().toString().slice(-6)}`
+    });
   };
 
   const handleReceiveFromDriver = (driverId: string, driverName: string, amount: number) => {
      if (amount <= 0) {
-      alert("لا يوجد مبلغ محصل بذمة المندوب");
       return;
     }
-    if (window.confirm(`هل أنت متأكد من إنشاء سند قبض من المندوب بقيمة ${amount}؟`)) {
-      addTransaction({
-        type: 'receipt',
-        amount: amount,
-        fromEntity: driverName,
-        toEntity: 'شركة',
-        referenceId: `DRIVER-RECV-${driverId}`,
-        userId: 'admin',
-        description: 'استلام مبالغ من المندوب'
-      });
-      orders.filter(o => o.driverId === driverId && (o.status === 'delivered' || o.status === 'delivered_partial') && (o.financialStatus === 'collected_from_driver' || o.financialStatus === 'pending'))
-            .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'company_received' }));
-      alert("تم استلام القاصة من المندوب بنجاح");
-    }
+    addTransaction({
+      type: 'receipt',
+      amount: amount,
+      fromEntity: driverName,
+      toEntity: 'شركة',
+      referenceId: `DRIVER-RECV-${driverId}`,
+      userId: 'admin',
+      description: 'استلام مبالغ من المندوب'
+    });
+    orders.filter(o => o.driverId === driverId && (o.status === 'delivered' || o.status === 'delivered_partial') && (o.financialStatus === 'collected_from_driver' || o.financialStatus === 'pending'))
+          .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'company_received' }));
   };
 
   const handlePayDriverCommission = (driverId: string, driverName: string, amount: number) => {
     if (amount <= 0) {
-      alert("لا توجد عمولات مستحقة");
       return;
     }
-    if (window.confirm(`هل أنت متأكد من إنشاء سند صرف عمولة للمندوب بقيمة ${amount}؟`)) {
-      addTransaction({
-        type: 'payment',
-        amount: amount,
-        fromEntity: 'شركة',
-        toEntity: driverName,
-        referenceId: `DRIVER-COMM-${driverId}`,
-        userId: 'admin',
-        description: 'تصفية عمولات مندوب'
-      });
-      // In a real app we'd track "driver_commission_paid" boolean on the order, but we can't easily overwrite financialStatus if it's "merchant_paid" vs "company_received".
-      // We will skip fully marking order as driver_commission_paid to avoid overwriting merchant status, unless we have a separate boolean 'isDriverCommissionPaid'.
-      alert("تم إنشاء سند صرف لعمولة المندوب");
-    }
+    addTransaction({
+      type: 'payment',
+      amount: amount,
+      fromEntity: 'شركة',
+      toEntity: driverName,
+      referenceId: `DRIVER-COMM-${driverId}`,
+      userId: 'admin',
+      description: 'تصفية عمولات مندوب'
+    });
+    // In a real app we'd track "driver_commission_paid" boolean on the order, but we can't easily overwrite financialStatus if it's "merchant_paid" vs "company_received".
+    // We will skip fully marking order as driver_commission_paid to avoid overwriting merchant status, unless we have a separate boolean 'isDriverCommissionPaid'.
   };
 
   return (
-    <div className="space-y-6 text-sm" dir="rtl">
+    <>
+    <div className={`space-y-6 text-sm ${receiptMerchantData ? 'print:hidden' : ''}`} dir="rtl">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
         <div>
           <h1 className="text-3xl font-black text-[#0F3B73]">النظام المالي الشامل</h1>
@@ -326,8 +325,9 @@ export default function AdminFinance() {
       </AnimatePresence>
 
       {/* Printable Financial Report */}
-      <div id="printable-financial-report" className="hidden print:block w-full bg-white text-black pt-4 z-50 overflow-visible" dir="rtl">
-         <PrintHeader 
+      {!receiptMerchantData && (
+        <div id="printable-financial-report" className="hidden print:block w-full bg-white text-black pt-4 z-50 overflow-visible" dir="rtl">
+           <PrintHeader 
            title="التقرير المالي للإدارة"
            stats={[
              { label: 'أرباح الشركة المحققة', value: totalCompanyProfit.toLocaleString() },
@@ -378,7 +378,90 @@ export default function AdminFinance() {
                <p className="text-black font-black">________________________</p>
             </div>
          </div>
-      </div>
+        </div>
+      )}
     </div>
+
+    {/* MODAL: Print Receipt after Settlement */}
+    {receiptMerchantData && (
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm print:static print:bg-white" dir="rtl">
+        <div className="flex min-h-full items-center justify-center p-4 print:p-0 print:block">
+          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden print:shadow-none print:w-full print:max-w-none print:rounded-none">
+          
+          {/* Header / Actions - Hidden in Print */}
+          <div className="flex items-center justify-between p-4 border-b border-slate-100 print:hidden bg-slate-50">
+            <h2 className="text-xl font-black text-[#0F3B73]">استخراج مستند صرف للتاجر</h2>
+            <button 
+              onClick={() => setReceiptMerchantData(null)}
+              className="p-2 hover:bg-slate-200 rounded-full transition-colors"
+            >
+              <FileText className="w-5 h-5 text-slate-500" />
+            </button>
+          </div>
+
+          {/* Printable Area */}
+          <div className="p-8 space-y-6">
+            {/* Receipt Header */}
+            <div className="text-center space-y-2 border-b-2 border-dashed border-slate-300 pb-6">
+              <div className="w-16 h-16 bg-[#0F3B73] text-white rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Wallet className="w-8 h-8" />
+              </div>
+              <h1 className="text-3xl font-black text-slate-800 tracking-tight">مستند صرف مستحقات</h1>
+              <p className="text-slate-500 font-bold font-en">{receiptMerchantData.date} - {receiptMerchantData.time}</p>
+              <div className="pt-2 text-sm font-bold text-slate-400">
+                رقم المستند: <span className="font-en">{receiptMerchantData.receiptNumber}</span>
+              </div>
+            </div>
+
+            {/* Merchant Details */}
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 font-bold">اسم المتجر / التاجر</span>
+                <span className="text-lg font-black text-slate-800">{receiptMerchantData.merchantName}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 font-bold">تفاصيل العملية</span>
+                <span className="text-sm font-bold text-slate-800">{receiptMerchantData.description}</span>
+              </div>
+            </div>
+
+            {/* Financial Summary */}
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-4 rounded-2xl bg-slate-900 text-white">
+                <span className="text-lg font-black">المبلغ المصروف للتاجر</span>
+                <span className="text-3xl font-black font-en tracking-tight">
+                  {receiptMerchantData.amount.toLocaleString()} د.ع
+                </span>
+              </div>
+            </div>
+
+            {/* Signatures */}
+            <div className="flex justify-between mt-12 pt-8 text-center text-slate-600 font-bold">
+              <div className="w-32 border-t-2 border-slate-300 pt-2">توقيع محاسب الشركة</div>
+              <div className="w-32 border-t-2 border-slate-300 pt-2">توقيع المستلم (التاجر)</div>
+            </div>
+          </div>
+
+          {/* Footer Actions - Hidden in Print */}
+          <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3 print:hidden">
+             <button 
+              onClick={() => {
+                window.print();
+                setTimeout(() => {
+                  setReceiptMerchantData(null);
+                }, 500);
+              }}
+              className="flex-1 bg-[#0F3B73] hover:bg-[#0F3B73]/90 text-white py-3 rounded-xl font-black flex items-center justify-center gap-2 transition-colors"
+            >
+              <Printer className="w-5 h-5" />
+              طباعة سند الصرف واستمرار
+            </button>
+          </div>
+
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
