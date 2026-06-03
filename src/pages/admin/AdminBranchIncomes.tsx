@@ -11,12 +11,13 @@ export default function AdminBranchIncomes() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBranch, setSelectedBranch] = useState<any>(null);
 
-  // Calculate incomes per branch
-  const branchIncomes = branches.map(branch => {
-    const branchOrders = orders.filter(o => 
-      o.branchName === branch.name &&
-      o.financialStatus === 'branch_transferred'
-    );
+  // Calculate incomes per branch dynamically based on orders to avoid losing any transferred funds
+  const transferredOrders = orders.filter(o => o.financialStatus === 'branch_transferred');
+  const activeBranchNames = Array.from(new Set(transferredOrders.map(o => o.branchName || 'غير محدد')));
+
+  const branchIncomes = activeBranchNames.map(branchName => {
+    const branchInfo = branches.find(b => b.name === branchName) || { id: branchName, name: branchName, city: 'غير محدد', manager: 'غير محدد' };
+    const branchOrders = transferredOrders.filter(o => (o.branchName || 'غير محدد') === branchName);
     
     // Amount collected and transferred to admin
     const totalAmount = branchOrders.reduce((sum, o) => {
@@ -34,7 +35,7 @@ export default function AdminBranchIncomes() {
     const netIncome = totalAmount - driverCommissions;
 
     return {
-      ...branch,
+      ...branchInfo,
       deliveredOrdersCount: branchOrders.length,
       branchOrders,
       totalAmount,
@@ -55,10 +56,10 @@ export default function AdminBranchIncomes() {
     
     // Add transaction
     addTransaction({
-      type: 'transfer',
+      type: 'receipt', // Changed back to receipt so Treasury picks it up
       amount: selectedBranch.netIncome,
       fromEntity: 'warehouse',
-      toEntity: 'admin',
+      toEntity: 'الحساب المالي للشركة', // To be logically consistent with admin treasury
       referenceId: `admin-receipt-${Date.now()}`,
       description: `تأكيد استلام موارد فرع ${selectedBranch.name}`,
       userId: 'admin'

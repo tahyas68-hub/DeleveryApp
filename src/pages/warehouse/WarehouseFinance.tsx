@@ -64,15 +64,15 @@ export default function WarehouseFinance() {
             <button 
               onClick={() => {
                 if (window.confirm(`هل أنت متأكد من تسليم مبلغ ${currentBalance.toLocaleString()} د.ع للإدارة الرئيسية؟`)) {
-                  addTransaction({
-                    type: 'transfer',
-                    amount: currentBalance,
-                    fromEntity: 'warehouse',
-                    toEntity: 'admin',
-                    referenceId: `transfer-admin-${Date.now()}`,
-                    description: 'تسليم الرصيد المتاح من فرع المخزن إلى المركز الرئيسي',
-                    userId: 'session-user'
-                  });
+                    addTransaction({
+                      type: 'transfer',
+                      amount: currentBalance,
+                      fromEntity: 'warehouse',
+                      toEntity: 'الحساب المالي للشركة',
+                      referenceId: `transfer-admin-${Date.now()}`,
+                      description: 'تسليم الرصيد المتاح من فرع المخزن إلى المركز الرئيسي',
+                      userId: 'session-user'
+                    });
 
                   orders
                     .filter(o => o.financialStatus === 'collected_from_driver' && (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial'))
