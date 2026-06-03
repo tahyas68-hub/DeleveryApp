@@ -46,6 +46,7 @@ export default function PartialDelivery() {
 
     // Update current order as partial delivered
     updateOrderStatus(selectedOrder.id, 'delivered_partial', {
+      totalAmount: amountNum,
       orderAmount: newOrderAmount,
       amount: newOrderAmount, // Keep backward compatibility
       collectedAmount: amountNum, 

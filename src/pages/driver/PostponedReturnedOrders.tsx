@@ -6,7 +6,7 @@ import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 
 export default function PostponedReturnedOrders() {
   const [searchTerm, setSearchTerm] = useState('');
-  const { orders } = useOrders();
+  const { orders, updateOrderStatus } = useOrders();
   const { user } = useAuth(); // Import useAuth!
 
   const filteredOrders = orders.filter(
@@ -60,12 +60,13 @@ export default function PostponedReturnedOrders() {
                 <th className="px-6 py-4 font-bold text-slate-600 whitespace-nowrap">العنوان</th>
                 <th className="px-6 py-4 font-bold text-slate-600">تاريخ الطلب</th>
                 <th className="px-6 py-4 font-bold text-slate-600 text-center">الحالة</th>
+                <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={8} className="px-6 py-12 text-center text-slate-500">
                     <Package className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                     <p className="text-lg font-medium">لا توجد طلبات مطابقة</p>
                   </td>
@@ -134,6 +135,18 @@ export default function PostponedReturnedOrders() {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <OrderStatusBadge status={order.status} />
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button 
+                        onClick={() => {
+                          if (window.confirm('هل أنت متأكد من إرجاع هذا الطلب ليكون قيد التوصيل؟')) {
+                            updateOrderStatus(order.id, 'driver_assigned');
+                          }
+                        }}
+                        className="bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap"
+                      >
+                        إرجاع قيد التوصيل
+                      </button>
                     </td>
                   </tr>
                 ))

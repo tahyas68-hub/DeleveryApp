@@ -13,7 +13,7 @@ export default function DeliveryOrders() {
   const { getDriverCommission } = useSettings();
   const driverOrders = orders.filter(
     o => 
-      (o.status === 'driver_assigned' || o.status === 'postponed') && 
+      (o.status === 'driver_assigned') && 
       o.driverId === user?.id
   );
   
