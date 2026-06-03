@@ -11,19 +11,33 @@ export default function AdminBranchIncomes() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBranch, setSelectedBranch] = useState<any>(null);
 
-  // Calculate incomes per branch dynamically based on orders to avoid losing any transferred funds
+  // Calculate incomes per branch dynamically
   const transferredOrders = orders.filter(o => o.financialStatus === 'branch_transferred');
-  const activeBranchNames = Array.from(new Set(transferredOrders.map(o => o.branchName || 'غير محدد')));
-
-  const branchIncomes = activeBranchNames.map(branchName => {
-    const branchInfo = branches.find(b => b.name === branchName) || { id: branchName, name: branchName, city: 'غير محدد', manager: 'غير محدد' };
+  const receivedOrders = orders.filter(o => o.financialStatus === 'admin_received' || o.financialStatus === 'merchant_paid');
+  
+  const branchIncomes = branches.map(branchInfo => {
+    const branchName = branchInfo.name;
     const branchOrders = transferredOrders.filter(o => (o.branchName || 'غير محدد') === branchName);
+    const historicalOrders = receivedOrders.filter(o => (o.branchName || 'غير محدد') === branchName);
     
-    // Amount collected and transferred to admin
+    // Amount collected and transferred to admin (Pending Confirmation)
     const totalAmount = branchOrders.reduce((sum, o) => {
       const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.amount || 0);
       return sum + collected;
     }, 0);
+
+    // Historical Confirmed Amount
+    const historicalAmount = historicalOrders.reduce((sum, o) => {
+      const collected = o.collectedAmount !== undefined ? o.collectedAmount : (o.amount || 0);
+      return sum + collected;
+    }, 0);
+
+    const historicalDriverCommissions = historicalOrders.reduce((sum, o) => {
+       const commission = o.driverCommissionStatus === 'paid' ? (o.driverCommission || 0) : 0;
+       return sum + commission;
+    }, 0);
+
+    const historicalNetIncome = historicalAmount - historicalDriverCommissions;
 
     const driverCommissions = branchOrders.reduce((sum, o) => {
        // Only count commissions if they were paid at the branch
@@ -41,7 +55,8 @@ export default function AdminBranchIncomes() {
       totalAmount,
       driverCommissions,
       deliveryFees,
-      netIncome
+      netIncome,
+      historicalNetIncome
     };
   });
 
@@ -113,18 +128,16 @@ export default function AdminBranchIncomes() {
             <thead className="bg-[#0F3B73]/5 border-b border-slate-200">
               <tr>
                 <th className="px-6 py-4 font-bold text-slate-600">الفرع</th>
-                <th className="px-6 py-4 font-bold text-slate-600">المدينة</th>
                 <th className="px-6 py-4 font-bold text-slate-600">الطلبات الواصلة</th>
-                <th className="px-6 py-4 font-bold text-slate-600">إجمالي المبالغ</th>
-                <th className="px-6 py-4 font-bold text-slate-600">عمولات المناديب المصروفة</th>
-                <th className="px-6 py-4 font-bold text-slate-600">صافي وارد الصندوق</th>
+                <th className="px-6 py-4 font-bold text-slate-600">مبالغ قيد التأكيد (وارد)</th>
+                <th className="px-6 py-4 font-bold text-slate-600">تم استلامه مسبقاً (سحب)</th>
                 <th className="px-6 py-4 font-bold text-slate-600 text-center flex-1">الإجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredBranches.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-slate-500 font-bold">لا توجد فروع مطابقة للبحث</td>
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500 font-bold">لا توجد فروع مطابقة للبحث</td>
                 </tr>
               ) : (
                 filteredBranches.map((branch) => (
@@ -137,11 +150,9 @@ export default function AdminBranchIncomes() {
                          {branch.name}
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-bold text-slate-600">{branch.city}</td>
                     <td className="px-6 py-4 font-en font-bold text-slate-600">{branch.deliveredOrdersCount}</td>
-                    <td className="px-6 py-4 font-en font-bold text-emerald-600">{branch.totalAmount.toLocaleString()}</td>
-                    <td className="px-6 py-4 font-en font-bold text-red-500">{branch.driverCommissions.toLocaleString()}</td>
                     <td className="px-6 py-4 font-en font-black text-[#0F3B73]">{branch.netIncome.toLocaleString()}</td>
+                    <td className="px-6 py-4 font-en font-black text-emerald-600">{branch.historicalNetIncome.toLocaleString()}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center">
                         <button 
