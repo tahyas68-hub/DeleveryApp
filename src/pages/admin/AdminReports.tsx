@@ -29,12 +29,12 @@ export default function AdminReports() {
       description: 'يحتوي على صافي أرباح المنصة من التوصيل والعمولات',
       type: 'Excel',
       category: 'finance',
-      icon: <TrendingUp className="w-6 h-6 text-emerald-600" />,
-      bgIcon: 'bg-emerald-50',
+      icon: <TrendingUp className="w-6 h-6 text-blue-600" />,
+      bgIcon: 'bg-blue-50',
       onExport: () => {
         const data = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial').map(o => {
           const fee = o.deliveryFee || getDeliveryFee(o.province);
-          const comm = getDriverCommission(o.province);
+          const comm = (typeof o.driverCommission === 'number') ? o.driverCommission : getDriverCommission(o.province, o.driverId);
           const profit = fee - comm;
           return [
             o.id,
@@ -85,8 +85,8 @@ export default function AdminReports() {
       description: 'إحصائيات التوصيل والطلبيات الناجحة والراجعة للمناديب',
       type: 'Excel',
       category: 'drivers',
-      icon: <Truck className="w-6 h-6 text-purple-600" />,
-      bgIcon: 'bg-purple-50',
+      icon: <Truck className="w-6 h-6 text-blue-600" />,
+      bgIcon: 'bg-blue-50',
       onExport: () => {
         const drivers = users.filter(u => u.role === 'driver');
         const data = drivers.map(d => {
@@ -96,7 +96,7 @@ export default function AdminReports() {
           const pending = dOrders.filter(o => o.status === 'driver_assigned' || o.status === 'postponed').length;
           const returned = dOrders.filter(o => o.status === 'returned' || o.status === 'returned_partial').length;
           const commission = dOrders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial')
-             .reduce((sum, o) => sum + getDriverCommission(o.province), 0);
+             .reduce((sum, o) => sum + ((typeof o.driverCommission === 'number') ? o.driverCommission : getDriverCommission(o.province, o.driverId)), 0);
              
           return [
             d.name,
@@ -116,8 +116,8 @@ export default function AdminReports() {
       description: 'تفاصيل المرتجعات الكلية والجزئية مع ذكر الأسباب الواردة',
       type: 'Excel',
       category: 'operations',
-      icon: <RotateCcw className="w-6 h-6 text-red-600" />,
-      bgIcon: 'bg-red-50',
+      icon: <RotateCcw className="w-6 h-6 text-blue-600" />,
+      bgIcon: 'bg-blue-50',
       onExport: () => {
         const returnedOrders = orders.filter(o => o.status === 'returned' || o.status === 'returned_partial');
         exportCustomTableToExcel('الطلبات المرتجعة', ['رقم الطلب', 'رقم الشحنة', 'اسم التاجر', 'المندوب', 'المحافظة', 'حالة الراجع'], returnedOrders.map(o => [
@@ -136,8 +136,8 @@ export default function AdminReports() {
       description: 'بيانات وجرد الشحنات في المخزن الرئيسي والفرعي',
       type: 'Excel',
       category: 'operations',
-      icon: <Building2 className="w-6 h-6 text-indigo-600" />,
-      bgIcon: 'bg-indigo-50',
+      icon: <Building2 className="w-6 h-6 text-blue-600" />,
+      bgIcon: 'bg-blue-50',
       onExport: () => {
         const warehouseOrders = orders.filter(o => o.status === 'main_warehouse' || o.status === 'branch_warehouse' || o.status === 'branch_transfering');
         exportCustomTableToExcel('حركة المخازن', ['رقم الطلب', 'رقم الشحنة', 'اسم التاجر', 'المكان الحالي'], warehouseOrders.map(o => [
@@ -154,18 +154,18 @@ export default function AdminReports() {
       description: 'تقارير مالية مجمعة للواردات والصادرات والخزينة',
       type: 'Excel',
       category: 'finance',
-      icon: <DollarSign className="w-6 h-6 text-teal-600" />,
-      bgIcon: 'bg-teal-50',
+      icon: <DollarSign className="w-6 h-6 text-blue-600" />,
+      bgIcon: 'bg-blue-50',
       onExport: () => {
          const deliveredOrders = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial');
          const totalSales = deliveredOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
          const totalDeliveryFees = deliveredOrders.reduce((sum, o) => sum + (o.deliveryFee || getDeliveryFee(o.province)), 0);
          const totalPlatformsProfits = deliveredOrders.reduce((sum, o) => {
            const fee = o.deliveryFee || getDeliveryFee(o.province);
-           const comm = getDriverCommission(o.province);
+           const comm = (typeof o.driverCommission === 'number') ? o.driverCommission : getDriverCommission(o.province, o.driverId);
            return sum + (fee - comm);
          }, 0);
-         const totalDriversCommissions = deliveredOrders.reduce((sum, o) => sum + getDriverCommission(o.province), 0);
+         const totalDriversCommissions = deliveredOrders.reduce((sum, o) => sum + ((typeof o.driverCommission === 'number') ? o.driverCommission : getDriverCommission(o.province, o.driverId)), 0);
          
          exportCustomTableToExcel('التقرير المالي الشامل', ['البيان', 'المبلغ (د.ع)'], [
            ['اجمالي مبيعات التجار (الواصلة)', totalSales],
@@ -181,8 +181,8 @@ export default function AdminReports() {
       description: 'ملخص يومي/أسبوعي/شهري لأهم أحداث وحركات المنصة',
       type: 'Excel',
       category: 'all',
-      icon: <BarChart2 className="w-6 h-6 text-orange-600" />,
-      bgIcon: 'bg-orange-50',
+      icon: <BarChart2 className="w-6 h-6 text-blue-600" />,
+      bgIcon: 'bg-blue-50',
       onExport: () => {
          const totalOrders = orders.length;
          const delivered = orders.filter(o => o.status === 'delivered' || o.status === 'delivered_partial').length;
@@ -203,8 +203,8 @@ export default function AdminReports() {
       description: 'تقارير الإنجاز والأرباح الخاصة بكل فرع على حدة',
       type: 'Excel',
       category: 'operations',
-      icon: <FileText className="w-6 h-6 text-cyan-600" />,
-      bgIcon: 'bg-cyan-50',
+      icon: <FileText className="w-6 h-6 text-blue-600" />,
+      bgIcon: 'bg-blue-50',
       onExport: () => {
         const provinces = [...new Set(orders.map(o => o.province).filter(Boolean))];
         const data = provinces.map(p => {

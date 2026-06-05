@@ -97,7 +97,7 @@ export default function WarehouseReturnsTransfer() {
           <button 
             disabled={selectedIds.length === 0}
             onClick={handleTransferToMainWarehouse}
-            className="flex items-center gap-2 bg-red-500 disabled:bg-slate-100 disabled:text-slate-400 text-white px-6 py-3.5 rounded-2xl font-black transition-all hover:bg-red-600 shadow-lg shadow-red-50"
+            className="flex items-center gap-2 bg-blue-500 disabled:bg-slate-100 disabled:text-slate-400 text-white px-6 py-3.5 rounded-2xl font-black transition-all hover:bg-blue-600 shadow-lg shadow-blue-50"
           >
             <Send className="w-5 h-5" />
             تحويل للمركز الرئيسي

@@ -15,10 +15,41 @@ export default function AdminReturns() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBranches, setSelectedBranches] = useState<Record<string, string>>({});
+  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
 
   const handleReturnToMerchant = (id: string) => {
     updateOrderStatus(id, 'returned_to_merchant');
     alert(`تم تحويل الطلب لتسليمه للتاجر`);
+  };
+
+  const handleBulkReturnToMerchant = () => {
+    if (selectedOrders.length === 0) {
+      alert("الرجاء تحديد طلبات أولاً");
+      return;
+    }
+    if (window.confirm(`هل أنت متأكد من تحويل ${selectedOrders.length} طلبات للتسليم للتاجر؟`)) {
+      selectedOrders.forEach(id => {
+        updateOrderStatus(id, 'returned_to_merchant');
+      });
+      alert('تم تحويل الطلبات بنجاح');
+      setSelectedOrders([]);
+    }
+  };
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedOrders(filteredOrders.map(o => o.id));
+    } else {
+      setSelectedOrders([]);
+    }
+  };
+
+  const handleSelectOrder = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedOrders(prev => [...prev, id]);
+    } else {
+      setSelectedOrders(prev => prev.filter(orderId => orderId !== id));
+    }
   };
 
   const handleTransferToBranch = (id: string) => {
@@ -43,11 +74,11 @@ export default function AdminReturns() {
           <h1 className="text-3xl font-black text-slate-800">رواجع الفروع</h1>
           <p className="text-slate-500 font-medium mt-1">عرض الطلبات الراجعة من الفروع لإرجاعها للتاجر أو تحويلها لفرع آخر</p>
         </div>
-        <div className="flex items-center gap-4 bg-red-50 px-4 py-2 rounded-xl border border-red-100">
-           <Package className="w-5 h-5 text-red-600" />
+        <div className="flex items-center gap-4 bg-blue-50 px-4 py-2 rounded-xl border border-blue-100">
+           <Package className="w-5 h-5 text-blue-600" />
            <div>
-             <p className="text-xs font-bold text-red-600/80">طلبات راجعة</p>
-             <p className="text-lg font-black text-red-700">{returnedOrders.length}</p>
+             <p className="text-xs font-bold text-blue-600/80">طلبات راجعة</p>
+             <p className="text-lg font-black text-blue-700">{returnedOrders.length}</p>
            </div>
         </div>
       </div>
@@ -64,12 +95,28 @@ export default function AdminReturns() {
               className="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-sm"
             />
           </div>
+          {selectedOrders.length > 0 && (
+            <button 
+              onClick={handleBulkReturnToMerchant}
+              className="bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors border border-amber-200 w-full sm:w-auto justify-center"
+            >
+              <Store className="w-4 h-4" /> إرجاع للتاجر ({selectedOrders.length})
+            </button>
+          )}
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-right text-sm">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-600">
               <tr>
+                <th className="p-4">
+                  <input 
+                    type="checkbox" 
+                    onChange={handleSelectAll}
+                    checked={filteredOrders.length > 0 && selectedOrders.length === filteredOrders.length}
+                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
+                  />
+                </th>
                 <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
                 <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
                 <th className="px-6 py-4 font-bold text-slate-600">تفاصيل العميل</th>
@@ -85,13 +132,21 @@ export default function AdminReturns() {
             <tbody className="divide-y divide-slate-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={11} className="px-6 py-12 text-center text-slate-500">
                     <p className="font-bold">لا توجد طلبات راجعة</p>
                   </td>
                 </tr>
               ) : (
                 filteredOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="p-4">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedOrders.includes(order.id)}
+                        onChange={(e) => handleSelectOrder(order.id, e.target.checked)}
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
+                      />
+                    </td>
                     <td className="px-6 py-4 font-en font-bold text-[#0F3B73]">
                       <div>{order.id}</div>
                       <div className="text-xs text-slate-400">{order.date}</div>
@@ -109,15 +164,15 @@ export default function AdminReturns() {
                       {order.totalAmount?.toLocaleString() || (order.amount + (order.deliveryFee || 0)).toLocaleString()} د.ع
                     </td>
                     <td className="px-6 py-4 font-en font-bold text-amber-600 whitespace-nowrap">{order.deliveryFee?.toLocaleString()} د.ع</td>
-                    <td className="px-6 py-4 font-en font-bold text-emerald-600 whitespace-nowrap">
+                    <td className="px-6 py-4 font-en font-bold text-blue-600 whitespace-nowrap">
                       {order.amount?.toLocaleString()} د.ع
                       {(order.id.endsWith('-P') || order.remainingAmount !== undefined) && (
                         <div className="flex flex-col gap-1 mt-1 font-sans">
-                          <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded">
                             المبلغ المتبقي للراجع: {order.remainingAmount !== undefined ? order.remainingAmount.toLocaleString() : order.amount.toLocaleString()} د.ع
                           </span>
                           {order.receivedAmount !== undefined && (
-                            <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">
+                            <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded">
                               تم استلام: {order.receivedAmount.toLocaleString()} د.ع
                             </span>
                           )}
@@ -126,7 +181,7 @@ export default function AdminReturns() {
                     </td>
                     <td className="px-6 py-4 font-en font-bold text-blue-600 text-center">{order.pieces}</td>
                     <td className="px-6 py-4 text-center">
-                      <span className="bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-bold border border-red-100">
+                      <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold border border-blue-100">
                         {order.status === 'returned_partial' ? 'راجع جزئي' : 'راجع كلي'}
                       </span>
                     </td>

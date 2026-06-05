@@ -98,7 +98,7 @@ export default function AdminBranches() {
                 </div>
                 <div>
                   <h3 className="font-black text-lg text-slate-800">{branch.name}</h3>
-                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{branch.status === 'active' ? 'نشط' : 'غير نشط'}</span>
+                  <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{branch.status === 'active' ? 'نشط' : 'غير نشط'}</span>
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -111,7 +111,7 @@ export default function AdminBranches() {
                 </button>
                 <button 
                   onClick={() => handleDeleteBranch(branch.id, branch.name)}
-                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100 shadow-sm"
+                  className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100 shadow-sm"
                   title="حذف"
                 >
                   <Trash2 className="w-5 h-5" />

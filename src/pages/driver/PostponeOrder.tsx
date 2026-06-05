@@ -78,9 +78,9 @@ export default function PostponeOrder() {
 
       {/* Action Panel */}
       {selectedOrder && (
-        <div className="bg-white border border-purple-200 rounded-3xl shadow-sm overflow-hidden p-6 max-w-3xl">
+        <div className="bg-white border border-blue-200 rounded-3xl shadow-sm overflow-hidden p-6 max-w-3xl">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4 mb-6">
-            <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
               <Clock className="w-5 h-5" />
             </div>
             <div>
@@ -111,7 +111,7 @@ export default function PostponeOrder() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">تاريخ التأجيل الجديد <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-bold text-slate-700 mb-2">تاريخ التأجيل الجديد <span className="text-blue-500">*</span></label>
               <div className="relative">
                 <input
                   type="date"
@@ -119,19 +119,19 @@ export default function PostponeOrder() {
                   dir="ltr"
                   value={postponeDate}
                   onChange={(e) => setPostponeDate(e.target.value)}
-                  className="w-full bg-white border-2 border-purple-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-en font-bold text-slate-800 text-lg"
+                  className="w-full bg-white border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-en font-bold text-slate-800 text-lg"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">سبب التأجيل <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-bold text-slate-700 mb-2">سبب التأجيل <span className="text-blue-500">*</span></label>
               <div className="relative">
                 <textarea
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="اكتب هنا سبب تأجيل الطلب (مثال: العميل طلب التأجيل ليوم غد)..."
                   rows={3}
-                  className="w-full bg-white border-2 border-purple-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium text-slate-700 text-right pr-4 pl-12"
+                  className="w-full bg-white border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium text-slate-700 text-right pr-4 pl-12"
                 />
                 <FileText className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
               </div>
@@ -148,7 +148,7 @@ export default function PostponeOrder() {
             <button
               onClick={handlePostpone}
               disabled={!reason.trim() || !postponeDate}
-              className="px-6 py-2.5 rounded-xl font-bold bg-purple-600 text-white hover:bg-purple-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <CheckCircle2 className="w-5 h-5" />
               تأكيد التأجيل

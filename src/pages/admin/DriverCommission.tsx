@@ -49,7 +49,7 @@ export default function DriverCommission() {
 
   const totalCommission = filteredOrders.reduce((sum, order) => {
     if (order.status === 'delivered' || order.status === 'delivered_partial') {
-      return sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province));
+      return sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province, order.driverId));
     }
     return sum;
   }, 0);
@@ -163,7 +163,7 @@ export default function DriverCommission() {
               ) : (
                 filteredOrders.map((order, index) => {
                   const driverCommission = (order.status === 'delivered' || order.status === 'delivered_partial')
-                    ? (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province))
+                    ? (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province, order.driverId))
                     : 0;
                   return (
                     <tr key={order.id} className="hover:bg-slate-50 transition-colors">
@@ -173,7 +173,7 @@ export default function DriverCommission() {
                       <td className="px-6 py-4 font-en font-bold text-slate-800 print:border print:border-slate-300">
                         {order.date}
                       </td>
-                      <td className="px-6 py-4 font-en font-black text-emerald-600 print:border print:border-slate-300 print:text-slate-900">
+                      <td className="px-6 py-4 font-en font-black text-blue-600 print:border print:border-slate-300 print:text-slate-900">
                         {driverCommission.toLocaleString()} د.ع
                       </td>
                     </tr>
@@ -181,12 +181,12 @@ export default function DriverCommission() {
                 })
               )}
             </tbody>
-            <tfoot className="bg-emerald-50 border-t-2 border-emerald-100 print:bg-slate-100 print:border-slate-900">
+            <tfoot className="bg-blue-50 border-t-2 border-blue-100 print:bg-slate-100 print:border-slate-900">
               <tr>
-                <td colSpan={2} className="px-6 py-4 font-bold text-emerald-900 text-left text-lg print:border print:border-slate-300 print:text-slate-900">
+                <td colSpan={2} className="px-6 py-4 font-bold text-blue-900 text-left text-lg print:border print:border-slate-300 print:text-slate-900">
                   إجمالي عمولة المندوب:
                 </td>
-                <td className="px-6 py-4 font-en font-black text-emerald-700 text-xl print:border print:border-slate-300 print:text-slate-900">
+                <td className="px-6 py-4 font-en font-black text-blue-700 text-xl print:border print:border-slate-300 print:text-slate-900">
                   {totalCommission.toLocaleString()} د.ع
                 </td>
               </tr>

@@ -142,10 +142,10 @@ export default function IncomingMerchant() {
                     </td>
                     <td className="px-6 py-4 font-en font-bold text-slate-700">{o.totalAmount?.toLocaleString()} د.ع</td>
                     <td className="px-6 py-4 font-en font-bold text-amber-600">{o.deliveryFee?.toLocaleString()} د.ع</td>
-                    <td className="px-6 py-4 font-en font-bold text-emerald-600">{o.amount?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-en font-bold text-blue-600">{o.amount?.toLocaleString()} د.ع</td>
                     <td className="px-6 py-4 font-en font-bold text-blue-600 text-center">{o.pieces}</td>
                     <td className="px-6 py-4 text-center">
-                      <span className="bg-orange-50 text-orange-600 px-2.5 py-1 rounded-full text-xs font-bold border border-orange-100 whitespace-nowrap">استلام من التاجر</span>
+                      <span className="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full text-xs font-bold border border-blue-100 whitespace-nowrap">استلام من التاجر</span>
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center gap-2">

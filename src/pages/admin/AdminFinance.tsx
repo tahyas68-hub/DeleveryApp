@@ -146,9 +146,9 @@ export default function AdminFinance() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { id: 'overview', label: 'نظرة عامة', desc: 'ملخص مالي شامل', icon: LayoutDashboard, activeBg: 'bg-blue-600', activeBorder: 'border-blue-600', iconBg: 'bg-blue-50', iconColor: 'text-blue-600', shadow: 'shadow-blue-600/20' },
-          { id: 'merchants', label: 'كشوفات التجار', desc: 'حسابات وتسويات التجار', icon: Store, activeBg: 'bg-emerald-600', activeBorder: 'border-emerald-600', iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600', shadow: 'shadow-emerald-600/20' },
-          { id: 'drivers', label: 'عهد ومناديب', desc: 'ذمم وعمولات المناديب', icon: Bike, activeBg: 'bg-orange-600', activeBorder: 'border-orange-600', iconBg: 'bg-orange-50', iconColor: 'text-orange-600', shadow: 'shadow-orange-600/20' },
-          { id: 'transactions', label: 'السجل المالي', desc: 'حركة الأموال والقيود', icon: History, activeBg: 'bg-purple-600', activeBorder: 'border-purple-600', iconBg: 'bg-purple-50', iconColor: 'text-purple-600', shadow: 'shadow-purple-600/20' },
+          { id: 'merchants', label: 'كشوفات التجار', desc: 'حسابات وتسويات التجار', icon: Store, activeBg: 'bg-blue-600', activeBorder: 'border-blue-600', iconBg: 'bg-blue-50', iconColor: 'text-blue-600', shadow: 'shadow-blue-600/20' },
+          { id: 'drivers', label: 'عهد ومناديب', desc: 'ذمم وعمولات المناديب', icon: Bike, activeBg: 'bg-blue-600', activeBorder: 'border-blue-600', iconBg: 'bg-blue-50', iconColor: 'text-blue-600', shadow: 'shadow-blue-600/20' },
+          { id: 'transactions', label: 'السجل المالي', desc: 'حركة الأموال والقيود', icon: History, activeBg: 'bg-blue-600', activeBorder: 'border-blue-600', iconBg: 'bg-blue-50', iconColor: 'text-blue-600', shadow: 'shadow-blue-600/20' },
         ].map(t => (
           <button
             key={t.id}
@@ -193,17 +193,17 @@ export default function AdminFinance() {
                    <Wallet className="w-6 h-6" />
                  </div>
               </div>
-              <div className="bg-emerald-50 rounded-3xl p-6 border border-emerald-100 shadow-sm relative overflow-hidden">
-                 <p className="text-emerald-700 font-bold mb-2">إجمالي المقبوضات</p>
-                 <h3 className="text-3xl font-black font-en text-emerald-800">{totalInbound.toLocaleString()}</h3>
-                 <div className="absolute top-6 left-6 w-12 h-12 bg-white text-emerald-600 rounded-2xl flex items-center justify-center">
+              <div className="bg-blue-50 rounded-3xl p-6 border border-blue-100 shadow-sm relative overflow-hidden">
+                 <p className="text-blue-700 font-bold mb-2">إجمالي المقبوضات</p>
+                 <h3 className="text-3xl font-black font-en text-blue-800">{totalInbound.toLocaleString()}</h3>
+                 <div className="absolute top-6 left-6 w-12 h-12 bg-white text-blue-600 rounded-2xl flex items-center justify-center">
                    <ArrowDownRight className="w-6 h-6" />
                  </div>
               </div>
-              <div className="bg-red-50 rounded-3xl p-6 border border-red-100 shadow-sm relative overflow-hidden">
-                 <p className="text-red-700 font-bold mb-2">إجمالي المصروفات</p>
-                 <h3 className="text-3xl font-black font-en text-red-800">{totalOutbound.toLocaleString()}</h3>
-                 <div className="absolute top-6 left-6 w-12 h-12 bg-white text-red-600 rounded-2xl flex items-center justify-center">
+              <div className="bg-blue-50 rounded-3xl p-6 border border-blue-100 shadow-sm relative overflow-hidden">
+                 <p className="text-blue-700 font-bold mb-2">إجمالي المصروفات</p>
+                 <h3 className="text-3xl font-black font-en text-blue-800">{totalOutbound.toLocaleString()}</h3>
+                 <div className="absolute top-6 left-6 w-12 h-12 bg-white text-blue-600 rounded-2xl flex items-center justify-center">
                    <ArrowUpRight className="w-6 h-6" />
                  </div>
               </div>
@@ -216,8 +216,8 @@ export default function AdminFinance() {
                 <thead className="bg-[#0F3B73]/5 text-[#0F3B73] font-bold">
                   <tr>
                     <th className="px-6 py-4">التاجر</th>
-                    <th className="px-6 py-4 text-orange-600">قيد التوصيل (المتوقع)</th>
-                    <th className="px-6 py-4 text-emerald-600">الرصيد الجاهز للسحب</th>
+                    <th className="px-6 py-4 text-blue-600">قيد التوصيل (المتوقع)</th>
+                    <th className="px-6 py-4 text-blue-600">الرصيد الجاهز للسحب</th>
                     <th className="px-6 py-4 text-slate-500">تم صرفه مسبقاً</th>
                     <th className="px-6 py-4 text-center">إجراءات</th>
                   </tr>
@@ -228,8 +228,8 @@ export default function AdminFinance() {
                     return (
                       <tr key={id} className="hover:bg-slate-50">
                         <td className="px-6 py-4 font-bold text-slate-800">{merchantData.name}</td>
-                        <td className="px-6 py-4 font-en text-orange-600">{merchantData.pending.toLocaleString()}</td>
-                        <td className="px-6 py-4 font-en font-black text-emerald-600">{merchantData.balance.toLocaleString()}</td>
+                        <td className="px-6 py-4 font-en text-blue-600">{merchantData.pending.toLocaleString()}</td>
+                        <td className="px-6 py-4 font-en font-black text-blue-600">{merchantData.balance.toLocaleString()}</td>
                         <td className="px-6 py-4 font-en text-slate-500">{merchantData.paid.toLocaleString()}</td>
                         <td className="px-6 py-4 text-center">
                            <button onClick={() => handlePayMerchant(id, merchantData.name, merchantData.balance)} className="bg-[#0F3B73] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
@@ -250,7 +250,7 @@ export default function AdminFinance() {
                 <thead className="bg-[#0F3B73]/5 text-[#0F3B73] font-bold">
                   <tr>
                     <th className="px-6 py-4">المندوب</th>
-                    <th className="px-6 py-4 text-emerald-600">المبلغ بنذمة المندوب (المحصل)</th>
+                    <th className="px-6 py-4 text-blue-600">المبلغ بنذمة المندوب (المحصل)</th>
                     <th className="px-6 py-4 text-blue-600">عمولات مستحقة</th>
                     <th className="px-6 py-4 text-slate-500">تم صرفه مسبقاً</th>
                     <th className="px-6 py-4 text-center">إجراءات</th>
@@ -262,11 +262,11 @@ export default function AdminFinance() {
                     return (
                       <tr key={id} className="hover:bg-slate-50">
                         <td className="px-6 py-4 font-bold text-slate-800">{driverData.name}</td>
-                        <td className="px-6 py-4 font-en font-black text-emerald-600">{driverData.collected.toLocaleString()}</td>
+                        <td className="px-6 py-4 font-en font-black text-blue-600">{driverData.collected.toLocaleString()}</td>
                         <td className="px-6 py-4 font-en text-blue-600">{driverData.commission.toLocaleString()}</td>
                         <td className="px-6 py-4 font-en text-slate-500">{driverData.paid.toLocaleString()}</td>
                         <td className="px-6 py-4 justify-center flex gap-2">
-                           <button onClick={() => handleReceiveFromDriver(id, driverData.name, driverData.collected)} className="bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
+                           <button onClick={() => handleReceiveFromDriver(id, driverData.name, driverData.collected)} className="bg-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
                               سند قبض من المندوب
                            </button>
                            <button onClick={() => handlePayDriverCommission(id, driverData.name, driverData.commission)} className="bg-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
@@ -305,8 +305,8 @@ export default function AdminFinance() {
                       <tr key={t.id} className="hover:bg-slate-50">
                         <td className="px-6 py-4 font-en text-slate-500 text-xs">{t.id}</td>
                         <td className="px-6 py-4">
-                          {t.type === 'receipt' && <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded">سند قبض</span>}
-                          {t.type === 'payment' && <span className="bg-red-100 text-red-700 px-2 py-1 rounded">سند صرف</span>}
+                          {t.type === 'receipt' && <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded">سند قبض</span>}
+                          {t.type === 'payment' && <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded">سند صرف</span>}
                           {t.type === 'transfer' && <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded">سند تحويل</span>}
                         </td>
                         <td className="px-6 py-4 font-en font-black text-slate-800">{t.amount.toLocaleString()}</td>

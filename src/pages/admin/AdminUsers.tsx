@@ -21,10 +21,10 @@ export default function AdminUsers() {
 
   const getRoleLabel = (role: string) => {
     switch(role) {
-      case 'admin': return { label: 'إدارة', color: 'bg-red-50 text-red-600 border-red-100' };
-      case 'merchant': return { label: 'تاجر', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' };
+      case 'admin': return { label: 'إدارة', color: 'bg-blue-50 text-blue-600 border-blue-100' };
+      case 'merchant': return { label: 'تاجر', color: 'bg-blue-50 text-blue-600 border-blue-100' };
       case 'driver': return { label: 'مندوب', color: 'bg-blue-50 text-blue-600 border-blue-100' };
-      case 'branch_manager': return { label: 'مدير فرع', color: 'bg-orange-50 text-orange-600 border-orange-100' };
+      case 'branch_manager': return { label: 'مدير فرع', color: 'bg-blue-50 text-blue-600 border-blue-100' };
       default: return { label: 'مستخدم', color: 'bg-slate-50 text-slate-600 border-slate-100' };
     }
   };
@@ -145,7 +145,7 @@ export default function AdminUsers() {
                   <td className="px-6 py-4 font-en font-bold text-slate-600">{user.password || '-'}</td>
                   <td className="px-6 py-4 text-center">
                     {user.status === 'active' ? (
-                      <span className="text-emerald-500 font-bold">نشط</span>
+                      <span className="text-blue-500 font-bold">نشط</span>
                     ) : (
                       <span className="text-slate-400 font-bold">غير نشط</span>
                     )}
@@ -160,7 +160,7 @@ export default function AdminUsers() {
                       </button>
                       <button 
                         onClick={() => handleDeleteUser(user.id, user.name)}
-                        className="text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-700 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors"
+                        className="text-blue-600 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors"
                       >
                         حذف
                       </button>
@@ -290,7 +290,7 @@ export default function AdminUsers() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-6 text-center space-y-4">
-              <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Shield className="w-8 h-8" />
               </div>
               <h2 className="text-xl font-bold text-slate-800">حذف المستخدم</h2>
@@ -301,7 +301,7 @@ export default function AdminUsers() {
             <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3">
               <button 
                 onClick={confirmDelete}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-bold transition-all"
+                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl font-bold transition-all"
               >
                 تأكيد الحذف
               </button>

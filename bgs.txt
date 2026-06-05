@@ -1,0 +1,25 @@
+const StatCard = ({ title, value, subValue, icon: Icon, trend, trendUp, titleColor, textColor='text-primary', subTextColor='text-gray-400', bg='bg-white' }: any) => (
+      <div className="w-16 h-16 bg-white/50 rounded-2xl flex items-center justify-center">
+      bg: 'bg-yellow-50',
+      bg: 'bg-orange-50',
+      bg: 'bg-yellow-100',
+      bg: 'bg-orange-100',
+      bg: 'bg-blue-50',
+      bg: 'bg-emerald-50',
+      bg: 'bg-blue-100',
+      bg: 'bg-sky-50',
+      bg: 'bg-red-50',
+      bg: 'bg-purple-100',
+      bg: 'bg-purple-50',
+    <div className="space-y-8 h-full bg-[#f8fafc] -m-4 lg:-m-8 p-6 md:p-10 text-right" dir="rtl">
+        <div className="absolute right-0 top-0 bottom-0 w-1 bg-brand rounded-full"></div>
+        <div className="col-span-1 lg:col-span-8 bg-slate-200 rounded-2xl relative overflow-hidden h-[400px] border border-slate-100 shadow-sm">
+          <div className="absolute top-10 left-20 w-3 h-3 bg-brand rounded-full shadow-[0_0_10px_#FF6B00]"></div>
+          <div className="absolute top-40 left-60 w-3 h-3 bg-brand rounded-full shadow-[0_0_10px_#FF6B00]"></div>
+          <div className="absolute bottom-20 right-40 w-3 h-3 bg-blue-500 rounded-full shadow-[0_0_10px_#3B82F6]"></div>
+          <div className="absolute top-1/2 left-1/2 w-4 h-4 bg-primary rounded-sm transform rotate-45"></div>
+          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur p-3 rounded-lg border text-xs shadow-sm">
+              <span className="flex items-center"><div className="w-2 h-2 rounded-full bg-brand ml-1"></div> مناديب نشطين</span>
+              <span className="flex items-center"><div className="w-2 h-2 rounded-full bg-blue-500 ml-1"></div> مستودعات</span>
+        <div className="col-span-1 lg:col-span-4 bg-white rounded-2xl border border-slate-100 p-6 flex flex-col h-[400px] shadow-sm">
+          <button className="mt-4 text-center w-full py-3 border-2 border-slate-100 text-slate-500 font-bold rounded-xl text-sm hover:bg-slate-50 hover:text-primary hover:border-primary/20 transition-colors">

@@ -39,7 +39,7 @@ export default function PartialDelivery() {
     // Recalculate true order amount based on collected
     const newOrderAmount = amountNum > 0 ? amountNum - applyDeliveryFee : 0;
     
-    const commission = amountNum > 0 ? getDriverCommission(selectedOrder.province) : 0;
+    const commission = amountNum > 0 ? getDriverCommission(selectedOrder.province, user?.id) : 0;
     const companyProfit = applyDeliveryFee - commission;
 
     const remainderTotal = selectedOrder.totalAmount - amountNum;
@@ -135,9 +135,9 @@ export default function PartialDelivery() {
 
       {/* Action Panel */}
       {selectedOrder && (
-        <div className="bg-white border border-orange-200 rounded-3xl shadow-sm overflow-hidden p-6 max-w-3xl">
+        <div className="bg-white border border-blue-200 rounded-3xl shadow-sm overflow-hidden p-6 max-w-3xl">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4 mb-6">
-            <div className="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
               <XCircle className="w-5 h-5" />
             </div>
             <div>
@@ -167,13 +167,13 @@ export default function PartialDelivery() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">المبلغ المستلم فعلياً من العميل (الجزئي) <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-bold text-slate-700 mb-2">المبلغ المستلم فعلياً من العميل (الجزئي) <span className="text-blue-500">*</span></label>
               <div className="relative">
                 <input
                   type="number"
                   value={receivedAmount}
                   onChange={(e) => setReceivedAmount(e.target.value)}
-                  className="w-full bg-white border-2 border-orange-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all font-en font-bold text-slate-800 text-lg"
+                  className="w-full bg-white border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-en font-bold text-slate-800 text-lg"
                 />
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-400 font-bold">
                   د.ع
@@ -183,7 +183,7 @@ export default function PartialDelivery() {
             </div>
             
             {receivedAmount && !isNaN(Number(receivedAmount)) && (
-              <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 text-sm font-bold text-orange-800 flex justify-between items-center mt-4">
+              <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm font-bold text-blue-800 flex justify-between items-center mt-4">
                 <span>المبلغ المتبقي (للراجع):</span>
                 <span className="font-en">
                   {Math.max(0, (selectedOrder.amount + selectedOrder.deliveryFee) - Number(receivedAmount)).toLocaleString()} د.ع
@@ -192,14 +192,14 @@ export default function PartialDelivery() {
             )}
 
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2 mt-4">سبب التسليم الجزئي والتفاصيل <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-bold text-slate-700 mb-2 mt-4">سبب التسليم الجزئي والتفاصيل <span className="text-blue-500">*</span></label>
               <div className="relative">
                 <textarea
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="اكتب هنا سبب استلام جزء من الشحنة أو المبالغ المرتجعة..."
                   rows={3}
-                  className="w-full bg-white border-2 border-orange-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all font-medium text-slate-700 text-right pr-4 pl-12"
+                  className="w-full bg-white border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium text-slate-700 text-right pr-4 pl-12"
                 />
                 <FileText className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
               </div>
@@ -216,7 +216,7 @@ export default function PartialDelivery() {
             <button
               onClick={handlePartialDeliver}
               disabled={!receivedAmount || isNaN(Number(receivedAmount)) || !reason.trim()}
-              className="px-6 py-2.5 rounded-xl font-bold bg-orange-600 text-white hover:bg-orange-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <CheckCircle2 className="w-5 h-5" />
               تأكيد التسليم الجزئي

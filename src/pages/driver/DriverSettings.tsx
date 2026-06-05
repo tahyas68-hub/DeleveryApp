@@ -62,7 +62,7 @@ export default function DriverSettings() {
       </div>
 
       {successMsg && (
-        <div className="bg-emerald-50 text-emerald-700 p-4 rounded-xl text-center font-bold">
+        <div className="bg-blue-50 text-blue-700 p-4 rounded-xl text-center font-bold">
           {successMsg}
         </div>
       )}

@@ -68,7 +68,7 @@ export default function AdminTreasury() {
            <h3 className="font-bold text-slate-800 mb-4 text-xl">إيداع في الصندوق</h3>
            <button 
              onClick={() => setActiveModal('deposit')}
-             className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
+             className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
            >
               <ArrowDownRight className="w-5 h-5" /> إضافة مبلغ
            </button>
@@ -77,7 +77,7 @@ export default function AdminTreasury() {
            <h3 className="font-bold text-slate-800 mb-4 text-xl">صرف من الصندوق</h3>
            <button 
              onClick={() => setActiveModal('expense')}
-             className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
+             className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
            >
               <ArrowUpRight className="w-5 h-5" /> تسجيل مصروف
            </button>
@@ -94,16 +94,16 @@ export default function AdminTreasury() {
               className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden text-right font-sans"
             >
               <div className={`p-6 border-b flex items-center justify-between ${
-                activeModal === 'deposit' ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'
+                activeModal === 'deposit' ? 'bg-blue-50 border-blue-100' : 'bg-blue-50 border-blue-100'
               }`}>
                 <div className="flex items-center gap-2">
                   {activeModal === 'deposit' ? (
-                    <ArrowDownRight className="w-6 h-6 text-emerald-600" />
+                    <ArrowDownRight className="w-6 h-6 text-blue-600" />
                   ) : (
-                    <ArrowUpRight className="w-6 h-6 text-red-600" />
+                    <ArrowUpRight className="w-6 h-6 text-blue-600" />
                   )}
                   <h3 className={`text-lg font-black ${
-                    activeModal === 'deposit' ? 'text-emerald-900' : 'text-red-900'
+                    activeModal === 'deposit' ? 'text-blue-900' : 'text-blue-900'
                   }`}>
                     {activeModal === 'deposit' ? 'إيداع مبلغ في الصندوق' : 'صرف مبلغ من الصندوق'}
                   </h3>
@@ -115,7 +115,7 @@ export default function AdminTreasury() {
                     setDescription('');
                   }}
                   className={`p-1 rounded-full transition-all ${
-                    activeModal === 'deposit' ? 'hover:bg-emerald-100 text-emerald-800' : 'hover:bg-red-100 text-red-800'
+                    activeModal === 'deposit' ? 'hover:bg-blue-100 text-blue-800' : 'hover:bg-blue-100 text-blue-800'
                   }`}
                 >
                   <X className="w-5 h-5" />
@@ -164,8 +164,8 @@ export default function AdminTreasury() {
                     type="submit" 
                     className={`${
                       activeModal === 'deposit' 
-                        ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/10' 
-                        : 'bg-red-500 hover:bg-red-600 shadow-red-500/10'
+                        ? 'bg-blue-500 hover:bg-blue-600 shadow-blue-500/10' 
+                        : 'bg-blue-500 hover:bg-blue-600 shadow-blue-500/10'
                     } text-white font-black py-3 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-md`}
                   >
                     <Check className="w-5 h-5" />

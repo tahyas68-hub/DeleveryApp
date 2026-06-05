@@ -100,16 +100,16 @@ export default function PostponedReturnedOrders() {
                         {(order.amount + (order.deliveryFee || 0)).toLocaleString()} د.ع
                         {(order.id.endsWith('-P') || order.remainingAmount !== undefined) ? (
                             <div className="flex flex-col gap-1 mt-1 font-sans">
-                              <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-1.5 py-0.5 rounded">
+                              <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded">
                                 المبلغ المتبقي للراجع: {order.remainingAmount !== undefined ? order.remainingAmount.toLocaleString() : order.amount.toLocaleString()} د.ع
                               </span>
                               {order.receivedAmount !== undefined && (
-                                <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">
+                                <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded">
                                   تم استلام: {order.receivedAmount.toLocaleString()} د.ع
                                 </span>
                               )}
                             </div>
-                        ) : order.status === 'returned_partial' && !order.id.endsWith('-P') && <span className="text-xs text-orange-600 block leading-tight mt-1">راجع جزئي</span>}
+                        ) : order.status === 'returned_partial' && !order.id.endsWith('-P') && <span className="text-xs text-blue-600 block leading-tight mt-1">راجع جزئي</span>}
                       </span>
                     </td>
                     <td className="px-6 py-4">

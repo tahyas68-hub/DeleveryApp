@@ -17,14 +17,23 @@ export interface MerchantPrice {
   provincePrices: Record<string, number>;
 }
 
+export interface DriverPrice {
+  id: string; // The driver user id
+  name: string;
+  defaultCommission: number;
+  provincePrices: Record<string, number>;
+}
+
 interface SettingsContextType {
   governorates: GovernoratePrice[];
   updateGovernorate: (id: number, data: Partial<GovernoratePrice>) => void;
   bulkUpdateGovernorates: (govs: GovernoratePrice[]) => void;
   merchants: MerchantPrice[];
   updateMerchant: (id: string, data: Partial<MerchantPrice>) => void;
+  driversPricing: DriverPrice[];
+  updateDriverPricing: (id: string, data: Partial<DriverPrice>) => void;
   getDeliveryFee: (province: string, merchantId?: string) => number;
-  getDriverCommission: (province: string) => number;
+  getDriverCommission: (province: string, driverId?: string) => number;
   defaultDriverCommission: number;
   updateDefaultDriverCommission: (val: number) => void;
   requireMerchantApproval: boolean;
@@ -75,6 +84,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [defaultDriverCommission, setDefaultDriverCommission] = useFirebaseSync<number>('settings', 'driverCommission', parseInt(localStorage.getItem('app_default_driver_commission') || '0'));
   const [governorates, setGovernorates] = useFirebaseSync<GovernoratePrice[]>('settings', 'governorates', parseLocal('app_governorates', defaultGovernorates));
   const [merchants, setMerchants] = useFirebaseSync<MerchantPrice[]>('settings', 'merchants', parseLocal('app_merchants_pricing', []));
+  const [driversPricing, setDriversPricing] = useFirebaseSync<DriverPrice[]>('settings', 'driversPricing', parseLocal('app_drivers_pricing', []));
   const [requireMerchantApproval, setRequireMerchantApproval] = useFirebaseSync<boolean>('settings', 'requireMerchantApproval', localStorage.getItem('app_require_merchant_approval') === 'true' || true);
   const [companyName, setCompanyName] = useFirebaseSync<string>('settings', 'companyName', localStorage.getItem('app_company_name') || '');
   const [companyLogo, setCompanyLogo] = useFirebaseSync<string>('settings', 'companyLogo', localStorage.getItem('app_company_logo') || '');
@@ -109,7 +119,30 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return gov?.base || 0;
   };
 
-  const getDriverCommission = (_province?: string) => {
+  const updateDriverPricing = (id: string, data: Partial<DriverPrice>) => {
+    setDriversPricing(prev => {
+      const p = prev || [];
+      const exists = p.find(d => d.id === id);
+      if (exists) {
+        return p.map(d => d.id === id ? { ...d, ...data } : d);
+      } else {
+        return [...p, { id, name: data.name || '', defaultCommission: data.defaultCommission ?? defaultDriverCommission, provincePrices: data.provincePrices || {} } as DriverPrice];
+      }
+    });
+  };
+
+  const getDriverCommission = (province: string, driverId?: string) => {
+    if (driverId) {
+      const d = (driversPricing || []).find(d => d.id === driverId);
+      if (d) {
+        if (d.provincePrices && d.provincePrices[province] !== undefined && d.provincePrices[province] >= 0) {
+          return d.provincePrices[province];
+        }
+        if (typeof d.defaultCommission === 'number' && d.defaultCommission > 0) {
+          return d.defaultCommission;
+        }
+      }
+    }
     return typeof defaultDriverCommission === 'number' ? defaultDriverCommission : 0;
   };
 
@@ -121,6 +154,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     <SettingsContext.Provider value={{
       governorates: governorates || defaultGovernorates, updateGovernorate, bulkUpdateGovernorates, 
       merchants: merchants || [], updateMerchant,
+      driversPricing: driversPricing || [], updateDriverPricing,
       getDeliveryFee, getDriverCommission, 
       defaultDriverCommission: typeof defaultDriverCommission === 'number' ? defaultDriverCommission : 0, updateDefaultDriverCommission: setDefaultDriverCommission,
       requireMerchantApproval: requireMerchantApproval ?? true, updateRequireMerchantApproval: setRequireMerchantApproval,

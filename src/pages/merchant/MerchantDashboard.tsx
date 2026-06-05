@@ -14,7 +14,7 @@ import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 export default function MerchantDashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { orders, addOrder, deleteOrder } = useOrders();
+  const { orders, addOrder, deleteOrder, updateOrderStatus } = useOrders();
   const { getDeliveryFee, governorates, requireMerchantApproval } = useSettings();
   const merchantOrders = orders.filter(o => o.merchantId === user?.id);
   const [searchParams] = useSearchParams();
@@ -100,12 +100,12 @@ export default function MerchantDashboard() {
       statusId: 'returned'
     },
     {
-      title: 'راجع مخزن',
-      count: merchantOrders.filter(o => o.status === 'returned_to_merchant').length,
+      title: 'رواجع مستلمة',
+      count: merchantOrders.filter(o => o.status === 'merchant_received_return').length,
       icon: <RotateCcw className="w-8 h-8 text-white/50" />,
       bg: 'bg-[#9c27b0]', // Purple
       textColor: 'text-white',
-      statusId: 'returned_to_merchant'
+      statusId: 'merchant_received_return'
     },
     {
       title: 'راجع جزئي',
@@ -189,9 +189,20 @@ export default function MerchantDashboard() {
     }
   };
   
+  const handleResendToCompany = () => {
+    if (selectedIds.length === 0) return;
+    if (window.confirm(`هل أنت متأكد من إعادة إرسال ${selectedIds.length} طلب للشركة؟`)) {
+      selectedIds.forEach(id => {
+        updateOrderStatus(id, requireMerchantApproval ? 'merchant_pending' : 'main_warehouse');
+      });
+      setSelectedIds([]);
+      alert("تمت إعادة الإرسال بنجاح");
+    }
+  };
+  
   const handleCreateOrder = () => {
-    if(!newOrder.customerName || !newOrder.customerPhone || !newOrder.province || !newOrder.amount) {
-       alert("الرجاء ملء كافة الحقول المطلوبة (الاسم، الهاتف، المحافظة، المبلغ)");
+    if(!newOrder.customerName || !newOrder.customerPhone || !newOrder.province || !newOrder.amount || !newOrder.trackingNumber) {
+       alert("الرجاء ملء كافة الحقول المطلوبة (الاسم، الهاتف، المحافظة، المبلغ، رقم الشحنة)");
        return;
     }
     const deliveryFee = getDeliveryFee(newOrder.province, user?.id || 'merch-1');
@@ -203,7 +214,7 @@ export default function MerchantDashboard() {
 
     const order: MainOrder = {
        id: `ORD-${1000 + orders.length + 1}`,
-       trackingNumber: newOrder.trackingNumber || `SHP-${Math.floor(Math.random() * 100000)}`,
+       trackingNumber: newOrder.trackingNumber,
        merchantId: user?.id || 'merch-1',
        merchantName: user?.name || 'التاجر الحالي',
        customerName: newOrder.customerName,
@@ -291,13 +302,24 @@ export default function MerchantDashboard() {
           </button>
 
           {selectedIds.length > 0 && (
-            <button 
-              onClick={handleDeleteSelected}
-              className="bg-[#ef4444] text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 active:scale-95 transition-all animate-in fade-in zoom-in-95 shadow-lg shadow-red-500/20"
-            >
-              <Trash2 className="w-5 h-5" />
-              <span>حذف ({selectedIds.length})</span>
-            </button>
+            <>
+              {activeTab === 'merchant_received_return' && (
+                <button 
+                  onClick={handleResendToCompany}
+                  className="bg-amber-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 active:scale-95 transition-all animate-in fade-in shadow-lg shadow-amber-500/20"
+                >
+                  <RotateCcw className="w-5 h-5" />
+                  <span>تحويل للشركة ({selectedIds.length})</span>
+                </button>
+              )}
+              <button 
+                onClick={handleDeleteSelected}
+                className="bg-[#ef4444] text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 active:scale-95 transition-all animate-in fade-in zoom-in-95 shadow-lg shadow-red-500/20"
+              >
+                <Trash2 className="w-5 h-5" />
+                <span>حذف ({selectedIds.length})</span>
+              </button>
+            </>
           )}
         </div>
 
@@ -464,16 +486,16 @@ export default function MerchantDashboard() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-slate-600 font-bold text-xs text-right">المبلغ الكلي للطلب (مع التوصيل) <span className="text-red-500">*</span></label>
+                    <label className="block text-slate-600 font-bold text-xs text-right">المبلغ الكلي للطلب (مع التوصيل) <span className="text-blue-500">*</span></label>
                     <input type="number" min="0" value={newOrder.amount} onChange={e => setNewOrder({...newOrder, amount: e.target.value})} placeholder="المبلغ المطلوب من العميل" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-center text-slate-800 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-slate-600 font-bold text-xs text-right">عدد القطع <span className="text-red-500">*</span></label>
+                    <label className="block text-slate-600 font-bold text-xs text-right">عدد القطع <span className="text-blue-500">*</span></label>
                     <input type="number" min="1" value={newOrder.pieces} onChange={e => setNewOrder({...newOrder, pieces: parseInt(e.target.value) || 1})} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-center text-slate-800 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-slate-600 font-bold text-xs text-right">رقم الشحنة (اختياري)</label>
-                    <input type="text" value={newOrder.trackingNumber} onChange={e => setNewOrder({...newOrder, trackingNumber: e.target.value})} placeholder="رقم الباركود أو الوصل" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 placeholder-slate-300 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
+                    <label className="block text-slate-600 font-bold text-xs text-right">رقم الشحنة <span className="text-blue-500">*</span></label>
+                    <input type="text" value={newOrder.trackingNumber} onChange={e => setNewOrder({...newOrder, trackingNumber: e.target.value})} placeholder="رقم الباركود أو الوصل" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 placeholder-slate-300 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" required />
                   </div>
                   <div className="space-y-2">
                     <label className="block text-slate-600 font-bold text-xs text-right">رقم الطلب (تلقائي)</label>
@@ -491,11 +513,11 @@ export default function MerchantDashboard() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-slate-600 font-bold text-xs text-right">رقم الهاتف <span className="text-red-500">*</span></label>
+                    <label className="block text-slate-600 font-bold text-xs text-right">رقم الهاتف <span className="text-blue-500">*</span></label>
                     <input type="text" value={newOrder.customerPhone} onChange={e => setNewOrder({...newOrder, customerPhone: e.target.value})} placeholder="07xxxxxxxxx" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-en font-bold text-right text-slate-800 placeholder-slate-300 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-slate-600 font-bold text-xs text-right">الاسم الكامل <span className="text-red-500">*</span></label>
+                    <label className="block text-slate-600 font-bold text-xs text-right">الاسم الكامل <span className="text-blue-500">*</span></label>
                     <input type="text" value={newOrder.customerName} onChange={e => setNewOrder({...newOrder, customerName: e.target.value})} placeholder="اسم المستلم" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 placeholder-slate-300 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
                   </div>
                 </div>
@@ -511,11 +533,11 @@ export default function MerchantDashboard() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                       <label className="block text-slate-600 font-bold text-xs text-right">المنطقة / الحي \ أقرب نقطة دالة <span className="text-red-500">*</span></label>
+                       <label className="block text-slate-600 font-bold text-xs text-right">المنطقة / الحي \ أقرب نقطة دالة <span className="text-blue-500">*</span></label>
                        <input type="text" value={newOrder.address} onChange={e => setNewOrder({...newOrder, address: e.target.value})} placeholder="المنصور، الكرادة، إلخ" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 placeholder-slate-300 focus:bg-white focus:border-[#0F3B73] transition-all outline-none" />
                     </div>
                     <div className="space-y-2">
-                      <label className="block text-slate-600 font-bold text-xs text-right">محافظة التوصيل <span className="text-red-500">*</span></label>
+                      <label className="block text-slate-600 font-bold text-xs text-right">محافظة التوصيل <span className="text-blue-500">*</span></label>
                       <select value={newOrder.province} onChange={e => setNewOrder({...newOrder, province: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 font-bold text-right text-slate-800 focus:bg-white focus:border-[#0F3B73] transition-all outline-none appearance-none cursor-pointer">
                         <option value="">اختر المحافظة</option>
                         {governorates.filter(g => g.active !== false).map(g => {

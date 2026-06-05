@@ -38,7 +38,7 @@ export default function Login() {
         {companyLogo ? (
           <img src={companyLogo} alt={companyName} className="w-24 h-24 object-contain rounded-xl shadow-lg border border-slate-100 bg-white p-2" />
         ) : (
-          <div className="w-20 h-20 bg-[#FF6B00] rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+          <div className="w-20 h-20 bg-[#0F3B73] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
             <span className="text-4xl font-bold text-white tracking-tighter">
               {companyName ? companyName.charAt(0) : "D"}
             </span>
@@ -59,7 +59,7 @@ export default function Login() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           {error && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-bold text-center">
+            <div className="bg-blue-50 text-blue-600 p-3 rounded-lg text-sm font-bold text-center">
               {error}
             </div>
           )}

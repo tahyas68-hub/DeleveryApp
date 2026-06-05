@@ -44,7 +44,7 @@ export default function WarehouseDriverCommission() {
     // Driver's commission
     const totalCommission = driverOrders.reduce((sum, order) => {
       if (order.status === 'delivered' || order.status === 'delivered_partial' || order.status === 'returned_partial') {
-        return sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province));
+        return sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province, order.driverId));
       }
       return sum;
     }, 0);
@@ -138,7 +138,7 @@ export default function WarehouseDriverCommission() {
                     </td>
                     <td className="px-4 py-4">
                        <div className="flex flex-col">
-                          <span className="text-xl md:text-2xl font-black text-emerald-500 font-en">{driver.commission.toLocaleString()} د.ع</span>
+                          <span className="text-xl md:text-2xl font-black text-blue-500 font-en">{driver.commission.toLocaleString()} د.ع</span>
                           <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">{driver.orderCount} طلب مستحق العمولة</span>
                        </div>
                     </td>
@@ -151,7 +151,7 @@ export default function WarehouseDriverCommission() {
                            <button 
                              onClick={() => setSelectedDriver(driver)}
                              disabled={driver.orderCount === 0}
-                             className="flex items-center gap-1.5 bg-emerald-500 text-white px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-black text-xs md:text-sm hover:bg-emerald-600 transition-all flex-1 whitespace-nowrap justify-center disabled:opacity-50"
+                             className="flex items-center gap-1.5 bg-blue-500 text-white px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-black text-xs md:text-sm hover:bg-blue-600 transition-all flex-1 whitespace-nowrap justify-center disabled:opacity-50"
                            >
                               <FileText className="w-4 h-4" />
                               اجراء تسوية عمولة المندوب
@@ -187,7 +187,7 @@ export default function WarehouseDriverCommission() {
             <div className="p-8 space-y-6">
               {/* Receipt Header */}
               <div className="text-center space-y-2 border-b-2 border-dashed border-slate-300 pb-6">
-                <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-100">
+                <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-100">
                   <CreditCard className="w-8 h-8" />
                 </div>
                 <h1 className="text-3xl font-black text-slate-800 tracking-tight">مستند صرف وتسوية عمولة</h1>
@@ -211,9 +211,9 @@ export default function WarehouseDriverCommission() {
 
               {/* Financial Summary */}
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 rounded-xl bg-emerald-50 border border-emerald-100">
-                  <span className="font-bold text-emerald-800">إجمالي العمولات المستحقة</span>
-                  <span className="text-xl font-black font-en text-emerald-600">{selectedDriver.commission.toLocaleString()} د.ع</span>
+                <div className="flex justify-between items-center p-3 rounded-xl bg-blue-50 border border-blue-100">
+                  <span className="font-bold text-blue-800">إجمالي العمولات المستحقة</span>
+                  <span className="text-xl font-black font-en text-blue-600">{selectedDriver.commission.toLocaleString()} د.ع</span>
                 </div>
                 
                 <div className="border-t-2 border-slate-800 my-4"></div>
@@ -235,7 +235,7 @@ export default function WarehouseDriverCommission() {
             <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3 print:hidden">
               <button 
                 onClick={handleConfirmSettlement}
-                className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl font-black flex items-center justify-center gap-2 transition-colors"
+                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl font-black flex items-center justify-center gap-2 transition-colors"
               >
                 <Printer className="w-5 h-5" />
                 تأكيد وتسوية وتصدير السند
@@ -284,13 +284,13 @@ export default function WarehouseDriverCommission() {
                       ) : (
                         ledgerDriver.driverOrders.map((o: any) => {
                           const commission = (o.status === 'delivered' || o.status === 'delivered_partial' || o.status === 'returned_partial') 
-                            ? (typeof o.driverCommission === 'number' ? o.driverCommission : getDriverCommission(o.province))
+                            ? (typeof o.driverCommission === 'number' ? o.driverCommission : getDriverCommission(o.province, o.driverId))
                             : 0;
                           return (
                             <tr key={o.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                               <td className="px-4 py-3 font-bold font-en text-slate-800 text-xs">{o.id}</td>
                               <td className="px-4 py-3 font-bold text-slate-700 text-xs">{o.customerName}</td>
-                              <td className="px-4 py-3 font-bold font-en text-emerald-600 text-xs">{commission.toLocaleString()}</td>
+                              <td className="px-4 py-3 font-bold font-en text-blue-600 text-xs">{commission.toLocaleString()}</td>
                               <td className="px-4 py-3 font-bold text-xs">{o.status === 'delivered' ? 'واصل كلي' : o.status === 'delivered_partial' ? 'واصل جزئي' : 'راجع جزئي'}</td>
                               <td className="px-4 py-3 font-bold font-en text-slate-500 text-xs">{o.date ? o.date.split('T')[0] : 'N/A'}</td>
                             </tr>

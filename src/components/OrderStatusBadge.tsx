@@ -16,7 +16,8 @@ export const getStatusText = (status: string) => {
     case 'delivered_partial': return 'واصل جزئي';
     case 'returned': return 'رفض';
     case 'returned_partial': return 'راجع جزئي';
-    case 'returned_to_merchant': return 'راجع مخزن';
+    case 'returned_to_merchant': return 'محول للتاجر (راجع)';
+    case 'merchant_received_return': return 'راجع مستلم';
     case 'postponed': return 'مؤجل';
     default: return status;
   }
@@ -34,16 +35,16 @@ export const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({ status }) =>
         };
       case 'main_warehouse': 
         return {
-          bg: 'bg-indigo-50',
-          text: 'text-indigo-600',
-          border: 'border-indigo-200',
+          bg: 'bg-blue-50',
+          text: 'text-blue-600',
+          border: 'border-blue-200',
           icon: <Building2 className="w-3.5 h-3.5" />
         };
       case 'branch_transfering': 
         return {
-          bg: 'bg-cyan-50',
-          text: 'text-cyan-600',
-          border: 'border-cyan-200',
+          bg: 'bg-blue-50',
+          text: 'text-blue-600',
+          border: 'border-blue-200',
           icon: <Share className="w-3.5 h-3.5" />
         };
       case 'branch_warehouse': 
@@ -55,9 +56,9 @@ export const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({ status }) =>
         };
       case 'driver_assigned': 
         return {
-          bg: 'bg-purple-50',
-          text: 'text-purple-600',
-          border: 'border-purple-200',
+          bg: 'bg-blue-50',
+          text: 'text-blue-600',
+          border: 'border-blue-200',
           icon: <Truck className="w-3.5 h-3.5" />
         };
       case 'delivered': 
@@ -76,9 +77,9 @@ export const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({ status }) =>
         };
       case 'returned_partial': 
         return {
-          bg: 'bg-purple-50',
-          text: 'text-purple-600',
-          border: 'border-purple-200',
+          bg: 'bg-red-50',
+          text: 'text-red-500',
+          border: 'border-red-200',
           icon: <AlertTriangle className="w-3.5 h-3.5" />
         };
       case 'delivered_partial': 
@@ -93,6 +94,13 @@ export const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({ status }) =>
           bg: 'bg-slate-100',
           text: 'text-slate-600',
           border: 'border-slate-300',
+          icon: <RotateCcw className="w-3.5 h-3.5" />
+        };
+      case 'merchant_received_return':
+        return {
+          bg: 'bg-purple-100',
+          text: 'text-purple-800',
+          border: 'border-purple-200',
           icon: <RotateCcw className="w-3.5 h-3.5" />
         };
       case 'postponed': 

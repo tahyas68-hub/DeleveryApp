@@ -92,7 +92,7 @@ export default function DriverProfile() {
       {/* Logout Button */}
       <button 
         onClick={handleLogout}
-        className="w-full bg-red-50 text-red-600 hover:bg-red-500 hover:text-white border border-red-100 px-4 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95"
+        className="w-full bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white border border-blue-100 px-4 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95"
       >
         <LogOut className="w-5 h-5" />
         تسجيل الخروج

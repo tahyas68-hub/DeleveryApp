@@ -56,7 +56,7 @@ export default function DriverPerformance() {
       <div className="grid grid-cols-2 gap-4">
         {/* Delivered Stat */}
         <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm flex items-center justify-between">
-          <div className="w-[52px] h-[52px] bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0">
+          <div className="w-[52px] h-[52px] bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center shrink-0">
             <Check className="w-8 h-8 stroke-[3]" />
           </div>
           <div className="text-right">

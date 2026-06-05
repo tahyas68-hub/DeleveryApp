@@ -57,7 +57,7 @@ export default function WarehouseReports() {
           </button>
           <button 
              onClick={() => { setReportType('financial'); setTimeout(() => window.print(), 100); }}
-             className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-2xl font-black shadow-lg shadow-emerald-100 transition-all text-sm sm:text-base print:hidden"
+             className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-5 py-2.5 rounded-2xl font-black shadow-lg shadow-blue-100 transition-all text-sm sm:text-base print:hidden"
           >
             <Download className="w-5 h-5" />
             طباعة التقرير المالي
@@ -186,7 +186,7 @@ export default function WarehouseReports() {
                                  <td className="px-6 py-5 font-en font-black text-blue-600">{order.trackingNumber}</td>
                                  <td className="px-6 py-5 font-bold text-slate-700 whitespace-nowrap">{order.merchantName}</td>
                                  <td className="px-6 py-5 font-en font-bold text-slate-800 whitespace-nowrap">{(order.orderAmount || 0).toLocaleString()} د.ع</td>
-                                 <td className="px-6 py-5 font-en font-bold text-emerald-600 whitespace-nowrap">{(order.deliveryFee || 0).toLocaleString()} د.ع</td>
+                                 <td className="px-6 py-5 font-en font-bold text-blue-600 whitespace-nowrap">{(order.deliveryFee || 0).toLocaleString()} د.ع</td>
                                  <td className="px-6 py-5 font-en font-black text-[#0F3B73] whitespace-nowrap">{(order.collectedAmount || 0).toLocaleString()} د.ع</td>
                              </tr>
                          ))}

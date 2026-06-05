@@ -25,7 +25,7 @@ export default function CustomerTracking() {
       <header className="bg-[#0F3B73] text-white p-4">
         <div className="container mx-auto max-w-lg flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#FF6B00] rounded text-white flex items-center justify-center font-bold text-lg">D</div>
+            <div className="w-8 h-8 bg-[#0F3B73] rounded text-white flex items-center justify-center font-bold text-lg">D</div>
             <span className="font-bold tracking-tight">Delevary</span>
           </div>
           <div className="text-sm font-medium">تتبع الشحنة</div>
@@ -58,7 +58,7 @@ export default function CustomerTracking() {
               {steps.map((step, i) => (
                 <div key={i} className="flex gap-4 relative">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center relative z-10 shrink-0 border-4 border-white ${
-                    step.status === 'completed' ? 'bg-emerald-500 text-white' : 
+                    step.status === 'completed' ? 'bg-blue-500 text-white' : 
                     step.status === 'current' ? 'bg-brand text-white shadow-lg shadow-brand/30' : 
                     'bg-slate-200 text-slate-400'
                   }`}>
@@ -81,7 +81,7 @@ export default function CustomerTracking() {
             <p className="text-sm text-slate-500 mb-4">يمكنك تتبع المندوب على الخريطة الآن.</p>
             <div className="h-48 bg-slate-100 rounded-xl mb-4 relative overflow-hidden border border-slate-200">
                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '10px 10px' }}></div>
-               <div className="absolute top-1/2 left-1/2 w-4 h-4 bg-brand rounded-full shadow-[0_0_15px_#FF6B00] animate-pulse"></div>
+               <div className="absolute top-1/2 left-1/2 w-4 h-4 bg-brand rounded-full shadow-[0_0_15px_#0F3B73] animate-pulse"></div>
             </div>
             <button className="w-full bg-[#0F3B73] text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
               <Clock className="w-5 h-5" /> تأكيد الاستلام (OTP)

@@ -64,21 +64,21 @@ export default function DriverApp() {
           </button>
           
           <button onClick={() => navigate('/driver/delivery-orders')} className="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm border border-slate-100 gap-2 hover:bg-slate-50 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
               <Package className="w-5 h-5" />
             </div>
             <span className="text-xs font-bold text-slate-700">العهد</span>
           </button>
           
           <button onClick={() => navigate('/driver/postponed-returned-orders')} className="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm border border-slate-100 gap-2 hover:bg-slate-50 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
               <RefreshCcw className="w-5 h-5" />
             </div>
             <span className="text-xs font-bold text-slate-700">الرواجع</span>
           </button>
 
           <button onClick={() => navigate('/driver/commission-report')} className="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm border border-slate-100 gap-2 hover:bg-slate-50 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
               <FileText className="w-5 h-5" />
             </div>
             <span className="text-xs font-bold text-slate-700">العمولات</span>
@@ -122,7 +122,7 @@ export default function DriverApp() {
                    <button className="flex-1 bg-primary text-white py-2 rounded-lg text-xs font-bold transition-transform active:scale-95 shadow-md flex items-center justify-center" onClick={(e) => { e.stopPropagation(); window.open(`https://maps.google.com/?q=${task.address}`); }}>
                      <Navigation className="w-3.5 h-3.5 ml-1" /> ابدأ الملاحة
                    </button>
-                   <button className="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0 border-2 border-green-100" onClick={(e) => { e.stopPropagation(); window.open(`tel:${task.customerPhone}`); }}>
+                   <button className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 border-2 border-blue-100" onClick={(e) => { e.stopPropagation(); window.open(`tel:${task.customerPhone}`); }}>
                      <Phone className="w-4 h-4" />
                    </button>
                    <button className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 border-2 border-blue-100" onClick={(e) => { e.stopPropagation(); window.open(`sms:${task.customerPhone}`); }}>

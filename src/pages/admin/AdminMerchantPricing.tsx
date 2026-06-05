@@ -88,7 +88,7 @@ export default function AdminMerchantPricing() {
                             placeholder="أدخل تسعيرة التاجر"
                             value={currentVal !== undefined ? currentVal : ''}
                             onChange={(e) => handleCustomPriceChange(selectedUser.id, selectedUser.name, g.name, e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 font-en font-bold text-emerald-600 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-left placeholder-slate-300"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 font-en font-bold text-blue-600 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-left placeholder-slate-300"
                             dir="ltr"
                           />
                           <span className="text-xs font-bold text-slate-500">د.ع</span>

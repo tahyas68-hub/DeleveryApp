@@ -125,7 +125,7 @@ export default function AdminMerchants() {
                   <tr key={acc.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4 font-bold text-slate-800">
                       <div className="flex items-center gap-2">
-                         <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                         <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
                            <Store className="w-4 h-4" />
                          </div>
                          {acc.name}
@@ -136,7 +136,7 @@ export default function AdminMerchants() {
                     <td className="px-6 py-4 font-en font-bold text-slate-600">{acc.password || '-'}</td>
                     <td className="px-6 py-4 text-center">
                       {acc.status === 'active' ? (
-                        <span className="text-emerald-500 font-bold bg-emerald-50 px-2 py-1 rounded">نشط</span>
+                        <span className="text-blue-500 font-bold bg-blue-50 px-2 py-1 rounded">نشط</span>
                       ) : (
                         <span className="text-slate-400 font-bold">غير نشط</span>
                       )}
@@ -157,7 +157,7 @@ export default function AdminMerchants() {
                         </button>
                         <button 
                           onClick={() => handleDeleteUser(acc.id, acc.name)}
-                          className="text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-700 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors flex items-center gap-1"
+                          className="text-blue-600 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors flex items-center gap-1"
                         >
                           <Trash2 className="w-3 h-3" /> حذف
                         </button>
@@ -175,14 +175,14 @@ export default function AdminMerchants() {
        {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between shrink-0 bg-emerald-50">
-              <h2 className="text-xl font-bold text-emerald-800 flex items-center gap-2">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between shrink-0 bg-blue-50">
+              <h2 className="text-xl font-bold text-blue-800 flex items-center gap-2">
                 <Store className="w-5 h-5"/>
                 {editingUserId ? 'تعديل بيانات التاجر' : 'إضافة تاجر جديد'}
               </h2>
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-emerald-100 text-emerald-600 transition-colors shrink-0"
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-100 text-blue-600 transition-colors shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -195,7 +195,7 @@ export default function AdminMerchants() {
                   type="text" 
                   value={newUser.name}
                   onChange={e => setNewUser({...newUser, name: e.target.value})}
-                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500" 
+                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" 
                   placeholder="أدخل اسم المتجر أو التاجر"
                 />
               </div>
@@ -206,7 +206,7 @@ export default function AdminMerchants() {
                   type="text" 
                   value={newUser.phone}
                   onChange={e => setNewUser({...newUser, phone: e.target.value})}
-                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 text-left font-en font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500" 
+                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 text-left font-en font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" 
                   placeholder="07XXXXXXXXX"
                   dir="ltr"
                 />
@@ -218,7 +218,7 @@ export default function AdminMerchants() {
                   type="text" 
                   value={newUser.username}
                   onChange={e => setNewUser({...newUser, username: e.target.value})}
-                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 text-left font-en font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500" 
+                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 text-left font-en font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" 
                   placeholder="username"
                   dir="ltr"
                 />
@@ -230,7 +230,7 @@ export default function AdminMerchants() {
                   type="password" 
                   value={newUser.password}
                   onChange={e => setNewUser({...newUser, password: e.target.value})}
-                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 text-left font-en focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500" 
+                  className="w-full border border-slate-200 text-slate-900 rounded-xl px-4 py-3 text-left font-en focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" 
                   placeholder="********"
                   dir="ltr"
                 />
@@ -240,7 +240,7 @@ export default function AdminMerchants() {
             <div className="p-6 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0">
               <button 
                 onClick={handleAddUser}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition-all"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition-all"
               >
                 {editingUserId ? 'حفظ التعديلات' : 'حفظ وإضافة'}
               </button>
@@ -260,7 +260,7 @@ export default function AdminMerchants() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-6 text-center space-y-4">
-              <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Shield className="w-8 h-8" />
               </div>
               <h2 className="text-xl font-bold text-slate-800">حذف التاجر</h2>
@@ -271,7 +271,7 @@ export default function AdminMerchants() {
             <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3">
               <button 
                 onClick={confirmDelete}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-bold transition-all"
+                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl font-bold transition-all"
               >
                 تأكيد الحذف
               </button>

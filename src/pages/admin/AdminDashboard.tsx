@@ -42,22 +42,22 @@ export default function AdminDashboard() {
       title: 'في المخزن الرئيسي',
       count: orders.filter(o => o.status === 'main_warehouse').length,
       icon: Warehouse,
-      bg: 'bg-yellow-100',
-      textColor: 'text-yellow-700'
+      bg: 'bg-purple-100',
+      textColor: 'text-purple-700'
     },
     {
       title: 'في مخزن الفرع',
       count: orders.filter(o => o.status === 'branch_warehouse').length,
       icon: Building2,
-      bg: 'bg-orange-100',
-      textColor: 'text-orange-700'
+      bg: 'bg-purple-50',
+      textColor: 'text-purple-600'
     },
     {
       title: 'بحوزة المندوب',
       count: orders.filter(o => o.status === 'driver_assigned').length,
       icon: Truck,
-      bg: 'bg-blue-50',
-      textColor: 'text-blue-600'
+      bg: 'bg-sky-50',
+      textColor: 'text-sky-600'
     },
     {
       title: 'تم التسليم',
@@ -70,15 +70,15 @@ export default function AdminDashboard() {
       title: 'واصل جزئي',
       count: orders.filter(o => o.status === 'delivered_partial').length,
       icon: PackageCheck,
-      bg: 'bg-green-100',
-      textColor: 'text-green-700'
+      bg: 'bg-emerald-100',
+      textColor: 'text-emerald-700'
     },
     {
       title: 'مؤجل',
       count: orders.filter(o => o.status === 'postponed').length,
       icon: Clock,
-      bg: 'bg-sky-50',
-      textColor: 'text-sky-600'
+      bg: 'bg-orange-100',
+      textColor: 'text-orange-700'
     },
     {
       title: 'رفض',
@@ -91,15 +91,15 @@ export default function AdminDashboard() {
       title: 'راجع جزئي',
       count: orders.filter(o => o.status === 'returned_partial').length,
       icon: PackageMinus,
-      bg: 'bg-purple-100',
-      textColor: 'text-purple-700'
+      bg: 'bg-red-100',
+      textColor: 'text-red-700'
     },
     {
       title: 'راجع مخزن',
       count: orders.filter(o => o.status === 'returned_to_merchant').length,
       icon: RefreshCcw,
-      bg: 'bg-purple-50',
-      textColor: 'text-purple-600'
+      bg: 'bg-slate-50',
+      textColor: 'text-slate-600'
     }
   ];
 

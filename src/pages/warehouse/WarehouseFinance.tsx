@@ -79,7 +79,7 @@ export default function WarehouseFinance() {
                     .forEach(o => updateOrderStatus(o.id, o.status, { financialStatus: 'branch_transferred' }));
                 }
               }}
-              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-lg shadow-emerald-200 transition-colors"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-200 transition-colors"
             >
               <DollarSign className="w-5 h-5" />
               تسليم الصندوق للإدارة
@@ -162,12 +162,12 @@ export default function WarehouseFinance() {
                     <tr key={t.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-4 py-3 font-bold text-slate-600">{warehouseTransactions.length - index}</td>
                       <td className="px-4 py-3 font-en font-bold text-slate-800">{t.id}</td>
-                      <td className={`px-4 py-3 font-bold ${isNegative ? 'text-red-500' : 'text-emerald-500'}`}>
+                      <td className={`px-4 py-3 font-bold ${isNegative ? 'text-blue-500' : 'text-blue-500'}`}>
                         {t.type === 'receipt' && isNegative ? 'سحب إدارة' : t.type === 'receipt' ? 'قبض' : t.type === 'payment' ? 'صرف' : 'تحويل'}
                       </td>
                       <td className="px-4 py-3 font-bold text-slate-800 whitespace-normal min-w-[200px]">{t.description}</td>
                       <td className="px-4 py-3 font-en font-bold text-slate-600">{new Date(t.timestamp).toLocaleString('ar-IQ')}</td>
-                      <td className={`px-4 py-3 font-en font-black text-base lg:text-lg ${isNegative ? 'text-red-500' : 'text-emerald-500'}`}>
+                      <td className={`px-4 py-3 font-en font-black text-base lg:text-lg ${isNegative ? 'text-blue-500' : 'text-blue-500'}`}>
                         <div className="flex items-center gap-1">
                           <span>{isNegative ? '(-)' : '(+)'}</span>
                           <span dir="ltr">{t.amount.toLocaleString()} د.ع</span>
@@ -216,7 +216,7 @@ export default function WarehouseFinance() {
                         <td className="p-2 font-bold border-l border-slate-300">{t.type === 'receipt' && isNegative ? 'سحب إدارة' : t.type === 'receipt' ? 'قبض' : t.type === 'payment' ? 'صرف' : 'تحويل'}</td>
                         <td className="p-2 font-bold border-l border-slate-300">{t.description}</td>
                         <td className="p-2 font-bold border-l border-slate-300 font-en text-slate-700">{new Date(t.timestamp).toLocaleDateString('ar-IQ')}</td>
-                        <td className={`p-2 font-black font-en text-left dir-ltr ${isNegative ? 'text-red-700' : 'text-emerald-700'}`}>
+                        <td className={`p-2 font-black font-en text-left dir-ltr ${isNegative ? 'text-blue-700' : 'text-blue-700'}`}>
                           {isNegative ? '(-) ' : '(+) '}
                           {t.amount.toLocaleString()} د.ع
                         </td>

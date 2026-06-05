@@ -12,6 +12,7 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import MainWarehouse from "./pages/admin/MainWarehouse";
 import MerchantDashboard from "./pages/merchant/MerchantDashboard";
 import MerchantOverview from "./pages/merchant/MerchantOverview";
+import MerchantReturns from "./pages/merchant/MerchantReturns";
 import MerchantFinance from "./pages/merchant/MerchantFinance";
 import MerchantSettings from "./pages/merchant/MerchantSettings";
 import TrackingMap from "./pages/merchant/TrackingMap";
@@ -59,6 +60,7 @@ import Stickers from "./pages/admin/Stickers";
 import AdminBranches from "./pages/admin/AdminBranches";
 import AdminReturns from "./pages/admin/AdminReturns";
 import DriverCommission from "./pages/admin/DriverCommission";
+import AdminDriverPricing from "./pages/admin/AdminDriverPricing";
 import AdminFinance from "./pages/admin/AdminFinance";
 import AdminBranchIncomes from "./pages/admin/AdminBranchIncomes";
 import AdminMerchants from "./pages/admin/AdminMerchants";
@@ -124,6 +126,10 @@ export default function App() {
                     <Route
                       path="driver-commission"
                       element={<DriverCommission />}
+                    />
+                    <Route
+                      path="driver-pricing"
+                      element={<AdminDriverPricing />}
                     />
                     <Route path="finance" element={<AdminFinance />} />
                     <Route
@@ -199,6 +205,7 @@ export default function App() {
                   >
                     <Route index element={<MerchantOverview />} />
                     <Route path="orders" element={<MerchantDashboard />} />
+                    <Route path="returns" element={<MerchantReturns />} />
                     <Route path="tracking" element={<TrackingMap />} />
                     <Route path="finance" element={<MerchantFinance />} />
                     <Route path="settings" element={<MerchantSettings />} />

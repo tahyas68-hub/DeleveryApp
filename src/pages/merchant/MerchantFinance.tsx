@@ -191,7 +191,7 @@ export default function MerchantFinance() {
                       </div>
                     </td>
                     <td className="px-6 py-5 text-center">
-                      <span className={`px-4 py-1.5 rounded-lg font-bold text-xs whitespace-nowrap border ${trx.type === 'مرتجع' ? 'bg-red-50 text-red-700 border-red-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100'}`}>
+                      <span className={`px-4 py-1.5 rounded-lg font-bold text-xs whitespace-nowrap border ${trx.type === 'مرتجع' ? 'bg-blue-50 text-blue-700 border-blue-100' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
                         {trx.type}
                       </span>
                     </td>
@@ -201,7 +201,7 @@ export default function MerchantFinance() {
                     <td className="px-6 py-5 font-en font-bold text-amber-600">
                       {trx.deliveryFee.toLocaleString()}
                     </td>
-                    <td className="px-6 py-5 font-en font-black text-emerald-600">
+                    <td className="px-6 py-5 font-en font-black text-blue-600">
                       {trx.amount.toLocaleString()}
                     </td>
                     <td className="px-6 py-5 font-en font-bold text-slate-400 text-sm">{trx.date}</td>

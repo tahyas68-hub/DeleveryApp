@@ -138,7 +138,7 @@ export default function WarehouseDriverIncomes() {
                     </td>
                     <td className="px-4 py-4">
                        <div className="flex flex-col">
-                          <span className="text-xl md:text-2xl font-black text-orange-500 font-en">{driver.debt.toLocaleString()} د.ع</span>
+                          <span className="text-xl md:text-2xl font-black text-blue-500 font-en">{driver.debt.toLocaleString()} د.ع</span>
                           <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">{driver.orderCount} طلب/شحنة</span>
                        </div>
                     </td>
@@ -151,7 +151,7 @@ export default function WarehouseDriverIncomes() {
                            <button 
                              onClick={() => setSelectedDriver(driver)}
                              disabled={driver.orderCount === 0 || driver.debt === 0}
-                             className="flex items-center gap-1.5 bg-emerald-600 text-white px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-black text-xs md:text-sm hover:bg-emerald-700 transition-all whitespace-nowrap justify-center disabled:opacity-50 shadow-lg shadow-emerald-200"
+                             className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-black text-xs md:text-sm hover:bg-blue-700 transition-all whitespace-nowrap justify-center disabled:opacity-50 shadow-lg shadow-blue-200"
                            >
                               <FileText className="w-4 h-4" />
                               استلام المبالغ وإصدار وصل
@@ -211,9 +211,9 @@ export default function WarehouseDriverIncomes() {
 
               {/* Financial Summary */}
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 rounded-xl bg-orange-50 border border-orange-100">
-                  <span className="font-bold text-orange-800">إجمالي المبالغ المستلمة (الذمة)</span>
-                  <span className="text-xl font-black font-en text-orange-600">{selectedDriver.debt.toLocaleString()} د.ع</span>
+                <div className="flex justify-between items-center p-3 rounded-xl bg-blue-50 border border-blue-100">
+                  <span className="font-bold text-blue-800">إجمالي المبالغ المستلمة (الذمة)</span>
+                  <span className="text-xl font-black font-en text-blue-600">{selectedDriver.debt.toLocaleString()} د.ع</span>
                 </div>
                 
                 <div className="border-t-2 border-slate-800 my-4"></div>
@@ -288,7 +288,7 @@ export default function WarehouseDriverIncomes() {
                             <tr key={o.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                               <td className="px-4 py-3 font-bold font-en text-slate-800 text-xs">{o.id}</td>
                               <td className="px-4 py-3 font-bold text-slate-700 text-xs">{o.customerName}</td>
-                              <td className="px-4 py-3 font-bold font-en text-orange-600 text-xs">{collected.toLocaleString()}</td>
+                              <td className="px-4 py-3 font-bold font-en text-blue-600 text-xs">{collected.toLocaleString()}</td>
                               <td className="px-4 py-3 font-bold text-xs">{o.status === 'delivered' ? 'واصل كلي' : o.status === 'delivered_partial' ? 'واصل جزئي' : 'راجع جزئي'}</td>
                               <td className="px-4 py-3 font-bold font-en text-slate-500 text-xs">{o.date ? o.date.split('T')[0] : 'N/A'}</td>
                             </tr>

@@ -28,8 +28,8 @@ export default function TrackingMap() {
       <div className="bg-white border-b border-slate-200 p-4 shrink-0 z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm relative">
         <div className="flex items-center gap-4">
           <h1 className="text-xl font-bold text-slate-800">التتبع المباشر للأسطول</h1>
-          <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider">
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
             تحديث تلقائي (Every 5s)
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function TrackingMap() {
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 border-white relative ${isActive ? 'bg-brand shadow-brand/40 animate-bounce' : 'bg-[#0F3B73]'}`}>
                   <Truck className="w-5 h-5 text-white" />
                   {driver.status === 'busy' && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border border-white"></div>
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border border-white"></div>
                   )}
                 </div>
                 {isActive && (
@@ -142,7 +142,7 @@ export default function TrackingMap() {
                           <span className="font-en text-[10px] font-bold text-slate-500 tracking-wider block bg-slate-100 px-2 rounded">{order.trackingNumber}</span>
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                             order.status === 'delivered' ? 'bg-[#E5F5D0] text-[#10b981]' :
-                            order.status === 'driver_assigned' ? 'bg-purple-100 text-purple-700' :
+                            order.status === 'driver_assigned' ? 'bg-blue-100 text-blue-700' :
                             'bg-slate-100 text-slate-700'
                           }`}>
                             {order.status === 'delivered' ? 'تم التسليم' :

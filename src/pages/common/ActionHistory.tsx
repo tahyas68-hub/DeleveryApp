@@ -110,7 +110,7 @@ export default function ActionHistory() {
                     </span>
                   )}
                   {log.user && (
-                    <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded-md text-xs font-bold">
+                    <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-md text-xs font-bold">
                       {log.user}
                     </span>
                   )}

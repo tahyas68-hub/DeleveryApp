@@ -89,7 +89,7 @@ export default function WarehousePullOrders() {
           <button 
             disabled={selectedIds.length === 0}
             onClick={handlePullSelected}
-            className="flex items-center gap-2 bg-rose-500 disabled:bg-slate-100 disabled:text-slate-400 text-white px-8 py-3.5 rounded-2xl font-black transition-all hover:bg-rose-600 shadow-lg shadow-rose-50"
+            className="flex items-center gap-2 bg-blue-500 disabled:bg-slate-100 disabled:text-slate-400 text-white px-8 py-3.5 rounded-2xl font-black transition-all hover:bg-blue-600 shadow-lg shadow-blue-50"
           >
             سحب من المندوب
           </button>
@@ -143,11 +143,11 @@ export default function WarehousePullOrders() {
                 </tr>
               ) : (
                 filteredOrders.map((order) => (
-                  <tr key={order.id} className={`hover:bg-slate-50 transition-colors ${selectedIds.includes(order.id) ? 'bg-rose-50/50' : ''}`}>
+                  <tr key={order.id} className={`hover:bg-slate-50 transition-colors ${selectedIds.includes(order.id) ? 'bg-blue-50/50' : ''}`}>
                     <td className="px-6 py-5 text-center">
                       <input 
                         type="checkbox" 
-                        className="w-5 h-5 rounded border-slate-300 text-rose-600 focus:ring-rose-500"
+                        className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                         checked={selectedIds.includes(order.id)}
                         onChange={(e) => {
                           if (e.target.checked) setSelectedIds([...selectedIds, order.id]);

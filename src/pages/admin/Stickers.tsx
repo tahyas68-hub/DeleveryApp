@@ -76,7 +76,7 @@ export default function Stickers() {
             طباعة الاستيكرات الحرارية
           </h1>
           <div className="text-slate-500 font-medium text-sm mt-1 flex items-center gap-2 justify-end">
-            <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md text-xs font-bold border border-purple-200">
+            <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md text-xs font-bold border border-blue-200">
               في المخزن
             </span>
             طباعة ملصقات الشحن (100x150mm) للطلبات المتوفرة في المخزن

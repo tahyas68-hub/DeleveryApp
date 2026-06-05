@@ -99,12 +99,12 @@ export default function AdminBranchIncomes() {
           </h1>
           <p className="text-slate-500 mt-1 font-medium">متابعة المبالغ الواردة من كل فرع بشكل تفصيلي</p>
         </div>
-        <div className="bg-emerald-50 text-emerald-700 px-6 py-3 rounded-2xl border border-emerald-100 flex items-center gap-3">
-           <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
-             <DollarSign className="w-5 h-5 text-emerald-600" />
+        <div className="bg-blue-50 text-blue-700 px-6 py-3 rounded-2xl border border-blue-100 flex items-center gap-3">
+           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+             <DollarSign className="w-5 h-5 text-blue-600" />
            </div>
            <div>
-             <p className="text-xs font-bold text-emerald-600/80">إجمالي الواردات الكلي</p>
+             <p className="text-xs font-bold text-blue-600/80">إجمالي الواردات الكلي</p>
              <p className="text-xl font-black font-en">{grandTotal.toLocaleString()} <span className="text-sm">د.ع</span></p>
            </div>
         </div>
@@ -152,7 +152,7 @@ export default function AdminBranchIncomes() {
                     </td>
                     <td className="px-6 py-4 font-en font-bold text-slate-600">{branch.deliveredOrdersCount}</td>
                     <td className="px-6 py-4 font-en font-black text-[#0F3B73]">{branch.netIncome.toLocaleString()}</td>
-                    <td className="px-6 py-4 font-en font-black text-emerald-600">{branch.historicalNetIncome.toLocaleString()}</td>
+                    <td className="px-6 py-4 font-en font-black text-blue-600">{branch.historicalNetIncome.toLocaleString()}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center">
                         <button 
@@ -205,7 +205,7 @@ export default function AdminBranchIncomes() {
             <div className="p-4 bg-slate-50 border-t border-slate-100 flex gap-3">
               <button 
                 onClick={handleConfirmAdminReceipt}
-                className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl font-black transition-colors"
+                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl font-black transition-colors"
                 >
                 تأكيد العملية
               </button>

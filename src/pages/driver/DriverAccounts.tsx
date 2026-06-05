@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Wallet, CheckCircle2, Printer, Calendar, FileText, ArrowDownRight, ArrowUpRight, DollarSign, LayoutDashboard } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useSettings } from '../../context/SettingsContext';
+import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { PrintHeader } from '../../components/PrintHeader';
 
 export default function DriverAccounts() {
   const { orders } = useOrders();
   const { getDriverCommission } = useSettings();
+  const { user } = useAuth();
   
   const [activeTab, setActiveTab] = useState<'liability' | 'commission'>('liability');
   
@@ -47,14 +49,14 @@ export default function DriverAccounts() {
     o.driverCommissionStatus !== 'paid'
   );
   
-  const totalCommission = relevantCommissionOrders.reduce((sum, order) => sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province)), 0);
+  const totalCommission = relevantCommissionOrders.reduce((sum, order) => sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province, user?.id)), 0);
 
   const receivedCommissionOrders = orders.filter(o => 
     (o.status === 'delivered' || o.status === 'delivered_partial') &&
     o.driverCommissionStatus === 'paid'
   );
 
-  const receivedCommissions = receivedCommissionOrders.reduce((sum, order) => sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province)), 0);
+  const receivedCommissions = receivedCommissionOrders.reduce((sum, order) => sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province, user?.id)), 0);
 
 
   // Filter based on dates for lists
@@ -90,7 +92,7 @@ export default function DriverAccounts() {
     return sum + net;
   }, 0);
 
-  const filteredTotalCommission = filteredCommissionOrders.reduce((sum, order) => sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province)), 0);
+  const filteredTotalCommission = filteredCommissionOrders.reduce((sum, order) => sum + (typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province, user?.id)), 0);
 
   return (
     <div className="space-y-6 pb-24 max-w-5xl mx-auto px-4 sm:px-0 mt-4" dir="rtl">
@@ -135,10 +137,10 @@ export default function DriverAccounts() {
         <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-center">
           <p className="text-slate-500 font-bold mb-2">المبالغ المسلمة للشركة</p>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-black font-en text-purple-700 tracking-tight">{deliveredToCompany.toLocaleString()}</span>
-            <span className="text-sm font-bold text-purple-500">د.ع</span>
+            <span className="text-2xl font-black font-en text-blue-700 tracking-tight">{deliveredToCompany.toLocaleString()}</span>
+            <span className="text-sm font-bold text-blue-500">د.ع</span>
           </div>
-          <div className="absolute top-5 left-5 w-10 h-10 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center">
+          <div className="absolute top-5 left-5 w-10 h-10 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
             <ArrowUpRight className="w-5 h-5" />
           </div>
         </div>
@@ -147,10 +149,10 @@ export default function DriverAccounts() {
         <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-center">
           <p className="text-slate-500 font-bold mb-2 text-[13px]">العمولة الصافية المستحقة للمندوب</p>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-black font-en text-emerald-700 tracking-tight">{totalCommission.toLocaleString()}</span>
-            <span className="text-sm font-bold text-emerald-500">د.ع</span>
+            <span className="text-2xl font-black font-en text-blue-700 tracking-tight">{totalCommission.toLocaleString()}</span>
+            <span className="text-sm font-bold text-blue-500">د.ع</span>
           </div>
-          <div className="absolute top-5 left-5 w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
+          <div className="absolute top-5 left-5 w-10 h-10 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
             <DollarSign className="w-5 h-5" />
           </div>
         </div>
@@ -159,10 +161,10 @@ export default function DriverAccounts() {
         <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-center">
           <p className="text-slate-500 font-bold mb-2">عمولات مقبوضة فقط</p>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-black font-en text-orange-700 tracking-tight">{receivedCommissions.toLocaleString()}</span>
-            <span className="text-sm font-bold text-orange-500">د.ع</span>
+            <span className="text-2xl font-black font-en text-blue-700 tracking-tight">{receivedCommissions.toLocaleString()}</span>
+            <span className="text-sm font-bold text-blue-500">د.ع</span>
           </div>
-          <div className="absolute top-5 left-5 w-10 h-10 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center">
+          <div className="absolute top-5 left-5 w-10 h-10 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
             <Wallet className="w-5 h-5" />
           </div>
         </div>
@@ -330,7 +332,7 @@ export default function DriverAccounts() {
                       </tr>
                     ) : (
                       filteredCommissionOrders.map((order, index) => {
-                        const driverCommission = typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province);
+                        const driverCommission = typeof order.driverCommission === 'number' ? order.driverCommission : getDriverCommission(order.province, user?.id);
                         return (
                           <tr key={order.id} className="hover:bg-slate-50 transition-colors">
                             <td className="px-6 py-4 font-en font-bold text-slate-600 print:border print:border-slate-300 print:text-slate-900">
@@ -339,7 +341,7 @@ export default function DriverAccounts() {
                             <td className="px-6 py-4 font-en font-bold text-slate-800 print:border print:border-slate-300">
                               {order.date}
                             </td>
-                            <td className="px-6 py-4 font-en font-black text-emerald-600 print:border print:border-slate-300 print:text-slate-900">
+                            <td className="px-6 py-4 font-en font-black text-blue-600 print:border print:border-slate-300 print:text-slate-900">
                               {driverCommission.toLocaleString()} د.ع
                             </td>
                           </tr>
@@ -348,12 +350,12 @@ export default function DriverAccounts() {
                     )}
                   </tbody>
                   {filteredCommissionOrders.length > 0 && (
-                    <tfoot className="bg-emerald-50 border-t-2 border-emerald-100 print:bg-slate-100 print:border-slate-900">
+                    <tfoot className="bg-blue-50 border-t-2 border-blue-100 print:bg-slate-100 print:border-slate-900">
                       <tr>
-                        <td colSpan={2} className="px-6 py-4 font-bold text-emerald-900 text-left text-lg print:border print:border-slate-300 print:text-slate-900">
+                        <td colSpan={2} className="px-6 py-4 font-bold text-blue-900 text-left text-lg print:border print:border-slate-300 print:text-slate-900">
                           إجمالي عمولة المندوب:
                         </td>
-                        <td className="px-6 py-4 font-en font-black text-emerald-700 text-xl print:border print:border-slate-300 print:text-slate-900">
+                        <td className="px-6 py-4 font-en font-black text-blue-700 text-xl print:border print:border-slate-300 print:text-slate-900">
                           {filteredTotalCommission.toLocaleString()} د.ع
                         </td>
                       </tr>

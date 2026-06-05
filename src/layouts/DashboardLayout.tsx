@@ -5,7 +5,7 @@ import {
   Bell, Search, Menu, X, LogOut, FileText, Inbox, Star,
   Warehouse, Building2, ClipboardList, Calculator, Wallet,
   Briefcase, UserCircle, ArrowDown, History, Store,
-  Bike, Percent, DollarSign, Shield, Tags, ChevronLeft, ChevronDown, Activity, ArrowRightLeft, PlusCircle
+  Bike, Percent, DollarSign, Shield, Tags, ChevronLeft, ChevronDown, Activity, ArrowRightLeft, PlusCircle, RotateCcw
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
@@ -72,6 +72,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
             to: '/admin/drivers',
             subItems: [
               { label: 'عمولة المندوب', icon: Percent, to: '/admin/driver-commission' },
+              { label: 'تسعيرة المندوبين', to: '/admin/driver-pricing' },
             ]
           },
           { 
@@ -142,6 +143,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
           { label: 'الرئيسية', icon: LayoutDashboard, to: '/merchant' },
           { label: 'الطلبات', icon: Package, to: '/merchant/orders' },
           { label: 'تتبع الشحنات', icon: Truck, to: '/merchant/tracking' },
+          { label: 'رواجع الشركة', icon: RotateCcw, to: '/merchant/returns' },
           { label: 'الكشوفات المالية', icon: FileText, to: '/merchant/finance' },
           { label: 'الإعدادات', icon: Settings, to: '/merchant/settings' },
         ];
@@ -282,7 +284,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
           
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 mt-2 text-red-300 hover:bg-red-500/20 hover:text-red-200 rounded-xl font-bold transition-colors w-full"
+            className="flex items-center gap-3 px-4 py-3 mt-2 text-blue-300 hover:bg-blue-500/20 hover:text-blue-200 rounded-xl font-bold transition-colors w-full"
             title="تسجيل الخروج"
           >
             <LogOut className="w-4 h-4" />
@@ -317,7 +319,7 @@ export default function DashboardLayout({ role = 'merchant' }: { role?: 'merchan
             <div className="flex items-center gap-3 border-r border-slate-200 pr-6 mr-2">
               <button className="relative p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors">
                 <Bell className="w-5 h-5" />
-                <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                <span className="absolute top-1.5 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-white"></span>
               </button>
               
               <button className="flex items-center gap-3 hover:bg-slate-50 p-1.5 rounded-xl transition-colors text-right group">

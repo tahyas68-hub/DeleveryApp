@@ -50,9 +50,9 @@ export default function DriverMap() {
 
          {/* Destination Marker */}
          <div className="absolute top-[200px] left-[300px] -mt-8 -ml-5 z-10">
-           <MapPin className="w-10 h-10 text-emerald-500 drop-shadow-xl" fill="white" />
+           <MapPin className="w-10 h-10 text-blue-500 drop-shadow-xl" fill="white" />
            <div className="absolute top-full left-1/2 -ml-16 w-32 text-center mt-1">
-             <span className="bg-white text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg whitespace-nowrap">العميل: {currentTask.customerName}</span>
+             <span className="bg-white text-blue-700 border border-blue-200 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg whitespace-nowrap">العميل: {currentTask.customerName}</span>
            </div>
          </div>
       </div>
@@ -65,7 +65,7 @@ export default function DriverMap() {
              <h2 className="text-3xl font-black text-slate-800 font-en">12 <span className="text-lg text-slate-500 font-bold font-sans">دقيقة</span></h2>
              <p className="text-slate-500 font-medium">4.2 كيلومتر • وصول متوقع 04:30 م</p>
            </div>
-           <button className="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center font-bold border-2 border-red-100 mb-2 hover:bg-red-100 transition-colors">
+           <button className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center font-bold border-2 border-blue-100 mb-2 hover:bg-blue-100 transition-colors">
              إنهاء
            </button>
          </div>

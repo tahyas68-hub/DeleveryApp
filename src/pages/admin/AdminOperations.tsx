@@ -105,12 +105,12 @@ export default function AdminOperations() {
               </div>
               {(searchedOrder.id.endsWith('-P') || searchedOrder.remainingAmount !== undefined) && (
                 <div className="mb-3 space-y-1">
-                  <div className="bg-orange-50 text-orange-700 p-2 rounded-lg text-xs font-bold border border-orange-100 flex justify-between items-center">
+                  <div className="bg-blue-50 text-blue-700 p-2 rounded-lg text-xs font-bold border border-blue-100 flex justify-between items-center">
                     <span>مبلغ الراجع المتبقي:</span>
                     <span className="font-en">{searchedOrder.remainingAmount !== undefined ? searchedOrder.remainingAmount.toLocaleString() : (searchedOrder.amount + (searchedOrder.deliveryFee || 0)).toLocaleString()} د.ع</span>
                   </div>
                   {searchedOrder.receivedAmount !== undefined && (
-                    <div className="bg-emerald-50 text-emerald-700 p-2 rounded-lg text-xs font-bold border border-emerald-100 flex justify-between items-center">
+                    <div className="bg-blue-50 text-blue-700 p-2 rounded-lg text-xs font-bold border border-blue-100 flex justify-between items-center">
                       <span>تم استلام:</span>
                       <span className="font-en">{searchedOrder.receivedAmount.toLocaleString()} د.ع</span>
                     </div>
@@ -121,10 +121,10 @@ export default function AdminOperations() {
                  <button onClick={() => handleAction('delivered')} className="bg-[#E5F5D0] text-[#10b981] hover:bg-[#10b981] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
                     تسليم كامل
                  </button>
-                 <button onClick={() => handleAction('returned_partial')} className="bg-orange-100 text-orange-600 hover:bg-orange-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                 <button onClick={() => handleAction('returned_partial')} className="bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
                     مسلم جزئياً
                  </button>
-                 <button onClick={() => handleAction('returned')} className="bg-red-100 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                 <button onClick={() => handleAction('returned')} className="bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
                     راجع
                  </button>
                  <button onClick={() => handleAction('postponed')} className="bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
@@ -134,7 +134,7 @@ export default function AdminOperations() {
            </div>
          )}
          {!searchedOrder && actionQuery && (
-           <div className="flex-1 w-full bg-red-50 text-red-600 rounded-xl p-4 font-bold text-sm text-center border border-red-100">
+           <div className="flex-1 w-full bg-blue-50 text-blue-600 rounded-xl p-4 font-bold text-sm text-center border border-blue-100">
               لم يتم العثور على الطلب
            </div>
          )}
@@ -234,7 +234,7 @@ export default function AdminOperations() {
                           </button>
                           <button 
                             onClick={() => handleDeleteOrder(order.id, order.trackingNumber)}
-                            className="p-2 hover:bg-red-50 rounded-lg text-slate-500 hover:text-red-600 transition-colors"
+                            className="p-2 hover:bg-blue-50 rounded-lg text-slate-500 hover:text-blue-600 transition-colors"
                             title="حذف الطلب"
                           >
                             <Trash2 className="w-4 h-4" />

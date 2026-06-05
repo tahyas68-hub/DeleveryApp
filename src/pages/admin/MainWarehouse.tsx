@@ -110,7 +110,7 @@ export default function MainWarehouse() {
              {selectedIds.length > 0 && (
                <button 
                  onClick={handleTransferSelected}
-                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all active:scale-95"
+                 className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all active:scale-95"
                >
                  <CheckSquare className="w-5 h-5" />
                  تحويل {selectedIds.length} طلبات محددة
@@ -202,7 +202,7 @@ export default function MainWarehouse() {
                           ) : (
                             <button 
                               onClick={() => handleTransferToBranch(o.id)}
-                              className="bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors flex items-center gap-1"
+                              className="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors flex items-center gap-1"
                             >
                               <CheckCircle className="w-4 h-4" />
                               تحويل للفرع

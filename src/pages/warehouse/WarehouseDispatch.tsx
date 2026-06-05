@@ -87,7 +87,7 @@ export default function WarehouseDispatch() {
           <button 
             disabled={selectedIds.length === 0 || !targetDriverId}
             onClick={handleDispatchSelected}
-            className="flex items-center gap-2 bg-emerald-500 disabled:bg-slate-100 disabled:text-slate-400 text-white px-8 py-3.5 rounded-2xl font-black transition-all hover:bg-emerald-600 shadow-lg shadow-emerald-50"
+            className="flex items-center gap-2 bg-blue-500 disabled:bg-slate-100 disabled:text-slate-400 text-white px-8 py-3.5 rounded-2xl font-black transition-all hover:bg-blue-600 shadow-lg shadow-blue-50"
           >
             تجهيز الإرسال
           </button>
@@ -160,7 +160,7 @@ export default function WarehouseDispatch() {
                     <td className="px-6 py-5 font-bold text-slate-600">{order.customerName || '-'}</td>
                     <td className="px-6 py-5 font-bold text-slate-500">{order.province || '-'}</td>
                     <td className="px-6 py-5">
-                       <span className="text-orange-500 font-bold">جاهز للتحويل</span>
+                       <span className="text-blue-500 font-bold">جاهز للتحويل</span>
                     </td>
                     <td className="px-6 py-5 font-en font-bold text-slate-400">{order.date ? order.date.split('T')[0] : 'N/A'}</td>
                     <td className="px-6 py-5 font-en font-black text-slate-800">{(order.totalAmount || 0).toLocaleString()} د.ع</td>

@@ -70,7 +70,7 @@ export default function AdminMerchantDetails() {
             <div>
                <p className="text-sm text-slate-500 mb-1">حالة الحساب</p>
                {merchant.status === 'active' ? (
-                 <span className="text-emerald-500 font-bold bg-emerald-50 px-2 py-1 rounded text-sm">نشط</span>
+                 <span className="text-blue-500 font-bold bg-blue-50 px-2 py-1 rounded text-sm">نشط</span>
                ) : (
                  <span className="text-slate-400 font-bold text-sm">غير نشط</span>
                )}
@@ -92,7 +92,7 @@ export default function AdminMerchantDetails() {
 
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
                 <CheckCircle className="w-6 h-6" />
               </div>
               <span className="text-slate-400 text-sm font-bold">الطلبات الواصلة</span>
@@ -102,7 +102,7 @@ export default function AdminMerchantDetails() {
 
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
              <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
                 <ArrowLeft className="w-6 h-6" />
               </div>
               <span className="text-slate-400 text-sm font-bold">المرتجعات</span>
@@ -172,7 +172,7 @@ export default function AdminMerchantDetails() {
                     <td className="px-6 py-4 font-en font-bold text-amber-600">
                       {(order.deliveryFee || 0).toLocaleString()} د.ع
                     </td>
-                    <td className="px-6 py-4 font-en font-bold text-emerald-600">
+                    <td className="px-6 py-4 font-en font-bold text-blue-600">
                       {(order.amount || 0).toLocaleString()} د.ع
                     </td>
                     <td className="px-6 py-4">
@@ -183,8 +183,8 @@ export default function AdminMerchantDetails() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                        order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
-                        order.status.includes('returned') ? 'bg-red-100 text-red-700' :
+                        order.status === 'delivered' ? 'bg-blue-100 text-blue-700' :
+                        order.status.includes('returned') ? 'bg-blue-100 text-blue-700' :
                         'bg-blue-100 text-blue-700'
                       }`}>
                         {order.status === 'delivered' ? 'واصل' :

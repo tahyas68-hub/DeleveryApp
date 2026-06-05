@@ -1,0 +1,54 @@
+src/pages/warehouse/WarehouseInventory.tsx:75:          <button className="bg-green-600 text-white px-8 py-3.5 rounded-2xl font-black hover:bg-green-700 transition-colors shadow-lg shadow-blue-200">
+src/pages/warehouse/WarehouseDispatch.tsx:76:              className="w-full bg-green-600 text-white px-10 py-3.5 rounded-2xl font-black appearance-none focus:outline-none hover:bg-green-700 transition-colors cursor-pointer"
+src/pages/warehouse/WarehouseDispatch.tsx:145:                  <tr key={order.id} className={`hover:bg-slate-50 transition-colors ${selectedIds.includes(order.id) ? 'bg-green-50/50' : ''}`}>
+src/pages/warehouse/WarehouseReturns.tsx:65:            className="flex items-center gap-2 bg-green-600 disabled:bg-slate-100 disabled:text-slate-400 text-white px-8 py-3.5 rounded-2xl font-black transition-all hover:bg-green-700 shadow-lg shadow-blue-50"
+src/pages/warehouse/WarehouseReturns.tsx:121:                  <tr key={order.id} className={`hover:bg-slate-50 transition-colors ${selectedIds.includes(order.id) ? 'bg-green-50/50' : ''}`}>
+src/pages/warehouse/WarehouseReturnsTransfer.tsx:111:                className="w-full bg-green-600 text-white pl-4 pr-10 py-3.5 rounded-2xl font-black appearance-none focus:outline-none hover:bg-green-700 transition-colors cursor-pointer"
+src/pages/warehouse/WarehouseReturnsTransfer.tsx:125:              className="flex items-center gap-2 bg-green-600 disabled:bg-slate-100 disabled:text-slate-400 text-white px-6 py-3.5 rounded-2xl font-black transition-all hover:bg-green-700 shadow-lg shadow-blue-50"
+src/pages/warehouse/WarehouseReturnsTransfer.tsx:180:                  <tr key={order.id} className={`hover:bg-slate-50 transition-colors ${selectedIds.includes(order.id) ? 'bg-green-50/50' : ''}`}>
+src/pages/warehouse/WarehouseIncomingOrders.tsx:61:            className="flex items-center gap-2 bg-green-600 disabled:bg-slate-300 text-white px-6 py-3 rounded-2xl font-black transition-all hover:bg-green-700 shadow-lg shadow-blue-100"
+src/pages/warehouse/WarehouseIncomingOrders.tsx:117:                  <tr key={order.id} className={`hover:bg-slate-50 transition-colors ${selectedIds.includes(order.id) ? 'bg-green-50/50' : ''}`}>
+src/pages/CustomerTracking.tsx:41:          <div className="inline-block px-4 py-2 bg-green-50 text-green-700 rounded-lg font-bold">
+src/pages/admin/AdminMerchantDetails.tsx:85:              <div className="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center">
+src/pages/admin/AdminMerchantDetails.tsx:188:                        'bg-green-100 text-green-700'
+src/pages/admin/AdminBranchIncomes.tsx:147:                         <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0">
+src/pages/admin/AdminOperations.tsx:130:                 <button onClick={() => handleAction('postponed')} className="bg-green-100 text-green-600 hover:bg-green-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+src/pages/admin/AdminOperations.tsx:230:                            className="p-2 hover:bg-green-50 rounded-lg text-slate-500 hover:text-[#22c55e] transition-colors"
+src/pages/admin/AdminReturns.tsx:158:                             className={`p-1.5 rounded-lg flex items-center justify-center transition-colors ${selectedBranches[order.id] ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-slate-100 text-slate-400 cursor-not-allowed'}`}
+src/pages/admin/MainWarehouse.tsx:176:                  <tr key={o.id} className={`hover:bg-slate-50 transition-colors ${selectedIds.includes(o.id) ? 'bg-green-50/50' : ''}`}>
+src/pages/admin/AdminTreasury.tsx:56:        <div className="absolute top-0 right-0 w-64 h-64 bg-green-500 flex-shrink-0 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+src/pages/admin/IncomingMerchant.tsx:119:                  <tr key={o.id} className={`hover:bg-slate-50 transition-colors ${selectedIds.includes(o.id) ? 'bg-green-50/50' : ''}`}>
+src/pages/admin/IncomingMerchant.tsx:162:                          className="text-green-600 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
+src/pages/admin/AdminBranches.tsx:107:                  className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-100 shadow-sm"
+src/pages/admin/AdminBranches.tsx:157:                <div className="bg-green-50 rounded-xl p-3 text-center">
+src/pages/admin/AdminBranches.tsx:287:                  className="flex-1 py-3 px-4 font-bold text-white bg-green-600 hover:bg-green-700 rounded-xl transition-colors shrink-0"
+src/pages/admin/AdminFinance.tsx:148:          { id: 'overview', label: 'نظرة عامة', desc: 'ملخص مالي شامل', icon: LayoutDashboard, activeBg: 'bg-green-600', activeBorder: 'border-green-600', iconBg: 'bg-green-50', iconColor: 'text-green-600', shadow: 'shadow-blue-600/20' },
+src/pages/admin/AdminFinance.tsx:192:                 <div className="absolute top-6 left-6 w-12 h-12 bg-green-50 text-[#22c55e] rounded-2xl flex items-center justify-center">
+src/pages/admin/AdminFinance.tsx:272:                           <button onClick={() => handlePayDriverCommission(id, driverData.name, driverData.commission)} className="bg-green-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90">
+src/pages/admin/AdminFinance.tsx:310:                          {t.type === 'transfer' && <span className="bg-green-100 text-green-700 px-2 py-1 rounded">سند تحويل</span>}
+src/pages/admin/AdminUsers.tsx:26:      case 'driver': return { label: 'مندوب', color: 'bg-green-50 text-green-600 border-green-100' };
+src/pages/admin/AdminNotifications.tsx:37:              <button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl transition-colors">
+src/pages/admin/Stickers.tsx:179:                    className={`hover:bg-slate-50/50 transition-colors ${selectedOrders.includes(order.id) ? "bg-green-50/30" : ""}`}
+src/pages/admin/AdminDashboard.tsx:59:      bg: 'bg-green-50',
+src/pages/admin/AdminDashboard.tsx:73:      bg: 'bg-green-100',
+src/pages/admin/AdminDashboard.tsx:136:          <div className="absolute bottom-20 right-40 w-3 h-3 bg-green-500 rounded-full shadow-[0_0_10px_#3B82F6]"></div>
+src/pages/admin/AdminDashboard.tsx:143:              <span className="flex items-center"><div className="w-2 h-2 rounded-full bg-green-500 ml-1"></div> مستودعات</span>
+src/pages/admin/AdminOrders.tsx:166:                        <button onClick={() => handleAction(o.id, 'main_warehouse')} className="bg-green-50 text-green-600 hover:bg-green-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ml-2">
+src/pages/admin/AdminReports.tsx:58:      bgIcon: 'bg-green-50',
+src/pages/admin/AdminReports.tsx:279:      <div className="bg-green-50/50 border border-green-100 rounded-2xl p-4 flex flex-wrap items-center gap-4">
+src/pages/common/ActionHistory.tsx:56:          <div className="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center">
+src/pages/common/ActionHistory.tsx:103:                  <span className="bg-green-50 text-green-700 px-2 py-1 rounded-md text-xs font-bold font-en inline-flex items-center gap-1">
+src/pages/driver/DriverPerformance.tsx:28:          <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-sm">
+src/pages/driver/DriverPerformance.tsx:70:          <div className="w-[52px] h-[52px] bg-green-100 text-green-600 rounded-2xl flex items-center justify-center shrink-0">
+src/pages/driver/DriverProfile.tsx:22:        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-2xl flex-shrink-0">
+src/pages/driver/DeliverOrder.tsx:103:            <div className="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center shrink-0">
+src/pages/driver/DeliverOrder.tsx:159:              className="px-6 py-2.5 rounded-xl font-bold bg-green-600 text-white hover:bg-green-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+src/pages/driver/PostponedReturnedOrders.tsx:146:                        className="bg-green-100 text-green-700 hover:bg-green-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap"
+src/pages/driver/DeliveryOrders.tsx:159:                        <button onClick={() => openPartialModal(order)} className="w-8 h-8 rounded-lg bg-green-50 text-green-600 hover:bg-green-500 hover:text-white flex items-center justify-center transition-colors" title="تسليم جزئي">
+src/pages/driver/DriverAccounts.tsx:129:          <div className="absolute top-5 left-5 w-10 h-10 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center">
+src/pages/driver/DriverApp.tsx:60:            <div className="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center">
+src/pages/driver/DriverApp.tsx:125:                   <button className="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0 border-2 border-green-100" onClick={(e) => { e.stopPropagation(); window.open(`tel:${task.customerPhone}`); }}>
+src/pages/driver/DriverApp.tsx:128:                   <button className="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0 border-2 border-green-100" onClick={(e) => { e.stopPropagation(); window.open(`sms:${task.customerPhone}`); }}>
+src/layouts/DashboardLayout.tsx:194:                      ? 'bg-green-600/30 text-white shadow-sm' 
+src/layouts/DashboardLayout.tsx:216:          ? 'bg-green-600/30 text-white shadow-sm' 
+src/components/OrderStatusBadge.tsx:51:          bg: 'bg-green-50',

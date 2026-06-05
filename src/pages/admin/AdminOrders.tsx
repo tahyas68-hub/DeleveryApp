@@ -168,12 +168,12 @@ export default function AdminOrders() {
                         </button>
                       )}
                       {(o.status === 'main_warehouse' || o.status === 'branch_transfering') && (
-                        <button onClick={() => handleAction(o.id, 'branch_warehouse')} className="bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ml-2">
+                        <button onClick={() => handleAction(o.id, 'branch_warehouse')} className="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ml-2">
                           تأكيد للفرع
                         </button>
                       )}
                       {o.status === 'branch_warehouse' && (
-                        <button onClick={() => handleAction(o.id, 'driver_assigned')} className="bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ml-2">
+                        <button onClick={() => handleAction(o.id, 'driver_assigned')} className="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ml-2">
                           تأكيد للمندوب
                         </button>
                       )}
@@ -183,7 +183,7 @@ export default function AdminOrders() {
                             deleteOrder(o.id);
                           }
                         }}
-                        className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white p-1.5 rounded-lg transition-colors inline-flex items-center justify-center cursor-pointer shadow-sm border border-red-100 align-middle"
+                        className="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white p-1.5 rounded-lg transition-colors inline-flex items-center justify-center cursor-pointer shadow-sm border border-blue-100 align-middle"
                         title="حذف الطلب"
                       >
                         <Trash2 className="w-4 h-4" />

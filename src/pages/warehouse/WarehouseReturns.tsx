@@ -144,8 +144,8 @@ export default function WarehouseReturns() {
                     <td className="px-6 py-5 text-center">
                        <span className={`px-4 py-1.5 rounded-full text-xs font-bold ${
                          order.status === 'returned' 
-                           ? 'bg-red-50 text-red-600' 
-                           : 'bg-orange-50 text-orange-600'
+                           ? 'bg-blue-50 text-blue-600' 
+                           : 'bg-blue-50 text-blue-600'
                        }`}>
                          {order.status === 'returned' ? 'راجع من مندوب (بانتظار سحب)' : 'قيد التسليم'}
                        </span>

@@ -28,7 +28,7 @@ const operationCards = [
     description: 'تحويل الطلبات المتوفرة للتوزيع والمندوبين.',
     icon: Truck,
     to: '/warehouse/dispatch',
-    color: 'from-indigo-500 to-indigo-600 shadow-indigo-500/20'
+    color: 'from-indigo-500 to-indigo-600 shadow-blue-500/20'
   },
   {
     id: 'pull_orders',
@@ -36,7 +36,7 @@ const operationCards = [
     description: 'إرجاع الطلبات من ذمة المندوب إلى المخزن الفرعي.',
     icon: UserX,
     to: '/warehouse/pull-orders',
-    color: 'from-pink-500 to-pink-600 shadow-pink-500/20'
+    color: 'from-pink-500 to-pink-600 shadow-blue-500/20'
   },
   {
     id: 'returns',
@@ -44,7 +44,7 @@ const operationCards = [
     description: 'استلام المرتجعات من المندوبين إلى المخزن.',
     icon: RotateCcw,
     to: '/warehouse/returns',
-    color: 'from-rose-500 to-rose-600 shadow-rose-500/20'
+    color: 'from-rose-500 to-rose-600 shadow-blue-500/20'
   },
   {
     id: 'transfer',
@@ -52,7 +52,7 @@ const operationCards = [
     description: 'إرسال الراجع إلى المخزن الرئيسي.',
     icon: Send,
     to: '/warehouse/returns-transfer',
-    color: 'from-orange-500 to-orange-600 shadow-orange-500/20'
+    color: 'from-orange-500 to-orange-600 shadow-blue-500/20'
   },
   {
     id: 'inventory',
@@ -68,7 +68,7 @@ const operationCards = [
     description: 'إدارة المالية وعمولات المناديب والمطالبات.',
     icon: Calculator,
     to: '/warehouse/finance',
-    color: 'from-emerald-500 to-emerald-600 shadow-emerald-500/20'
+    color: 'from-emerald-500 to-emerald-600 shadow-blue-500/20'
   },
   {
     id: 'reports',

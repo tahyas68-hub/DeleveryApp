@@ -62,7 +62,7 @@ export default function DeliveryOrders() {
                alert('حدث خطأ أثناء التصدير: ' + err.message);
              });
            }}
-           className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shrink-0 shadow-lg shadow-emerald-500/20"
+           className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shrink-0 shadow-lg shadow-blue-500/20"
          >
            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>
            حفظ إكسل
@@ -153,16 +153,16 @@ export default function DeliveryOrders() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 justify-center">
-                        <button onClick={() => handleDeliver(order)} className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white flex items-center justify-center transition-colors" title="تسليم">
+                        <button onClick={() => handleDeliver(order)} className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-colors" title="تسليم">
                           <Check className="w-4 h-4" />
                         </button>
                         <button onClick={() => openPartialModal(order)} className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-colors" title="تسليم جزئي">
                           <SplitSquareHorizontal className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handleReturn(order.id)} className="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors" title="راجع">
+                        <button onClick={() => handleReturn(order.id)} className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-colors" title="راجع">
                           <X className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handlePostpone(order.id)} className="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-500 hover:text-white flex items-center justify-center transition-colors" title="تأجيل">
+                        <button onClick={() => handlePostpone(order.id)} className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-colors" title="تأجيل">
                           <Clock className="w-4 h-4" />
                         </button>
                       </div>

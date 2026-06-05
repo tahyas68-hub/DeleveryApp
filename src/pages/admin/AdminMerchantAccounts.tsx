@@ -215,7 +215,7 @@ export default function AdminMerchantAccounts() {
                         window.print();
                       }, 50);
                     }}
-                    className="bg-[#0F3B73] hover:bg-[#0c2f5c] text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 text-xs shadow-md transition-all active:scale-95 cursor-pointer"
+                    className="bg-[#0F3B73] hover:bg-[#0C2F5C] text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 text-xs shadow-md transition-all active:scale-95 cursor-pointer"
                   >
                     <Printer className="w-4 h-4" />
                     <span>طباعة الكشف الرسمي</span>
@@ -367,7 +367,7 @@ export default function AdminMerchantAccounts() {
                                 <td className="p-3 font-bold border-l border-slate-100 text-slate-500 font-en text-xs">{o.date ? o.date.split('T')[0] : 'N/A'}</td>
                                 <td className="p-3 font-bold border-l border-slate-100 text-slate-700 font-en text-xs">{collected.toLocaleString()}</td>
                                 <td className="p-3 font-bold border-l border-slate-100 text-slate-600 font-en text-xs">{fee.toLocaleString()}</td>
-                                <td className="p-3 font-black text-emerald-600 font-en text-xs">{net.toLocaleString()}</td>
+                                <td className="p-3 font-black text-blue-600 font-en text-xs">{net.toLocaleString()}</td>
                               </tr>
                             );
                           })
@@ -500,7 +500,7 @@ export default function AdminMerchantAccounts() {
                         {/* Due Column */}
                         <td className="px-6 py-6 text-center">
                           {balance <= 0 ? (
-                            <span className="text-emerald-500 font-black text-base bg-emerald-50/80 px-4 py-1.5 rounded-full inline-block">لا يوجد</span>
+                            <span className="text-blue-500 font-black text-base bg-blue-50/80 px-4 py-1.5 rounded-full inline-block">لا يوجد</span>
                           ) : (
                             <div className="inline-flex flex-col items-center">
                               <span className="text-[#EF4444] font-black text-xl font-en">
@@ -637,13 +637,13 @@ export default function AdminMerchantAccounts() {
                                 <td className="px-4 py-3 font-bold text-slate-700 text-xs">{o.customerName}</td>
                                 <td className="px-4 py-3 font-bold font-en text-slate-700 text-xs">{collected.toLocaleString()}</td>
                                 <td className="px-4 py-3 font-bold font-en text-slate-600 text-xs">{fee.toLocaleString()}</td>
-                                <td className="px-4 py-3 font-black font-en text-emerald-600 text-xs">{net.toLocaleString()}</td>
+                                <td className="px-4 py-3 font-black font-en text-blue-600 text-xs">{net.toLocaleString()}</td>
                                 <td className="px-4 py-3 font-bold text-xs">{getArabicStatus(o.status)}</td>
                                 <td className="px-4 py-3 font-bold text-xs">
                                   {isSettled ? (
-                                    <span className="text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full text-[11px] font-sans">نعم</span>
+                                    <span className="text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full text-[11px] font-sans">نعم</span>
                                   ) : (
-                                    <span className="text-red-500 bg-red-50 px-2.5 py-1 rounded-full text-[11px] font-sans">لا</span>
+                                    <span className="text-blue-500 bg-blue-50 px-2.5 py-1 rounded-full text-[11px] font-sans">لا</span>
                                   )}
                                 </td>
                                 <td className="px-4 py-3 font-bold font-en text-slate-500 text-xs">
@@ -683,14 +683,14 @@ export default function AdminMerchantAccounts() {
               exit={{ scale: 0.95, opacity: 0 }}
               className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden text-right font-sans"
             >
-              <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-emerald-50">
+              <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-blue-50">
                 <div className="flex items-center gap-2">
-                  <Coins className="w-6 h-6 text-emerald-600" />
-                  <h3 className="text-lg font-black text-emerald-900">تسوية رصيد وصرف مستحقات للتاجر</h3>
+                  <Coins className="w-6 h-6 text-blue-600" />
+                  <h3 className="text-lg font-black text-blue-900">تسوية رصيد وصرف مستحقات للتاجر</h3>
                 </div>
                 <button 
                   onClick={() => setSettleMerchant(null)}
-                  className="p-1 hover:bg-emerald-100 rounded-full transition-all text-emerald-800"
+                  className="p-1 hover:bg-blue-100 rounded-full transition-all text-blue-800"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -712,7 +712,7 @@ export default function AdminMerchantAccounts() {
                     value={settleAmount}
                     onChange={(e) => setSettleAmount(parseInt(e.target.value) || 0)}
                     placeholder="أدخل قيمة الصرف"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-en font-black text-slate-800 text-lg text-center focus:bg-white focus:border-emerald-500 hover:border-slate-300 outline-none transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-en font-black text-slate-800 text-lg text-center focus:bg-white focus:border-blue-500 hover:border-slate-300 outline-none transition-all"
                     required
                   />
                   <div className="flex justify-between text-[11px] text-slate-400 font-bold px-1 mt-1">
@@ -730,7 +730,7 @@ export default function AdminMerchantAccounts() {
                     value={settleDescription}
                     onChange={(e) => setSettleDescription(e.target.value)}
                     placeholder="مثال: تسوية دفعة ووصولات التوصيل المالي"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-right text-slate-800 focus:bg-white focus:border-emerald-500 outline-none text-xs transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-right text-slate-800 focus:bg-white focus:border-blue-500 outline-none text-xs transition-all"
                   />
                 </div>
 
@@ -744,7 +744,7 @@ export default function AdminMerchantAccounts() {
                   </button>
                   <button 
                     type="submit" 
-                    className="bg-[#10B981] hover:bg-[#059669] text-white font-black py-3 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10"
+                    className="bg-[#10B981] hover:bg-[#059669] text-white font-black py-3 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/10"
                   >
                     <Check className="w-5 h-5" />
                     <span>تأكيد الدفع والتسوية</span>

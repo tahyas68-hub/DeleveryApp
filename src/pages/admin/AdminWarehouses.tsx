@@ -98,7 +98,7 @@ export default function AdminWarehouses() {
                     </td>
                     <td className="px-6 py-4 font-en font-bold text-slate-700 whitespace-nowrap">{o.totalAmount?.toLocaleString()} د.ع</td>
                     <td className="px-6 py-4 font-en font-bold text-amber-600 whitespace-nowrap">{o.deliveryFee?.toLocaleString()} د.ع</td>
-                    <td className="px-6 py-4 font-en font-bold text-emerald-600 whitespace-nowrap">{o.amount?.toLocaleString()} د.ع</td>
+                    <td className="px-6 py-4 font-en font-bold text-blue-600 whitespace-nowrap">{o.amount?.toLocaleString()} د.ع</td>
                     <td className="px-6 py-4 font-en font-bold text-blue-600 text-center">{o.pieces}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">

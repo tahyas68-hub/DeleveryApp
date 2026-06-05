@@ -32,7 +32,7 @@ export default function AdminDrivers() {
           <button className="p-3 bg-white text-slate-400 border border-slate-200 rounded-xl hover:text-blue-600 hover:border-blue-200 transition-all">
             <Printer className="w-5 h-5" />
           </button>
-          <button className="p-3 bg-white text-slate-400 border border-slate-200 rounded-xl hover:text-emerald-600 hover:border-emerald-200 transition-all">
+          <button className="p-3 bg-white text-slate-400 border border-slate-200 rounded-xl hover:text-blue-600 hover:border-blue-200 transition-all">
             <FileText className="w-5 h-5" />
           </button>
         </div>
@@ -95,7 +95,7 @@ export default function AdminDrivers() {
                      </td>
                      <td className="px-6 py-6">
                         <div className="flex items-center gap-2 font-en font-bold text-slate-600">
-                           <MessageCircle className="w-4 h-4 text-emerald-500" />
+                           <MessageCircle className="w-4 h-4 text-blue-500" />
                            {driver.phone || '07731941507'}
                         </div>
                      </td>
@@ -103,12 +103,12 @@ export default function AdminDrivers() {
                         <span className="text-slate-600 font-bold">عام</span>
                      </td>
                      <td className="px-6 py-6 text-center">
-                        <span className="font-en font-bold text-emerald-600 text-lg">0</span>
+                        <span className="font-en font-bold text-blue-600 text-lg">0</span>
                      </td>
                      <td className="px-6 py-6 text-center">
                         <span className={`px-4 py-1.5 rounded-full text-xs font-black ${
                           driver.status === 'active' 
-                            ? 'bg-emerald-100 text-emerald-600' 
+                            ? 'bg-blue-100 text-blue-600' 
                             : 'bg-slate-100 text-slate-500'
                         }`}>
                           {driver.status === 'active' ? 'نشط' : 'غير متصل'}
