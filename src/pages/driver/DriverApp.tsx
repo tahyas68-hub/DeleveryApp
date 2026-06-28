@@ -38,7 +38,7 @@ export default function DriverApp() {
         <h2 className="text-xl font-bold relative z-10">مهام اليوم</h2>
         <div className="flex gap-6 mt-4 relative z-10">
            <div>
-             <p className="text-primary-100 text-xs">للتبليم</p>
+             <p className="text-primary-100 text-xs">طلبات قيد التوصيل</p>
              <p className="text-2xl font-bold font-en">{toDeliverOrders.length}</p>
            </div>
            <div>
@@ -95,7 +95,7 @@ export default function DriverApp() {
 
         {tasks.length === 0 ? (
           <div className="bg-white p-6 rounded-xl border border-dashed border-slate-300 text-center">
-            <p className="text-slate-500 font-bold">لا يوجد شحنات للتبليم حالياً</p>
+            <p className="text-slate-500 font-bold">لا يوجد طلبات قيد التوصيل حالياً</p>
           </div>
         ) : (
           tasks.map((task, i) => (

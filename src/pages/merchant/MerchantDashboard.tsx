@@ -205,6 +205,13 @@ export default function MerchantDashboard() {
        alert("الرجاء ملء كافة الحقول المطلوبة (الاسم، الهاتف، المحافظة، المبلغ، رقم الشحنة)");
        return;
     }
+
+    const todayDate = new Date().toISOString().split('T')[0];
+    if (orders.some(o => o.trackingNumber === newOrder.trackingNumber && o.date === todayDate)) {
+       alert("رقم الشحنة (الوصل) مستخدم مسبقاً في طلبات اليوم، يرجى إدخال رقم فريد.");
+       return;
+    }
+
     const deliveryFee = getDeliveryFee(newOrder.province, user?.id || 'merch-1');
     const totalAmount = parseFloat(newOrder.amount) || 0;
     const amountForMerchant = totalAmount - deliveryFee;
@@ -212,8 +219,16 @@ export default function MerchantDashboard() {
     // Check if admin approval is required
     const initialStatus = requireMerchantApproval ? 'merchant_pending' : 'main_warehouse';
 
+    const generateUniqueId = () => {
+      let newId;
+      do {
+        newId = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
+      } while(orders.some(o => o.id === newId));
+      return newId;
+    };
+
     const order: MainOrder = {
-       id: `ORD-${1000 + orders.length + 1}`,
+       id: generateUniqueId(),
        trackingNumber: newOrder.trackingNumber,
        merchantId: user?.id || 'merch-1',
        merchantName: user?.name || 'التاجر الحالي',
