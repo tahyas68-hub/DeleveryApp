@@ -3,6 +3,7 @@ import { Package, Search, Warehouse, CheckCircle, CheckSquare, Settings } from '
 import { useOrders } from '../../context/OrderContext';
 import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 import { useBranches } from '../../context/BranchContext';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 export default function MainWarehouse() {
   const { orders, updateOrderStatus } = useOrders();
@@ -154,20 +155,14 @@ export default function MainWarehouse() {
                     />
                   </div>
                 </th>
-                <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
-                <th className="px-6 py-4 font-bold text-slate-600">رقم الشحنة</th>
-                <th className="px-6 py-4 font-bold text-slate-600">التاريخ</th>
-                <th className="px-6 py-4 font-bold text-slate-600">الحالة</th>
-                <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
-                <th className="px-6 py-4 font-bold text-slate-600">العميل</th>
-                <th className="px-6 py-4 font-bold text-slate-600">المحافظة</th>
+                <OrderTableHeaders showMerchant={true} />
                 <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراء</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-slate-400 font-bold">
+                  <td colSpan={11} className="px-6 py-12 text-center text-slate-400 font-bold">
                     لا يوجد طلبات في المخزن الرئيسي حالياً
                   </td>
                 </tr>
@@ -185,16 +180,7 @@ export default function MainWarehouse() {
                         />
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-bold font-en text-[#0F3B73]">{(o.id || '').slice(0, 8)}</td>
-                    <td className="px-6 py-4 text-sm font-bold text-slate-600 font-en">{o.trackingNumber || '-'}</td>
-                    <td className="px-6 py-4 text-sm font-bold text-slate-500 font-en">{o.date}</td>
-                    <td className="px-6 py-4"><OrderStatusBadge status={o.status} /></td>
-                    <td className="px-6 py-4 font-bold text-slate-800">{o.merchantName}</td>
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-slate-800">{o.customerName}</div>
-                      <div className="text-xs font-en text-slate-500">{o.customerPhone}</div>
-                    </td>
-                    <td className="px-6 py-4 font-bold text-slate-600">{o.province}</td>
+                    <OrderTableCells order={o} showMerchant={true} />
                     <td className="px-6 py-4">
                         <div className="flex justify-center">
                           {o.status === 'branch_transfering' ? (

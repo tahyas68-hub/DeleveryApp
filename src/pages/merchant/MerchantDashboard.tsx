@@ -10,6 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useOrders, MainOrder } from '../../context/OrderContext';
 import { useSettings } from '../../context/SettingsContext';
 import { OrderStatusBadge } from '../../components/OrderStatusBadge';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 export default function MerchantDashboard() {
   const navigate = useNavigate();
@@ -215,7 +216,8 @@ export default function MerchantDashboard() {
     const isDuplicate = orders.some(o => {
       const existingTracking = (o.trackingNumber || '').toString().trim();
       const newTracking = (newOrder.trackingNumber || '').toString().trim();
-      return existingTracking === newTracking && o.date === todayDate;
+      const currentMerchantId = user?.id || 'merch-1';
+      return existingTracking === newTracking && o.date === todayDate && o.merchantId === currentMerchantId;
     });
 
     if (isDuplicate) {
@@ -429,18 +431,13 @@ export default function MerchantDashboard() {
                        : <Square className="w-7 h-7" />}
                    </button>
                 </th>
-                <th className="px-6 py-5 text-slate-500 font-bold text-sm tracking-wide">رقم الطلب</th>
-                <th className="px-6 py-5 text-slate-500 font-bold text-sm tracking-wide">رقم الشحنة</th>
-                <th className="px-6 py-5 text-slate-500 font-bold text-sm tracking-wide">العميل</th>
-                <th className="px-6 py-5 text-slate-500 font-bold text-sm text-center tracking-wide">عدد القطع</th>
-                <th className="px-6 py-5 text-slate-500 font-bold text-sm text-center tracking-wide">التاريخ</th>
-                <th className="px-6 py-5 text-slate-500 font-bold text-sm tracking-wide">الحالة</th>
+                <OrderTableHeaders showMerchant={false} />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-20 text-center text-slate-300 font-bold text-lg">
+                  <td colSpan={10} className="px-6 py-20 text-center text-slate-300 font-bold text-lg">
                     لا توجد بيانات متاحة حالياً
                   </td>
                 </tr>
@@ -457,22 +454,7 @@ export default function MerchantDashboard() {
                            : <Square className="w-7 h-7" />}
                       </button>
                     </td>
-                    <td className="px-6 py-5 font-bold text-slate-800">{order.id}</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-500">{order.trackingNumber}</td>
-                    <td className="px-6 py-5">
-                      <div className="flex flex-col items-start gap-1">
-                        <span className="font-bold text-slate-800">{order.customerName}</span>
-                        <div className="flex items-center gap-1 text-slate-500 text-xs font-en">
-                          <MessageCircle className="w-3.5 h-3.5 text-[#10b981]" />
-                          <span>{order.customerPhone}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 font-black text-slate-800 text-center">{order.pieces}</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-500 text-center">{order.date}</td>
-                    <td className="px-6 py-5">
-                      <OrderStatusBadge status={order.status} />
-                    </td>
+                    <OrderTableCells order={order} showMerchant={false} />
                   </tr>
                 ))
               )}

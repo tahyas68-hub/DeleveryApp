@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useNavigate } from 'react-router-dom';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 export default function WarehouseReturns() {
   const navigate = useNavigate();
@@ -99,20 +100,14 @@ export default function WarehouseReturns() {
                       checked={selectedIds.length === filteredOrders.length && filteredOrders.length > 0}
                    />
                 </th>
-                <th className="px-6 py-5 font-black text-slate-700">رقم الطلب</th>
-                <th className="px-6 py-5 font-black text-slate-700">رقم الشحنة</th>
+                <OrderTableHeaders showMerchant={true} />
                 <th className="px-6 py-5 font-black text-slate-700">المندوب</th>
-                <th className="px-6 py-5 font-black text-slate-700">التاجر / المتجر</th>
-                <th className="px-6 py-5 font-black text-slate-700">العميل</th>
-                <th className="px-6 py-5 font-black text-slate-700">العنوان</th>
-                <th className="px-6 py-5 font-black text-slate-700 text-center">الحالة</th>
-                <th className="px-6 py-5 font-black text-slate-700 text-left">مبلغ الطلب</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 italic">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-32 text-center text-slate-400 font-bold text-lg">
+                  <td colSpan={11} className="px-6 py-32 text-center text-slate-400 font-bold text-lg">
                     لا توجد طلبات راجعة في المخزن حالياً (جاهزة للتحويل).
                   </td>
                 </tr>
@@ -130,27 +125,8 @@ export default function WarehouseReturns() {
                         }}
                       />
                     </td>
-                    <td className="px-6 py-5 font-en font-bold text-[#0F3B73]">{order.id.slice(0, 8)}</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-600">{order.trackingNumber || '-'}</td>
+                    <OrderTableCells order={order} showMerchant={true} />
                     <td className="px-6 py-5 font-bold text-slate-800">{order.driverName || 'علي'}</td>
-                    <td className="px-6 py-5 font-bold text-slate-900">{order.merchantName}</td>
-                    <td className="px-6 py-5">
-                       <div className="flex flex-col">
-                          <span className="font-bold text-slate-900">{order.customerName}</span>
-                          <span className="text-xs text-slate-400 font-en font-bold">{order.customerPhone}</span>
-                       </div>
-                    </td>
-                    <td className="px-6 py-5 font-bold text-slate-500 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">{order.province} - {order.address}</td>
-                    <td className="px-6 py-5 text-center">
-                       <span className={`px-4 py-1.5 rounded-full text-xs font-bold ${
-                         order.status === 'returned' 
-                           ? 'bg-blue-50 text-blue-600' 
-                           : 'bg-blue-50 text-blue-600'
-                       }`}>
-                         {order.status === 'returned' ? 'راجع من مندوب (بانتظار سحب)' : 'قيد التسليم'}
-                       </span>
-                    </td>
-                    <td className="px-6 py-5 font-en font-black text-slate-900 text-left whitespace-nowrap">{(order.totalAmount || 0).toLocaleString()} د.ع</td>
                   </tr>
                 ))
               )}

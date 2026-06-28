@@ -3,6 +3,7 @@ import { Activity, Search, Package, Check, Clock, AlertTriangle, RotateCcw, Copy
 import { useOrders } from '../../context/OrderContext';
 import { OrderStatus } from '../../context/OrderContext';
 import { OrderStatusBadge } from '../../components/OrderStatusBadge';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 type TabView = 'all' | 'driver_assigned' | 'returned_partial' | 'returned' | 'postponed';
 
@@ -196,18 +197,15 @@ export default function AdminOperations() {
           <table className="w-full text-right text-sm">
              <thead className="bg-slate-50 border-b border-slate-200">
                <tr>
-                 <th className="px-6 py-4 font-bold text-slate-600">رقم التتبع</th>
-                 <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
-                 <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
+                 <OrderTableHeaders showMerchant={true} />
                  <th className="px-6 py-4 font-bold text-slate-600">المندوب</th>
-                 <th className="px-6 py-4 font-bold text-slate-600">الحالة</th>
                  <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراءات</th>
                </tr>
              </thead>
              <tbody className="divide-y divide-slate-100">
                {filteredOrders.length === 0 ? (
                  <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
+                    <td colSpan={11} className="px-6 py-12 text-center">
                        <Package className="w-12 h-12 text-slate-300 mx-auto w-full mb-3" />
                        <span className="text-slate-500 font-bold block">لا توجد طلبات في هذه القائمة</span>
                     </td>
@@ -215,11 +213,8 @@ export default function AdminOperations() {
                ) : (
                  filteredOrders.map(order => (
                    <tr key={order.id} className="hover:bg-slate-50">
-                     <td className="px-6 py-4 font-en font-bold text-slate-800">{order.trackingNumber}</td>
-                     <td className="px-6 py-4 font-en text-slate-600">{order.id}</td>
-                     <td className="px-6 py-4 font-bold text-slate-800">{order.merchantName}</td>
-                     <td className="px-6 py-4 font-bold text-slate-600">{order.driverName || '-'}</td>
-                     <td className="px-6 py-4"><OrderStatusBadge status={order.status} /></td>
+                     <OrderTableCells order={order} showMerchant={true} />
+                     <td className="px-6 py-4 font-bold text-slate-600 whitespace-nowrap">{order.driverName || '-'}</td>
                      <td className="px-6 py-4 text-center">
                         <div className="flex items-center justify-center gap-1">
                           <button 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useOrders } from '../../context/OrderContext';
 import { useAuth } from '../../context/AuthContext';
 import { RotateCcw, CheckCircle, Search, Store } from 'lucide-react';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 export default function MerchantReturns() {
   const { user } = useAuth();
@@ -86,7 +87,7 @@ export default function MerchantReturns() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-right">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-700">
               <tr>
                 <th className="p-4 w-12">
                   <input 
@@ -96,17 +97,14 @@ export default function MerchantReturns() {
                     className="w-4 h-4 rounded text-[#0F3B73] focus:ring-[#0F3B73] border-slate-300 cursor-pointer"
                   />
                 </th>
-                <th className="px-6 py-4 font-bold text-sm">رقم الطلب</th>
-                <th className="px-6 py-4 font-bold text-sm">رقم الشحنة</th>
-                <th className="px-6 py-4 font-bold text-sm">تفاصيل العميل</th>
-                <th className="px-6 py-4 font-bold text-sm">التاريخ</th>
-                <th className="px-6 py-4 font-bold text-sm">الإجراءات</th>
+                <OrderTableHeaders showMerchant={false} />
+                <th className="px-6 py-4 font-bold text-sm text-center">الإجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-slate-500 font-bold">
+                  <td colSpan={10} className="px-6 py-12 text-center text-slate-500 font-bold">
                     لا توجد طلبات راجعة من الشركة قيد الانتظار حالياً
                   </td>
                 </tr>
@@ -121,20 +119,7 @@ export default function MerchantReturns() {
                         className="w-4 h-4 rounded text-[#0F3B73] focus:ring-[#0F3B73] border-slate-300 cursor-pointer"
                       />
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="font-en font-black text-[#0F3B73] text-lg">{order.id}</div>
-                    </td>
-                    <td className="px-6 py-4 font-en font-bold text-slate-500">
-                      {order.trackingNumber}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-slate-800">{order.customerName}</div>
-                      <div className="text-sm font-en text-slate-500">{order.customerPhone}</div>
-                      <div className="text-xs font-medium text-slate-400 max-w-[200px] truncate">{order.province} - {order.address}</div>
-                    </td>
-                    <td className="px-6 py-4 font-en font-bold text-slate-500 text-sm">
-                      {order.date}
-                    </td>
+                    <OrderTableCells order={order} showMerchant={false} />
                     <td className="px-6 py-4">
                       <button 
                         onClick={() => handleConfirmReceipt(order.id)}

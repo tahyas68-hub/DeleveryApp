@@ -11,6 +11,7 @@ import {
 import { useOrders } from '../../context/OrderContext';
 import { useUsers } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 export default function WarehousePullOrders() {
   const navigate = useNavigate();
@@ -125,19 +126,14 @@ export default function WarehousePullOrders() {
                       checked={selectedIds.length === filteredOrders.length && filteredOrders.length > 0}
                    />
                 </th>
-                <th className="px-6 py-5 font-black text-slate-700">رقم الطلب</th>
-                <th className="px-6 py-5 font-black text-slate-700">رقم الشحنة</th>
-                <th className="px-6 py-5 font-black text-slate-700">التاجر / المتجر</th>
+                <OrderTableHeaders showMerchant={true} />
                 <th className="px-6 py-5 font-black text-slate-700">المندوب الحالي</th>
-                <th className="px-6 py-5 font-black text-slate-700">العميل</th>
-                <th className="px-6 py-5 font-black text-slate-700">التاريخ</th>
-                <th className="px-6 py-5 font-black text-slate-700">المبلغ الاجمالي</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 italic">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-32 text-center text-slate-400 font-bold text-lg">
+                  <td colSpan={11} className="px-6 py-32 text-center text-slate-400 font-bold text-lg">
                     لا توجد طلبات مع المناديب حالياً لغرض السحب.
                   </td>
                 </tr>
@@ -155,13 +151,8 @@ export default function WarehousePullOrders() {
                         }}
                       />
                     </td>
-                    <td className="px-6 py-5 font-en font-bold text-[#0F3B73]">{(order.id || '').slice(0, 8)}</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-600">{order.trackingNumber || '-'}</td>
-                    <td className="px-6 py-5 font-bold text-slate-800">{order.merchantName || '-'}</td>
+                    <OrderTableCells order={order} showMerchant={true} />
                     <td className="px-6 py-5 font-bold text-slate-600">{order.driverName || '-'}</td>
-                    <td className="px-6 py-5 font-bold text-slate-600">{order.customerName || '-'}</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-400">{order.date ? order.date.split('T')[0] : 'N/A'}</td>
-                    <td className="px-6 py-5 font-en font-black text-slate-800">{(order.totalAmount || 0).toLocaleString()} د.ع</td>
                   </tr>
                 ))
               )}

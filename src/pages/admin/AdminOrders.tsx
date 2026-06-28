@@ -3,6 +3,7 @@ import { Package, ArrowDown, Building2, Bike, Search, TableProperties, Trash2 } 
 import { useOrders } from '../../context/OrderContext';
 import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 import { OrderStatus } from '../../context/OrderContext';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 export default function AdminOrders() {
   const { orders, updateOrderStatus, deleteOrder } = useOrders();
@@ -133,34 +134,19 @@ export default function AdminOrders() {
           <table className="w-full text-right">
             <thead className="bg-slate-50 border-b border-slate-100">
               <tr>
-                <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
-                <th className="px-6 py-4 font-bold text-slate-600">التاريخ</th>
-                <th className="px-6 py-4 font-bold text-slate-600">العميل</th>
-                <th className="px-6 py-4 font-bold text-slate-600">المبلغ</th>
-                <th className="px-6 py-4 font-bold text-slate-600">الحالة</th>
+                <OrderTableHeaders showMerchant={true} />
                 <th className="px-6 py-4 font-bold text-slate-600">إجراء</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-slate-400 font-bold">لا يوجد طلبات مطابقة</td>
+                  <td colSpan={10} className="px-6 py-12 text-center text-slate-400 font-bold">لا يوجد طلبات مطابقة</td>
                 </tr>
               ) : (
                 filteredOrders.map(o => (
                   <tr key={o.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-bold font-en text-[#0F3B73]">{o.trackingNumber || o.id}</td>
-                    <td className="px-6 py-4 text-sm font-bold text-slate-500 font-en">{o.date}</td>
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-slate-800">{o.customerName}</div>
-                      <div className="text-xs font-en text-slate-500">{o.customerPhone}</div>
-                    </td>
-                    <td className="px-6 py-4 font-bold font-en text-slate-800">
-                      {o.amount?.toLocaleString()} د.ع
-                    </td>
-                    <td className="px-6 py-4">
-                      <OrderStatusBadge status={o.status} />
-                    </td>
+                    <OrderTableCells order={o} showMerchant={true} />
                     <td className="px-6 py-4">
                       {o.status === 'merchant_pending' && (
                         <button onClick={() => handleAction(o.id, 'main_warehouse')} className="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ml-2">

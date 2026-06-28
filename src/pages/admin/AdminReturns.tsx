@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Package, Search, ArrowRightLeft, Building2, Store } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { useBranches } from '../../context/BranchContext';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 export default function AdminReturns() {
   const { orders, updateOrderStatus } = useOrders();
@@ -117,22 +118,15 @@ export default function AdminReturns() {
                     className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
                   />
                 </th>
-                <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
-                <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
-                <th className="px-6 py-4 font-bold text-slate-600">تفاصيل العميل</th>
-                <th className="px-6 py-4 font-bold text-slate-600">العنوان</th>
-                <th className="px-6 py-4 font-bold text-slate-600">المبلغ الكلي</th>
-                <th className="px-6 py-4 font-bold text-slate-600">أجور التوصيل</th>
-                <th className="px-6 py-4 font-bold text-slate-600">مبلغ الطلب</th>
-                <th className="px-6 py-4 font-bold text-slate-600 text-center">الكمية</th>
-                <th className="px-6 py-4 font-bold text-slate-600 text-center">حالة الراجعة</th>
+                <OrderTableHeaders showMerchant={true} />
+                <th className="px-6 py-4 font-bold text-slate-600 text-center">نوع الراجعة</th>
                 <th className="px-6 py-4 font-bold text-center">إجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={12} className="px-6 py-12 text-center text-slate-500">
                     <p className="font-bold">لا توجد طلبات راجعة</p>
                   </td>
                 </tr>
@@ -147,39 +141,7 @@ export default function AdminReturns() {
                         className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
                       />
                     </td>
-                    <td className="px-6 py-4 font-en font-bold text-[#0F3B73]">
-                      <div>{order.id}</div>
-                      <div className="text-xs text-slate-400">{order.date}</div>
-                    </td>
-                    <td className="px-6 py-4 font-bold text-slate-800">{order.merchantName}</td>
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-slate-800">{order.customerName}</div>
-                      <div className="text-xs text-slate-500 font-en">{order.customerPhone}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-slate-700">{order.province}</div>
-                      <div className="text-xs text-slate-500 truncate max-w-[120px]">{order.address}</div>
-                    </td>
-                    <td className="px-6 py-4 font-en font-bold text-slate-700 whitespace-nowrap">
-                      {order.totalAmount?.toLocaleString() || (order.amount + (order.deliveryFee || 0)).toLocaleString()} د.ع
-                    </td>
-                    <td className="px-6 py-4 font-en font-bold text-amber-600 whitespace-nowrap">{order.deliveryFee?.toLocaleString()} د.ع</td>
-                    <td className="px-6 py-4 font-en font-bold text-blue-600 whitespace-nowrap">
-                      {order.amount?.toLocaleString()} د.ع
-                      {(order.id.endsWith('-P') || order.remainingAmount !== undefined) && (
-                        <div className="flex flex-col gap-1 mt-1 font-sans">
-                          <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded">
-                            المبلغ المتبقي للراجع: {order.remainingAmount !== undefined ? order.remainingAmount.toLocaleString() : order.amount.toLocaleString()} د.ع
-                          </span>
-                          {order.receivedAmount !== undefined && (
-                            <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded">
-                              تم استلام: {order.receivedAmount.toLocaleString()} د.ع
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 font-en font-bold text-blue-600 text-center">{order.pieces}</td>
+                    <OrderTableCells order={order} showMerchant={true} />
                     <td className="px-6 py-4 text-center">
                       <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold border border-blue-100">
                         {order.status === 'returned_partial' ? 'راجع جزئي' : 'راجع كلي'}

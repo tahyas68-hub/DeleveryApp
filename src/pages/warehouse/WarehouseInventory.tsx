@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { OrderStatusBadge } from '../../components/OrderStatusBadge';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 export default function WarehouseInventory() {
   const { orders } = useOrders();
@@ -84,43 +85,22 @@ export default function WarehouseInventory() {
           <table className="w-full text-right">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                <th className="px-6 py-5 font-black text-slate-700">رقم الطلب</th>
-                <th className="px-6 py-5 font-black text-slate-700">رقم الشحنة</th>
-                <th className="px-6 py-5 font-black text-slate-700">التاجر / المتجر</th>
-                <th className="px-6 py-5 font-black text-slate-700">العميل</th>
+                <OrderTableHeaders showMerchant={true} />
                 <th className="px-6 py-5 font-black text-slate-700">المندوب</th>
-                <th className="px-6 py-5 font-black text-slate-700">الحالة</th>
-                <th className="px-6 py-5 font-black text-slate-700">المبلغ</th>
-                <th className="px-6 py-5 font-black text-slate-700">التوصيل</th>
-                <th className="px-6 py-5 font-black text-slate-700">الإجمالي</th>
-                <th className="px-6 py-5 font-black text-slate-700">التاريخ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="px-6 py-20 text-center text-slate-400 font-bold">
+                  <td colSpan={11} className="px-6 py-20 text-center text-slate-400 font-bold">
                     لا توجد طلبات تطابق معايير البحث
                   </td>
                 </tr>
               ) : (
                 filteredOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-5 font-en font-bold text-slate-900">{(order.id || '').slice(0, 8)}</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-600">{order.trackingNumber || '-'}</td>
-                    <td className="px-6 py-5 font-bold text-slate-900">{order.merchantName || '-'}</td>
-                    <td className="px-6 py-5">
-                      <div className="flex flex-col">
-                        <span className="font-bold text-slate-900">{order.customerName || '-'}</span>
-                        <span className="text-xs font-en font-bold text-slate-400 tracking-wider">{order.customerPhone || '-'}</span>
-                      </div>
-                    </td>
+                    <OrderTableCells order={order} showMerchant={true} />
                     <td className="px-6 py-5 font-bold text-slate-600">{order.driverName || '-'}</td>
-                    <td className="px-6 py-5"><OrderStatusBadge status={order.status} /></td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-900">{((order.totalAmount || 0) - (order.deliveryFee || 0)).toLocaleString()} د.ع</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-600">{(order.deliveryFee || 0).toLocaleString()} د.ع</td>
-                    <td className="px-6 py-5 font-en font-black text-[#0F3B73]">{(order.totalAmount || 0).toLocaleString()} د.ع</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-400 text-sm">{order.date ? order.date.split('T')[0] : 'N/A'}</td>
                   </tr>
                 ))
               )}

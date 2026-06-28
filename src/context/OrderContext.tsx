@@ -44,6 +44,9 @@ export interface MainOrder {
   companyProfit: number; // ربح الشركة
   financialStatus: FinancialStatus;
 
+  remainingAmount?: number;
+  receivedAmount?: number;
+
   // Legacy/Alias Fields for compatibility
   amount: number; 
   

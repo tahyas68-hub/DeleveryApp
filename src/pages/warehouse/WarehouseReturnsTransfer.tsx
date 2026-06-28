@@ -12,6 +12,7 @@ import {
 import { useOrders } from '../../context/OrderContext';
 import { useUsers } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 export default function WarehouseReturnsTransfer() {
   const navigate = useNavigate();
@@ -159,19 +160,13 @@ export default function WarehouseReturnsTransfer() {
                       checked={selectedIds.length === filteredOrders.length && filteredOrders.length > 0}
                    />
                 </th>
-                <th className="px-6 py-5 font-black text-slate-700">رقم الطلب</th>
-                <th className="px-6 py-5 font-black text-slate-700">رقم الشحنة</th>
-                <th className="px-6 py-5 font-black text-slate-700">التاجر / المتجر</th>
-                <th className="px-6 py-5 font-black text-slate-700">العميل</th>
-                <th className="px-6 py-5 font-black text-slate-700">العنوان</th>
-                <th className="px-6 py-5 font-black text-slate-700 text-center">الحالة</th>
-                <th className="px-6 py-5 font-black text-slate-700 text-left">مبلغ الطلب</th>
+                <OrderTableHeaders showMerchant={true} />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 italic">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-32 text-center text-slate-400 font-bold text-lg">
+                  <td colSpan={10} className="px-6 py-32 text-center text-slate-400 font-bold text-lg">
                     لا يوجد طلبات راجعة في المخزن حالياً (جاهزة للتحويل).
                   </td>
                 </tr>
@@ -189,22 +184,7 @@ export default function WarehouseReturnsTransfer() {
                         }}
                       />
                     </td>
-                    <td className="px-6 py-5 font-en font-bold text-[#0F3B73]">{order.id.slice(0, 8)}</td>
-                    <td className="px-6 py-5 font-en font-bold text-slate-600">{order.trackingNumber || '-'}</td>
-                    <td className="px-6 py-5 font-bold text-slate-900">{order.merchantName}</td>
-                    <td className="px-6 py-5">
-                       <div className="flex flex-col">
-                          <span className="font-bold text-slate-900">{order.customerName}</span>
-                          <span className="text-xs text-slate-400 font-en font-bold">{order.customerPhone}</span>
-                       </div>
-                    </td>
-                    <td className="px-6 py-5 font-bold text-slate-500 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">{order.province} - {order.address}</td>
-                    <td className="px-6 py-5 text-center">
-                       <span className={`px-4 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600`}>
-                         جاهز للتحويل (مسترجع)
-                       </span>
-                    </td>
-                    <td className="px-6 py-5 font-en font-black text-slate-900 text-left whitespace-nowrap">{(order.totalAmount || 0).toLocaleString()} د.ع</td>
+                    <OrderTableCells order={order} showMerchant={true} />
                   </tr>
                 ))
               )}

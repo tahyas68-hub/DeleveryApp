@@ -4,6 +4,7 @@ import { useOrders } from '../../context/OrderContext';
 import { useSettings } from '../../context/SettingsContext';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 export default function PartialDelivery() {
   const { user } = useAuth();

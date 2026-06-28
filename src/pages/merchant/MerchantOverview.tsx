@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useOrders } from '../../context/OrderContext';
 import { OrderStatusBadge } from '../../components/OrderStatusBadge';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 export default function MerchantOverview() {
   const { user } = useAuth();

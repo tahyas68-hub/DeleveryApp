@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Package, Search, Calendar, CheckSquare, XCircle, ArrowLeft, Printer, CheckIcon } from 'lucide-react';
 import { useOrders } from '../../context/OrderContext';
 import { Link } from 'react-router-dom';
+import { OrderTableHeaders, OrderTableCells } from '../../components/OrderTableCells';
 
 export default function IncomingMerchant() {
   const { orders, updateOrderStatus } = useOrders();
@@ -95,22 +96,14 @@ export default function IncomingMerchant() {
                     />
                   </div>
                 </th>
-                <th className="px-6 py-4 font-bold text-slate-600">رقم الطلب</th>
-                <th className="px-6 py-4 font-bold text-slate-600">التاجر</th>
-                <th className="px-6 py-4 font-bold text-slate-600">تفاصيل العميل</th>
-                <th className="px-6 py-4 font-bold text-slate-600">العنوان</th>
-                <th className="px-6 py-4 font-bold text-slate-600">المبلغ الكلي</th>
-                <th className="px-6 py-4 font-bold text-slate-600">أجور التوصيل</th>
-                <th className="px-6 py-4 font-bold text-slate-600">مبلغ الطلب</th>
-                <th className="px-6 py-4 font-bold text-slate-600">الكمية (طرود)</th>
-                <th className="px-6 py-4 font-bold text-slate-600 text-center">الحالة</th>
+                <OrderTableHeaders showMerchant={true} />
                 <th className="px-6 py-4 font-bold text-slate-600 text-center">إجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="px-6 py-20 text-center text-slate-300 font-bold text-lg">
+                  <td colSpan={12} className="px-6 py-20 text-center text-slate-300 font-bold text-lg">
                     لا توجد شحنات مطابقة
                   </td>
                 </tr>
@@ -127,26 +120,7 @@ export default function IncomingMerchant() {
                         />
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-en font-bold text-[#0F3B73]">
-                      <div>{o.id}</div>
-                      <div className="text-xs text-slate-400">{o.date}</div>
-                    </td>
-                    <td className="px-6 py-4 font-bold text-slate-800">{o.merchantName}</td>
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-slate-800">{o.customerName}</div>
-                      <div className="text-xs text-slate-500 font-en">{o.customerPhone}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-slate-700">{o.province}</div>
-                      <div className="text-xs text-slate-500 truncate max-w-[120px]">{o.address}</div>
-                    </td>
-                    <td className="px-6 py-4 font-en font-bold text-slate-700">{o.totalAmount?.toLocaleString()} د.ع</td>
-                    <td className="px-6 py-4 font-en font-bold text-amber-600">{o.deliveryFee?.toLocaleString()} د.ع</td>
-                    <td className="px-6 py-4 font-en font-bold text-blue-600">{o.amount?.toLocaleString()} د.ع</td>
-                    <td className="px-6 py-4 font-en font-bold text-blue-600 text-center">{o.pieces}</td>
-                    <td className="px-6 py-4 text-center">
-                      <span className="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full text-xs font-bold border border-blue-100 whitespace-nowrap">استلام من التاجر</span>
-                    </td>
+                    <OrderTableCells order={o} showMerchant={true} />
                     <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <Link 
