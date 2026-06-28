@@ -33,6 +33,8 @@ export default function MerchantDashboard() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Tabs configuration mappings to OrderStatus
   const stats = [
     {
@@ -201,14 +203,24 @@ export default function MerchantDashboard() {
   };
   
   const handleCreateOrder = () => {
+    if(isSubmitting) return;
+
     if(!newOrder.customerName || !newOrder.customerPhone || !newOrder.province || !newOrder.amount || !newOrder.trackingNumber) {
        alert("الرجاء ملء كافة الحقول المطلوبة (الاسم، الهاتف، المحافظة، المبلغ، رقم الشحنة)");
        return;
     }
 
+    setIsSubmitting(true);
     const todayDate = new Date().toISOString().split('T')[0];
-    if (orders.some(o => o.trackingNumber === newOrder.trackingNumber && o.date === todayDate)) {
+    const isDuplicate = orders.some(o => {
+      const existingTracking = (o.trackingNumber || '').toString().trim();
+      const newTracking = (newOrder.trackingNumber || '').toString().trim();
+      return existingTracking === newTracking && o.date === todayDate;
+    });
+
+    if (isDuplicate) {
        alert("رقم الشحنة (الوصل) مستخدم مسبقاً في طلبات اليوم، يرجى إدخال رقم فريد.");
+       setIsSubmitting(false);
        return;
     }
 
@@ -259,6 +271,7 @@ export default function MerchantDashboard() {
       alert('تم إضافة الطلب بنجاح وهو الآن في المخزن الرئيسي.');
     }
     setNewOrder({ pieces: 1, trackingNumber: '', customerPhone: '', customerName: '', address: '', province: '', amount: '' });
+    setIsSubmitting(false);
   };
 
   return (
@@ -594,9 +607,19 @@ export default function MerchantDashboard() {
             <div className="flex flex-col gap-3 pt-6 border-t border-slate-50">
               <button 
                 onClick={handleCreateOrder}
-                className="w-full bg-[#0F3B73] text-white py-4 rounded-2xl font-bold text-lg hover:bg-opacity-90 active:scale-[0.98] transition-all shadow-xl shadow-[#0F3B73]/20"
+                disabled={isSubmitting}
+                className={`w-full text-white py-4 rounded-2xl font-bold text-lg transition-all shadow-xl ${
+                  isSubmitting 
+                    ? 'bg-[#0F3B73]/60 cursor-not-allowed shadow-none flex items-center justify-center gap-2' 
+                    : 'bg-[#0F3B73] hover:bg-opacity-90 active:scale-[0.98] shadow-[#0F3B73]/20'
+                }`}
               >
-                تأكيد الإضافة
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/80 border-t-transparent rounded-full animate-spin"></div>
+                    جاري الإضافة...
+                  </>
+                ) : 'تأكيد الإضافة'}
               </button>
               <button 
                 onClick={() => setIsAddModalOpen(false)}
